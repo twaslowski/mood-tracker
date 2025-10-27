@@ -1,4 +1,4 @@
-import { AuthButton } from "@/components/auth-button";
+import { AuthButton } from "@/components/auth/auth-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function Home() {
