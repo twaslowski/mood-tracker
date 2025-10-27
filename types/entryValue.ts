@@ -1,13 +1,12 @@
 import { Metric } from "@/types/metric";
 
-export interface EntryValue {
-  record_id: number;
-  metric_id: number;
+export interface CreateEntryValue {
+  metric_id: string;
   value: number;
 }
 
-export interface EntryValueWithMetric extends EntryValue {
-  metric: Metric;
+export interface EntryValue extends CreateEntryValue {
+  entry_id: number;
 }
 
 export function validateEntryValue(value: number, metric: Metric): boolean {

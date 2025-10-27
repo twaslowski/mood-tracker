@@ -1,6 +1,6 @@
 create table metric
 (
-    id                 BIGINT                                    NOT NULL PRIMARY KEY,
+    id                 UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     name               VARCHAR(255)                              NOT NULL,
     description        TEXT                                      NOT NULL,
     labels             JSONB,
@@ -14,19 +14,19 @@ create table metric
         unique (name, owner_id)
 );
 
-create table record
+create table entry
 (
-    id                 BIGINT                   NOT NULL PRIMARY KEY,
+    id                 SERIAL PRIMARY KEY,
     user_id            VARCHAR(255),
     recorded_at        TIMESTAMP WITH TIME ZONE NOT NULL,
-    creation_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-    updated_timestamp  TIMESTAMP WITH TIME ZONE NOT NULL
+    creation_timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_timestamp  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
-create table record_value
+create table entry_value
 (
-    record_id BIGINT REFERENCES record (id),
-    metric_id BIGINT REFERENCES metric (id),
+    entry_id  BIGINT REFERENCES entry (id),
+    metric_id UUID REFERENCES metric (id),
     value     NUMERIC NOT NULL,
-    PRIMARY KEY (record_id, metric_id)
+    PRIMARY KEY (entry_id, metric_id)
 );
