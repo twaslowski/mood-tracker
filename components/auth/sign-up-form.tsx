@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { configureDefaultTracking } from "@/lib/service/defaultsService";
 
 export function SignUpForm({
   className,
@@ -40,17 +41,22 @@ export function SignUpForm({
     }
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           emailRedirectTo: window.location.origin,
         },
       });
-      if (error) throw error;
+      if (error || !data.user) throw error;
+      await configureDefaultTracking(data.user.id);
       router.push("/protected");
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred");
+      setError(
+        error instanceof Error
+          ? "Error: " + error.message
+          : "An error occurred",
+      );
     } finally {
       setIsLoading(false);
     }

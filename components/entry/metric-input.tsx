@@ -7,41 +7,41 @@ interface MetricInputProps {
   metric: Metric;
   value: string;
   onChange: (value: string) => void;
-  icon?: React.ReactNode;
 }
 
 export default function MetricInput({
   metric,
   value,
   onChange,
-  icon,
 }: MetricInputProps) {
   const renderDiscreteInput = () => {
     if (!metric.labels) return null;
+    console.log(metric);
 
     return (
-    // todo sort this some way
       <div className="space-y-3">
-        {Object.entries(metric.labels).map(([val, label]) => (
-          <label
-            key={val}
-            className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-              value === val
-                ? "border-indigo-500 bg-indigo-50"
-                : "border-gray-200 hover:border-indigo-300"
-            }`}
-          >
-            <input
-              type="radio"
-              name={metric.id}
-              value={val}
-              checked={value === val}
-              onChange={(e) => onChange(e.target.value)}
-              className="w-5 h-5 text-indigo-600"
-            />
-            <span className="text-lg font-medium text-gray-800">{label}</span>
-          </label>
-        ))}
+        {Object.entries(metric.labels)
+          .sort()
+          .map(([val, label]) => (
+            <label
+              key={val}
+              className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                value === val
+                  ? "border-indigo-500 bg-indigo-50"
+                  : "border-gray-200 hover:border-indigo-300"
+              }`}
+            >
+              <input
+                type="radio"
+                name={metric.id}
+                value={val}
+                checked={value === val}
+                onChange={(e) => onChange(e.target.value)}
+                className="w-5 h-5 text-indigo-600"
+              />
+              <span className="text-lg font-medium text-gray-800">{label}</span>
+            </label>
+          ))}
       </div>
     );
   };
@@ -72,7 +72,6 @@ export default function MetricInput({
   return (
     <div className="mb-8">
       <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
-        {icon && <span className="text-indigo-600">{icon}</span>}
         {metric.name}
       </label>
       {metric.metric_type === "discrete"

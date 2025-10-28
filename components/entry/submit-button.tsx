@@ -4,7 +4,8 @@ import React from "react";
 import { Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { CreateEntryValue } from "@/types/entryValue";
-import {createEntryAction} from "@/app/actions/entries";
+import { createEntry } from "@/lib/service/entryService";
+import toast from "react-hot-toast";
 
 interface SubmitButtonProps {
   values: CreateEntryValue[];
@@ -21,11 +22,11 @@ export default function SubmitButton({
 
   const handleSubmit = async () => {
     try {
-      await createEntryAction({ values, recordedAt });
-      router.push("/protected"); // Navigate back to protected page after successful submission
+      await createEntry({ values, recordedAt });
+      router.push("/protected");
     } catch (error) {
-      console.error("Failed to create entry:", error);
-      // TODO: Add proper error handling/toast notification
+      console.log(error);
+      toast.error("Failed to create entry. Please try again.");
     }
   };
 
