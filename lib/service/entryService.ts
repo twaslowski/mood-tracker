@@ -1,7 +1,42 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { CreateEntryInput } from "@/types/entry";
+import { CreateEntryInput, EntryWithValues } from "@/types/entry";
+
+export const getEntriesByUser = async () => {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Authentication failed. Please log in again.");
+  }
+
+  const { data: entries, error: entriesError } = await supabase
+    .from("entry")
+    .select("*, entry_value(*)")
+    .eq("user_id", user.id)
+    .order("recorded_at", { ascending: false });
+
+  if (entriesError) {
+    throw new Error("Failed to fetch entries: " + entriesError.message);
+  }
+
+  const transformedEntries: EntryWithValues[] = (entries || []).map(
+    (entry: any) => ({
+      id: entry.id,
+      user_id: entry.user_id,
+      recorded_at: entry.recorded_at,
+      creation_timestamp: entry.creation_timestamp,
+      updated_timestamp: entry.updated_timestamp,
+      values: entry.entry_value || [],
+    }),
+  );
+
+  return transformedEntries;
+};
 
 export const createEntry = async (
   createEntryInput: CreateEntryInput,
