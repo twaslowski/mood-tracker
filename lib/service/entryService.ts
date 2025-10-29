@@ -1,9 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { CreateEntryInput, EntryWithValues } from "@/types/entry";
+import { CreateEntryInput, type Entry } from "@/types/type";
+import { EntrySchema } from "@/types/schema";
 
-export const getEntriesByUser = async () => {
+export const getEntriesByUser = async (): Promise<Entry[]> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -16,7 +17,7 @@ export const getEntriesByUser = async () => {
 
   const { data: entries, error: entriesError } = await supabase
     .from("entry")
-    .select("*, entry_value(*)")
+    .select("*, entry_value(*) as values")
     .eq("user_id", user.id)
     .order("recorded_at", { ascending: false });
 
@@ -24,18 +25,7 @@ export const getEntriesByUser = async () => {
     throw new Error("Failed to fetch entries: " + entriesError.message);
   }
 
-  const transformedEntries: EntryWithValues[] = (entries || []).map(
-    (entry: any) => ({
-      id: entry.id,
-      user_id: entry.user_id,
-      recorded_at: entry.recorded_at,
-      creation_timestamp: entry.creation_timestamp,
-      updated_timestamp: entry.updated_timestamp,
-      values: entry.entry_value || [],
-    }),
-  );
-
-  return transformedEntries;
+  return entries.map((entry) => EntrySchema.parse(entry));
 };
 
 export const createEntry = async (

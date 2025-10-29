@@ -10,19 +10,3 @@ export interface Metric {
   min_value: number | null;
   max_value: number | null;
 }
-
-export interface CreateMetricInput {
-  name: string;
-  description: string;
-  metric_type: "discrete" | "continuous" | "duration";
-  labels?: Record<string, string>;
-  min_value?: number;
-  max_value?: number;
-  owner_id?: string; // Defaults to 'SYSTEM'
-}
-
-export function isValidMetricType(
-  type: string,
-): type is "discrete" | "continuous" | "duration" {
-  return ["discrete", "continuous", "duration"].includes(type);
-}

@@ -1,7 +1,7 @@
 "use server";
 
 import { createEntry } from "@/lib/service/entryService";
-import { CreateEntryInput } from "@/types/entry";
+import { CreateEntryInput } from "@/types/type";
 import { getErrorMessage } from "@/lib/utils";
 
 export async function createEntryAction(input: CreateEntryInput) {

@@ -1,12 +1,8 @@
-import { EntryWithValues } from "@/types/entry";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { type Entry } from "@/types/type";
 
-interface EntryProps {
-  entry: EntryWithValues;
-}
-
-export function Entry({ entry }: EntryProps) {
+export function Entry({ entry }: { entry: Entry }) {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
