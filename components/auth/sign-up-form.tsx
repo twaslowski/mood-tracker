@@ -16,7 +16,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { configureDefaultTracking } from "@/lib/service/defaultsService";
-import {SupabaseClient} from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export function SignUpForm({
   className,
@@ -50,7 +50,7 @@ export function SignUpForm({
         },
       });
       if (error || !data.user) throw error;
-      await setupDefaults(data.user.id, supabase)
+      await setupDefaults(data.user.id, supabase);
       router.push("/protected");
     } catch (error: unknown) {
       setError(
@@ -69,12 +69,12 @@ export function SignUpForm({
     } catch (error) {
       await supabase.auth.admin.deleteUser(userId);
       setError(
-          error instanceof Error
-              ? "Error: " + error.message
-              : "An error occurred",
+        error instanceof Error
+          ? "Error: " + error.message
+          : "An error occurred",
       );
     }
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

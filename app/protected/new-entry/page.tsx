@@ -6,12 +6,10 @@ export default async function CreateEntryPage() {
   const trackedMetrics = await getTrackedMetrics();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 py-8">
+    <div className="min-h-screen p-4 py-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Create New Entry
-          </h1>
+          <h1 className="text-4xl font-bold mb-2">Create New Entry</h1>
           <p className="text-gray-600">
             Record your metrics for a specific point in time
           </p>
@@ -19,7 +17,7 @@ export default async function CreateEntryPage() {
 
         <EntryCreationForm trackedMetrics={trackedMetrics} />
 
-        <div className="mt-6 text-center text-sm text-gray-500">
+        <div className="mt-6 text-center text-sm">
           <p>
             You can leave metrics blank if you don&apos;t want to record them
           </p>

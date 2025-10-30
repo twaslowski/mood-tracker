@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import { AuthButton } from "@/components/auth/auth-button";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -34,6 +36,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <div className="absolute top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-16 z-10 bg-transparent">
+            <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
+              <div className="flex gap-5 items-center font-semibold"></div>
+              <div className="flex items-center gap-4">
+                <AuthButton />
+                <ThemeSwitcher />
+              </div>
+            </div>
+          </div>
           {children}
         </ThemeProvider>
       </body>
