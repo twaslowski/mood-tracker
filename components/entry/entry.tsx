@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { type Entry } from "@/types/type";
+import { type Entry } from "@/types/entry";
+import { type EntryValueWithMetric } from "@/types/entryValue";
+import { Metric } from "@/types/metric";
 
 export function Entry({ entry }: { entry: Entry }) {
   const formatDateTime = (dateString: string) => {
@@ -13,6 +15,13 @@ export function Entry({ entry }: { entry: Entry }) {
       minute: "2-digit",
       hour12: true,
     });
+  };
+
+  const deriveMetricValue = (value: number, metric: Metric): string => {
+    if (metric.metric_type !== "discrete" || metric.labels === null) {
+      return value.toString();
+    }
+    return metric.labels[value.toString()] || value.toString();
   };
 
   return (
@@ -28,10 +37,12 @@ export function Entry({ entry }: { entry: Entry }) {
             Recorded Values
           </h4>
           <div className="flex flex-wrap gap-2">
-            {entry.values.map((value, index) => (
+            {entry.values.map((value: EntryValueWithMetric, index) => (
               <Badge key={index} variant="secondary" className="px-3 py-1">
-                <span className="font-medium">Metric {value.metric_id}:</span>
-                <span className="ml-1">{value.value}</span>
+                <span className="font-medium">{value.metric.name}:</span>
+                <span className="ml-1">
+                  {deriveMetricValue(value.value, value.metric)}
+                </span>
               </Badge>
             ))}
           </div>

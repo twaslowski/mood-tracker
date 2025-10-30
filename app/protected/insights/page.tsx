@@ -3,10 +3,9 @@ import { getEntriesByUser } from "@/lib/service/entryService";
 
 export default async function InsightsPage() {
   const entries = await getEntriesByUser();
-  console.log("received entries", entries);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Insights</h1>
 
       <div className="space-y-6">

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EntryValueSchema } from "@/types/entryValue";
+import { EntryValueWithMetricSchema } from "@/types/entryValue";
 
 export const EntrySchema = z.object({
   id: z.number(),
@@ -7,7 +7,7 @@ export const EntrySchema = z.object({
   recorded_at: z.string(),
   creation_timestamp: z.string(),
   updated_timestamp: z.string(),
-  values: z.array(EntryValueSchema),
+  values: z.array(EntryValueWithMetricSchema),
 });
 
 export const CreateEntryInputSchema = z.object({
@@ -19,6 +19,21 @@ export const CreateEntryInputSchema = z.object({
     }),
   ),
 });
+
+// Represents the database schema retrieved from Supabase, accounting for the entry_value join column name
+export const DBEntrySchema = z
+  .object({
+    id: z.number(),
+    user_id: z.string(),
+    recorded_at: z.string(),
+    creation_timestamp: z.string(),
+    updated_timestamp: z.string(),
+    entry_value: z.array(EntryValueWithMetricSchema),
+  })
+  .transform(({ entry_value, ...rest }) => ({
+    ...rest,
+    values: entry_value,
+  }));
 
 export type CreateEntryInput = z.infer<typeof CreateEntryInputSchema>;
 export type Entry = z.infer<typeof EntrySchema>;

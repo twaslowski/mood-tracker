@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { CreateEntryInput, type Entry } from "@/types/entry";
-import { EntrySchema } from "@/types/entry";
+import { CreateEntryInput, DBEntrySchema, type Entry } from "@/types/entry";
+import { z } from "zod";
 
 export const getEntriesByUser = async (): Promise<Entry[]> => {
   const supabase = await createClient();
@@ -15,17 +15,17 @@ export const getEntriesByUser = async (): Promise<Entry[]> => {
     throw new Error("Authentication failed. Please log in again.");
   }
 
-  const { data: entries, error: entriesError } = await supabase
+  const { data, error } = await supabase
     .from("entry")
-    .select("*, entry_value(*) as values")
+    .select("*, entry_value(*, metric:metric_id(*))")
     .eq("user_id", user.id)
     .order("recorded_at", { ascending: false });
 
-  if (entriesError) {
-    throw new Error("Failed to fetch entries: " + entriesError.message);
+  if (error) {
+    throw new Error("Failed to fetch entries: " + error.message);
   }
 
-  return entries.map((entry) => EntrySchema.parse(entry));
+  return z.array(DBEntrySchema).parse(data);
 };
 
 export const createEntry = async (

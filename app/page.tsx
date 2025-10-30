@@ -25,13 +25,13 @@ export default function Home() {
         </div>
         <div className="justify-center flex space-x-2">
           <Link href="/auth/sign-up">
-            <Button className="btn-action-primary">
+            <Button>
               <RocketIcon />
               <p>Sign Up</p>
             </Button>
           </Link>
           <Link href="/protected">
-            <Button className="btn-action-secondary">
+            <Button>
               <CogIcon />
               <p>Track</p>
             </Button>

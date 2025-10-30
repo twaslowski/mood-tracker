@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { type Metric } from "@/types/type";
+import { type Metric } from "@/types/metric";
 
 interface MetricInputProps {
   metric: Metric;
@@ -16,7 +16,6 @@ export default function MetricInput({
 }: MetricInputProps) {
   const renderDiscreteInput = () => {
     if (!metric.labels) return null;
-    console.log(metric);
 
     return (
       <div className="space-y-3">
