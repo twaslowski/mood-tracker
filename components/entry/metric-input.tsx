@@ -2,74 +2,64 @@
 
 import React from "react";
 import { type Metric } from "@/types/metric";
+import { range } from "@/lib/utils";
 
 interface MetricInputProps {
   metric: Metric;
-  value: string;
-  onChange: (value: string) => void;
+  onMetricSelect: (metricId: string, value: number) => void;
 }
 
 export default function MetricInput({
   metric,
-  value,
-  onChange,
+  onMetricSelect,
 }: MetricInputProps) {
   const renderDiscreteInput = () => {
-    if (!metric.labels) return null;
+    if (!metric.labels) {
+      throw new Error("Discrete metrics must have labels defined.");
+    }
 
-    return (
-      <div className="space-y-3">
-        {Object.entries(metric.labels)
-          .sort()
-          .map(([val, label]) => (
-            <label
-              key={val}
-              className={`flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                value === val
-                  ? "border-indigo-500 bg-indigo-50"
-                  : "border-gray-200 hover:border-indigo-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name={metric.id}
-                value={val}
-                checked={value === val}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-5 h-5 text-indigo-600"
-              />
-              <span className="text-lg font-medium text-gray-800">{label}</span>
-            </label>
-          ))}
-      </div>
-    );
-  };
-
-  const renderContinuousInput = () => {
     return (
       <>
-        <input
-          type="number"
-          step={metric.metric_type === "duration" ? "0.5" : "1"}
-          min={metric.min_value ?? undefined}
-          max={metric.max_value ?? undefined}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={`e.g., ${metric.max_value ? Math.floor(metric.max_value / 2) : "10"}`}
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none text-lg"
-        />
-        <p className="mt-2 text-sm text-gray-500">
-          Optional: {metric.description}
-          {metric.min_value !== null &&
-            metric.max_value !== null &&
-            ` (${metric.min_value} - ${metric.max_value})`}
-        </p>
+        {Object.entries(metric.labels)
+          // order by values descending
+          .sort((a, b) => b[1] - a[1])
+          .map(([label, value]) => (
+            <div
+              key={value}
+              className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
+              onClick={() => onMetricSelect(metric.id, value)}
+            >
+              <button>
+                <p>{label}</p>
+              </button>
+            </div>
+          ))}
       </>
     );
   };
 
+  const renderContinuousInput = () => {
+    if (metric.min_value === null || metric.max_value === null) {
+      throw new Error(
+        "Continuous metrics must have min and max values defined.",
+      );
+    }
+
+    return range(metric.min_value, metric.max_value).map((val) => (
+      <div
+        key={val}
+        onClick={() => onMetricSelect(metric.id, val)}
+        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
+      >
+        <button>
+          <p>{val}</p>
+        </button>
+      </div>
+    ));
+  };
+
   return (
-    <div className="mb-8">
+    <div className="mb-8 space-y-3 border border-primary-foreground rounded-lg p-4">
       <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-3">
         {metric.name}
       </label>

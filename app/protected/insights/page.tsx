@@ -5,9 +5,7 @@ export default async function InsightsPage() {
   const entries = await getEntriesByUser();
 
   return (
-    <div className="min-h-screen">
-      <h1 className="text-3xl font-bold mb-8">Insights</h1>
-
+    <div className="flex flex-col max-w-4xl p-4 h-full">
       <div className="space-y-6">
         <div>
           <h2 className="text-xl font-semibold mb-4">Your Entry History</h2>

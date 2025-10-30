@@ -6,21 +6,17 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export const Header = () => {
   return (
-    <>
-      <div className="fixed top-0 left-0 h-16 flex items-center pl-3">
-        <Link href="/">
-          <Button size="icon" aria-label="Home">
-            <Home className="w-6 h-6" />
-          </Button>
-        </Link>
-      </div>
+    <div className="flex items-center justify-between p-2">
+      <Link href="/">
+        <Button size="icon" aria-label="Home">
+          <Home className="w-6 h-6" />
+        </Button>
+      </Link>
 
-      <div className="fixed top-0 right-0 h-16 flex items-center">
-        <div className="flex items-center gap-4">
-          <AuthButton />
-          <ThemeSwitcher />
-        </div>
+      <div className="flex items-center gap-4">
+        <AuthButton />
+        <ThemeSwitcher />
       </div>
-    </>
+    </div>
   );
 };

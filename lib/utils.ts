@@ -10,3 +10,6 @@ export function getErrorMessage(error: unknown): string {
   if (typeof error === "string") return error;
   return "An unknown error occurred";
 }
+
+export const range = (start: number, stop: number): Array<number> =>
+  Array.from({ length: stop - start + 1 }, (_, index) => start + index);

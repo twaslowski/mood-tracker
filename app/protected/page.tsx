@@ -14,9 +14,8 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center h-full">
       <div className="max-w-4xl w-full">
-        <h1>Welcome back, {data.user.email}</h1>
         {/* Primary Action */}
         <div className="mb-4">
           <Link href="/protected/new-entry">

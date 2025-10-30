@@ -4,7 +4,7 @@ export const MetricSchema = z.object({
   id: z.uuid(),
   name: z.string(),
   description: z.string(),
-  labels: z.record(z.string(), z.string()).nullable(),
+  labels: z.record(z.string(), z.number()).nullable(),
   owner_id: z.string(),
   creation_timestamp: z.string(),
   update_timestamp: z.string(),
