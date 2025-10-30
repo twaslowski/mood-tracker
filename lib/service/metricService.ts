@@ -1,9 +1,9 @@
 "use server";
 
-import { TrackingWithMetric } from "@/types/metricTracking";
+import { type MetricTracking, MetricTrackingSchema } from "@/types/tracking";
 import { createClient } from "@/lib/supabase/server";
 
-export const getTrackedMetrics = async (): Promise<TrackingWithMetric[]> => {
+export const getTrackedMetrics = async (): Promise<MetricTracking[]> => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -11,7 +11,7 @@ export const getTrackedMetrics = async (): Promise<TrackingWithMetric[]> => {
   } = await supabase.auth.getUser();
 
   if (authError || !user) {
-    throw new Error(`Error fetching user: ${error?.message}`);
+    throw new Error(`Error fetching user: ${authError?.message}`);
   }
 
   return getUserTrackedMetrics(user.id);
@@ -19,16 +19,16 @@ export const getTrackedMetrics = async (): Promise<TrackingWithMetric[]> => {
 
 export const getUserTrackedMetrics = async (
   userId: string,
-): Promise<TrackingWithMetric[]> => {
+): Promise<MetricTracking[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("metric_tracking")
-    .select("metric_id, baseline, tracked_at, metric(*)")
+    .select("user_id, baseline, tracked_at, metric(*)")
     .eq("user_id", userId);
 
   if (error || !data) {
     throw new Error(`Error fetching user tracked metrics: ${error?.message}`);
   }
 
-  return data as TrackingWithMetric[];
+  return data.map((item) => MetricTrackingSchema.parse(item));
 };

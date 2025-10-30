@@ -1,8 +1,8 @@
-export interface CreateEntryValue {
-  metric_id: string;
-  value: number;
-}
+import { z } from "zod";
 
-export interface EntryValue extends CreateEntryValue {
-  entry_id: number;
-}
+export const EntryValueSchema = z.object({
+  value: z.number(),
+  metric_id: z.string(),
+});
+
+export type EntryValue = z.infer<typeof EntryValueSchema>;

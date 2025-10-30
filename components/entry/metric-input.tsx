@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Metric } from "@/types/metric";
+import { type Metric } from "@/types/type";
 
 interface MetricInputProps {
   metric: Metric;

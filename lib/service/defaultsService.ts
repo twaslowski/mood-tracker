@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { TrackingDefault } from "@/types/trackingDefault";
+import { Default, DefaultSchema } from "@/types/default";
 
 export const configureDefaultTracking = async (userId: string) => {
   const supabase = await createClient();
@@ -20,13 +20,13 @@ export const configureDefaultTracking = async (userId: string) => {
   }
 };
 
-export const getTrackingDefaults = async (): Promise<TrackingDefault[]> => {
+export const getTrackingDefaults = async (): Promise<Default[]> => {
   const supabase = await createClient();
   const { data, error } = await supabase.from("tracking_default").select("*");
 
-  if (error) {
+  if (error || !data) {
     throw new Error(`Error fetching system metrics: ${error.message}`);
   }
 
-  return data as TrackingDefault[];
+  return data.map((item) => DefaultSchema.parse(item));
 };

@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { CreateEntryInput, type Entry } from "@/types/type";
-import { EntrySchema } from "@/types/schema";
+import { CreateEntryInput, type Entry } from "@/types/entry";
+import { EntrySchema } from "@/types/entry";
 
 export const getEntriesByUser = async (): Promise<Entry[]> => {
   const supabase = await createClient();
@@ -63,8 +63,6 @@ export const createEntry = async (
     metric_id: value.metric_id,
     value: value.value,
   }));
-
-  console.log("Inserting entry values:", valuesToInsert);
 
   const { error: valuesError } = await supabase
     .from("entry_value")

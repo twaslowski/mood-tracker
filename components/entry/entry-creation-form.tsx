@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { TrackingWithMetric } from "@/types/metricTracking";
-import { CreateEntryValue } from "@/types/entryValue";
+import { type MetricTracking } from "@/types/tracking";
+import { type EntryValue, EntryValueSchema } from "@/types/entryValue";
 import DateTimeInput from "./datetime-input";
 import MetricInput from "./metric-input";
 import SubmitButton from "./submit-button";
 import { Toaster } from "react-hot-toast";
 
 interface CreateEntryFormProps {
-  trackedMetrics: TrackingWithMetric[];
+  trackedMetrics: MetricTracking[];
 }
 
 export default function EntryCreationForm({
@@ -19,7 +19,6 @@ export default function EntryCreationForm({
     new Date().toISOString().slice(0, 16),
   );
   const [metricValues, setMetricValues] = useState<Record<string, string>>({});
-  console.log("tracked metrics", trackedMetrics);
 
   const handleMetricChange = (metricId: string, value: string) => {
     setMetricValues((prev) => ({
@@ -28,13 +27,15 @@ export default function EntryCreationForm({
     }));
   };
 
-  const getEntryValues = (): CreateEntryValue[] => {
+  const getEntryValues = (): EntryValue[] => {
     return Object.entries(metricValues)
       .filter(([value]) => value !== "" && value !== undefined)
-      .map(([metricId, value]) => ({
-        metric_id: metricId,
-        value: parseFloat(value),
-      }));
+      .map(([metricId, value]) =>
+        EntryValueSchema.parse({
+          metric_id: metricId,
+          value: parseInt(value),
+        }),
+      );
   };
 
   const entryValues = getEntryValues();
@@ -47,10 +48,10 @@ export default function EntryCreationForm({
 
       {trackedMetrics.map((tm) => (
         <MetricInput
-          key={tm.metric_id}
+          key={tm.metric.id}
           metric={tm.metric}
-          value={metricValues[tm.metric_id] || ""}
-          onChange={(value) => handleMetricChange(tm.metric_id, value)}
+          value={metricValues[tm.metric.id] || ""}
+          onChange={(value) => handleMetricChange(tm.metric.id, value)}
         />
       ))}
 

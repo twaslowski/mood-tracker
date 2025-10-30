@@ -3,12 +3,12 @@
 import React from "react";
 import { Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { CreateEntryValue } from "@/types/entryValue";
+import { type EntryValue } from "@/types/entryValue";
 import { createEntry } from "@/lib/service/entryService";
 import toast from "react-hot-toast";
 
 interface SubmitButtonProps {
-  values: CreateEntryValue[];
+  values: EntryValue[];
   recordedAt: string;
   disabled?: boolean;
 }
