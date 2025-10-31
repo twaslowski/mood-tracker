@@ -29,7 +29,7 @@ export default function MetricInput({
               className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
               onClick={() => onMetricSelect(metric.id, value)}
             >
-              <button>
+              <button aria-label={`select-${metric.name}-value-${label}`}>
                 <p>{label}</p>
               </button>
             </div>

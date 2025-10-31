@@ -9,7 +9,7 @@ const entry = {
   updated_timestamp: "2024-06-01T12:00:00Z",
 };
 
-describe("Entry Component", () => {
+describe("entry visualization", () => {
   it("should render single entry", () => {
     const entryWithoutValues = {
       ...entry,

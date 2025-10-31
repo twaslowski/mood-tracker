@@ -48,7 +48,7 @@ export default function SubmitButton({
         onClick={handleCancel}
         className="px-6 py-4 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-lg flex items-center justify-center gap-2 transition-colors"
       >
-        <X className="w-5 h-5" />
+        <X className="w-5 h-5" aria-label="submit-entry" />
         Cancel
       </button>
     </div>
