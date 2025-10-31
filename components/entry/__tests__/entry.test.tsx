@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { Entry } from "../entry";
+import { Mood, Sleep } from "../__fixtures__/metric";
+import { EntryValueWithMetric } from "@/types/entryValue";
 
 const entry = {
   id: 123,
@@ -21,24 +23,30 @@ describe("entry visualization", () => {
     expect(noRecords).toBeInTheDocument();
   });
 
-  it("should render entry with values", () => {
-    const values = [
-      { metric_id: "metric_1", value: 42, metric: { name: "metric 1" } },
-      { metric_id: "metric_2", value: 3.14, metric: { name: "metric 2" } },
+  it("should render entries with labels", () => {
+    const values: EntryValueWithMetric[] = [
+      { metric_id: Mood.id, value: 0, metric: Mood },
+      { metric_id: Sleep.id, value: 7, metric: Sleep },
     ];
     const entryWithValues = {
       ...entry,
       values,
     };
 
-    // @ts-expect-error: a subset of the expected type is enough for the test
     render(<Entry entry={entryWithValues} />);
 
-    values.forEach(({ value, metric }) => {
-      const metricElement = screen.getByText(new RegExp(metric.name, "i"));
-      const valueElement = screen.getByText(new RegExp(value.toString(), "i"));
-      expect(metricElement).toBeInTheDocument();
-      expect(valueElement).toBeInTheDocument();
-    });
+    const moodBadge = screen.getByLabelText(
+      `entry-${entry.id}-value-${Mood.name}`,
+    );
+    expect(moodBadge).toBeInTheDocument();
+    expect(moodBadge.querySelector("span:last-child")).toHaveTextContent(
+      "Neutral",
+    );
+
+    const sleepBadge = screen.getByLabelText(
+      `entry-${entry.id}-value-${Sleep.name}`,
+    );
+    expect(sleepBadge).toBeInTheDocument();
+    expect(sleepBadge.querySelector("span:last-child")).toHaveTextContent("7");
   });
 });

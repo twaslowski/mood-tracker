@@ -17,11 +17,16 @@ export function Entry({ entry }: { entry: Entry }) {
     });
   };
 
+  // Given the numeric value, possibly derive the corresponding label for discrete metrics
   const deriveMetricValue = (value: number, metric: Metric): string => {
-    if (metric.metric_type !== "discrete" || metric.labels === null) {
+    if (metric.metric_type === "continuous") {
       return value.toString();
     }
-    return metric.labels[value.toString()] || value.toString();
+
+    return (
+      Object.keys(metric.labels).find((key) => metric.labels[key] === value) ??
+      value.toString()
+    );
   };
 
   return (
@@ -38,7 +43,12 @@ export function Entry({ entry }: { entry: Entry }) {
           </h4>
           <div className="flex flex-wrap gap-2">
             {entry.values.map((value: EntryValueWithMetric, index) => (
-              <Badge key={index} variant="secondary" className="px-3 py-1">
+              <Badge
+                key={index}
+                variant="secondary"
+                aria-label={`entry-${entry.id}-value-${value.metric.name}`}
+                className="px-3 py-1"
+              >
                 <span className="font-medium">{value.metric.name}:</span>
                 <span className="ml-1">
                   {deriveMetricValue(value.value, value.metric)}

@@ -9,7 +9,7 @@ VALUES ('Mood',
 INSERT INTO metric (name, description, labels, owner_id, metric_type, min_value, max_value)
 VALUES ('Sleep',
         'Total hours of sleep per night',
-        NULL,
+        '{}'::jsonb,
         'SYSTEM',
         'continuous',
         0, 16);
