@@ -51,7 +51,7 @@ export function SignUpForm({
       });
       if (error || !data.user) throw error;
       await setupDefaults(data.user.id, supabase);
-      router.push("/protected");
+      router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(
         error instanceof Error

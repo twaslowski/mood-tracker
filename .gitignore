@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env
+.env.dev
+.env.prod
+
 .idea
 
 # vercel
@@ -43,3 +46,4 @@ next-env.d.ts
 .envrc
 .terraform
 *.tfstate*
+
