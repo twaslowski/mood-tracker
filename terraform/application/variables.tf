@@ -10,6 +10,12 @@ variable "vercel_api_key" {
   sensitive   = true
 }
 
+variable "github_oauth_client_id" {
+  description = "The GitHub OAuth client id for Supabase authentication."
+  type        = string
+  sensitive   = true
+}
+
 variable "github_oauth_client_secret" {
   description = "The GitHub OAuth client secret for Supabase authentication."
   type        = string

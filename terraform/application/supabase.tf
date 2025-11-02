@@ -18,8 +18,10 @@ resource "supabase_settings" "production" {
   })
 
   auth = jsonencode({
-    external_github_enabled = true
-    external_github_client_id = "Ov23liKbZf2VwVTTCmkU"
+    external_github_enabled       = true
+    external_github_client_id     = var.github_oauth_client_id
     external_github_client_secret = var.github_oauth_client_secret
+
+    site_url = "https://moody.twaslowski.com"
   })
 }
