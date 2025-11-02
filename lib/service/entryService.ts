@@ -3,22 +3,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { CreateEntryInput, DBEntrySchema, type Entry } from "@/types/entry";
 import { z } from "zod";
+import { getUserId } from "@/lib/service/userService";
 
 export const getEntriesByUser = async (): Promise<Entry[]> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Authentication failed. Please log in again.");
-  }
+  const userId = await getUserId(supabase);
 
   const { data, error } = await supabase
     .from("entry")
     .select("*, entry_value(*, metric:metric_id(*))")
-    .eq("user_id", user.id)
+    .eq("user_id", userId)
     .order("recorded_at", { ascending: false });
 
   if (error) {
@@ -32,19 +26,12 @@ export const createEntry = async (
   createEntryInput: CreateEntryInput,
 ): Promise<string> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Authentication failed. Please log in again.");
-  }
+  const userId = await getUserId(supabase);
 
   const { data: entryData, error: entryError } = await supabase
     .from("entry")
     .insert({
-      user_id: user.id,
+      user_id: userId,
       recorded_at: createEntryInput.recordedAt,
       creation_timestamp: new Date().toISOString(),
       updated_timestamp: new Date().toISOString(),

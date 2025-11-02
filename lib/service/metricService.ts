@@ -2,19 +2,13 @@
 
 import { type MetricTracking, MetricTrackingSchema } from "@/types/tracking";
 import { createClient } from "@/lib/supabase/server";
+import { getUserId } from "@/lib/service/userService";
 
 export const getTrackedMetrics = async (): Promise<MetricTracking[]> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+  const userId = await getUserId(supabase);
 
-  if (authError || !user) {
-    throw new Error(`Error fetching user: ${authError?.message}`);
-  }
-
-  return getUserTrackedMetrics(user.id);
+  return getUserTrackedMetrics(userId);
 };
 
 export const getUserTrackedMetrics = async (
