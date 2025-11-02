@@ -16,4 +16,10 @@ resource "supabase_settings" "production" {
     db_extra_search_path = "public,extensions"
     max_rows             = 1000
   })
+
+  auth = jsonencode({
+    external_github_enabled = true
+    external_github_client_id = "Ov23liKbZf2VwVTTCmkU"
+    external_github_client_secret = var.github_oauth_client_secret
+  })
 }

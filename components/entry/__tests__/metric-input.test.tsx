@@ -35,8 +35,8 @@ describe("MetricInput", () => {
   it("calls onMetricSelect with correct args for continuous metric", () => {
     const handleSelect = jest.fn();
     render(<MetricInput metric={Sleep} onMetricSelect={handleSelect} />);
-    const btn = screen.getByText("8").closest("button");
-    fireEvent.click(btn!);
+    const btn = screen.getByRole("button", { name: /^8$/ });
+    fireEvent.click(btn);
     expect(handleSelect).toHaveBeenCalledWith(Sleep.id, 8);
   });
 

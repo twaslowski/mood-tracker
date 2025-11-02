@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { Entry } from "../entry";
 import { Mood, Sleep } from "../__fixtures__/metric";
 import { EntryValueWithMetric } from "@/types/entryValue";
@@ -39,14 +39,12 @@ describe("entry visualization", () => {
       `entry-${entry.id}-value-${Mood.name}`,
     );
     expect(moodBadge).toBeInTheDocument();
-    expect(moodBadge.querySelector("span:last-child")).toHaveTextContent(
-      "Neutral",
-    );
+    expect(within(moodBadge).getByText("Neutral")).toBeInTheDocument();
 
     const sleepBadge = screen.getByLabelText(
       `entry-${entry.id}-value-${Sleep.name}`,
     );
     expect(sleepBadge).toBeInTheDocument();
-    expect(sleepBadge.querySelector("span:last-child")).toHaveTextContent("7");
+    expect(within(sleepBadge).getByText("7")).toBeInTheDocument();
   });
 });

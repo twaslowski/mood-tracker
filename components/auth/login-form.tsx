@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { OneTapAuth } from "@/components/auth/one-tap";
 
 export function LoginForm({
   className,
@@ -88,10 +89,14 @@ export function LoginForm({
                   onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
+
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
+
+              <div className="border border-primary-foreground*100" />
+              <OneTapAuth />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

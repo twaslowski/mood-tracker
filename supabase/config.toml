@@ -1,0 +1,5 @@
+[auth.external.github]
+enabled = true
+client_id = "env(GITHUB_CLIENT_ID)"
+secret = "env(GITHUB_CLIENT_SECRET)"
+redirect_uri = "https://iwegsqflyrbynymrvfqa.supabase.co/auth/v1/callback"
