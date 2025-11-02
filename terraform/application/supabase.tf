@@ -1,8 +1,3 @@
-import {
-  id = "iwegsqflyrbynymrvfqa"
-  to = supabase_project.production
-}
-
 resource "supabase_project" "production" {
   organization_id   = "znyzmuexwtcdboygolnu"
   name              = "mood-tracker"

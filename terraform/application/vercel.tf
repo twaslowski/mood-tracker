@@ -21,3 +21,8 @@ resource "vercel_project_environment_variable" "supabase_publishable_key" {
   value = "sb_publishable_LGBKaf-s3vfHy-HFtkvvJQ_1aJ0cR3Q"
   target = ["production"]
 }
+
+resource "vercel_project_domain" "domain_production_www" {
+  project_id = vercel_project.mood_tracker.id
+  domain     = "moody.twaslowski.com"
+}

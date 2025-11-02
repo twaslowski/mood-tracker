@@ -1,10 +1,19 @@
 terraform {
+  backend "s3" {}
   required_providers {
+    supabase = {
+      source  = "supabase/supabase"
+      version = "1.5.1"
+    }
     vercel = {
       source  = "vercel/vercel"
       version = "3.5.0"
     }
   }
+}
+
+provider "supabase" {
+  access_token = var.supabase_access_token
 }
 
 provider "vercel" {
