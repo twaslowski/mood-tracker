@@ -1,24 +1,15 @@
-# Since there is only one instance of Supabase in the free tier,
-# all Supabase environment variables point to the same Supabase project across all environments.
-resource "vercel_project_environment_variable" "supabase_url" {
-  project_id = var.vercel_project_id
-  key        = "NEXT_PUBLIC_SUPABASE_URL"
-  value      = "https://iwegsqflyrbynymrvfqa.supabase.co"
-  target     = ["production", "preview"]
+# Annoyingly, git_branch can only be specified for non-production domains.
+# Therefore, this code creates two separate resources for production and development domains.
+resource "vercel_project_domain" "domain_prod" {
+  count = var.vercel_source_branch == "main" ? 1 : 0
 
-  git_branch = var.vercel_source_branch
+  project_id = var.vercel_project_id
+  domain     = var.app_domain
 }
 
-resource "vercel_project_environment_variable" "supabase_publishable_key" {
-  project_id = var.vercel_project_id
-  key        = "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
-  value      = "sb_publishable_LGBKaf-s3vfHy-HFtkvvJQ_1aJ0cR3Q"
-  target     = ["production", "preview"]
+resource "vercel_project_domain" "domain_dev" {
+  count = var.vercel_source_branch == "dev" ? 1 : 0
 
-  git_branch = var.vercel_source_branch
-}
-
-resource "vercel_project_domain" "domain_production" {
   project_id = var.vercel_project_id
   domain     = var.app_domain
 
