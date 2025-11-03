@@ -10,6 +10,12 @@ tasks:
     cmds:
       - npx supabase stop
 
+  run:
+    desc: Run the development server
+    cmds:
+      - task: start-env
+      - pnpm run dev
+
   verify:
     desc: Run formatter, linter, and tests
     cmds:

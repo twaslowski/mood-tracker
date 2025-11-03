@@ -8,21 +8,32 @@ resource "vercel_project" "mood_tracker" {
   }
 }
 
+import {
+  id = "prj_DERvzLFdawxq7KDaTKBs183e0JIK"
+  to = vercel_project.mood_tracker
+}
+
 resource "vercel_project_environment_variable" "supabase_url" {
   project_id = vercel_project.mood_tracker.id
   key        = "NEXT_PUBLIC_SUPABASE_URL"
   value      = "https://iwegsqflyrbynymrvfqa.supabase.co"
-  target     = ["production"]
+  target     = [var.environment]
+
+  git_branch = var.vercel_source_branch
 }
 
 resource "vercel_project_environment_variable" "supabase_publishable_key" {
   project_id = vercel_project.mood_tracker.id
   key        = "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
   value      = "sb_publishable_LGBKaf-s3vfHy-HFtkvvJQ_1aJ0cR3Q"
-  target     = ["production"]
+  target     = [var.environment]
+
+  git_branch = var.vercel_source_branch
 }
 
-resource "vercel_project_domain" "domain_production_www" {
+resource "vercel_project_domain" "domain_production_dev" {
   project_id = vercel_project.mood_tracker.id
-  domain     = "moody.twaslowski.com"
+  domain     = var.app_domain
+
+  git_branch = var.vercel_source_branch
 }
