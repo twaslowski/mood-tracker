@@ -4,13 +4,10 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Header } from "@/components/header";
 import React from "react";
-
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
+import { instanceUrl } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(instanceUrl()),
   title: "mood-tracker",
   description:
     "A simple mood tracking app built with Next.js, Tailwind CSS, and Supabase.",
