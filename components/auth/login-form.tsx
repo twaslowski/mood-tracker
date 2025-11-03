@@ -15,7 +15,6 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { OneTapAuth } from "@/components/auth/one-tap";
 
 export function LoginForm({
   className,
@@ -96,7 +95,6 @@ export function LoginForm({
               </Button>
 
               <div className="border border-primary-foreground*100" />
-              <OneTapAuth />
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}

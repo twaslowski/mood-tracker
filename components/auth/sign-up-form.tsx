@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { configureDefaultTracking } from "@/lib/service/defaultsService";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { OneTapAuth } from "@/components/auth/one-tap";
 
 export function SignUpForm({
   className,
@@ -129,7 +128,6 @@ export function SignUpForm({
               </Button>
 
               <div className="border border-primary-foreground" />
-              <OneTapAuth />
             </div>
             <div className="mt-4 text-center text-sm">
               Already have an account?{" "}
