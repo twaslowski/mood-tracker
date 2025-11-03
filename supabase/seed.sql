@@ -13,3 +13,13 @@ VALUES ('Sleep',
         'SYSTEM',
         'continuous',
         0, 16);
+
+INSERT INTO tracking_default (metric_id, baseline)
+SELECT id, 0
+FROM metric
+WHERE name = 'Mood';
+
+INSERT INTO tracking_default (metric_id, baseline)
+SELECT id, 8
+FROM metric
+WHERE name = 'Sleep';
