@@ -13,8 +13,6 @@ export async function signInWithGithub() {
     },
   });
 
-  console.log(data, error);
-
   if (!error && data.url) {
     redirect(data.url);
   }

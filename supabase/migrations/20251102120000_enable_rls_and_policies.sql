@@ -64,5 +64,5 @@ ALTER TABLE tracking_default
 
 CREATE POLICY select_tracking_defaults ON tracking_default
     FOR SELECT
-    TO anon
+    TO authenticated, anon
     USING (true);

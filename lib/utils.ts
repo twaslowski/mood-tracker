@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function instanceUrl() {
   return process.env.NEXT_PUBLIC_APPLICATION_URL
-    ? `${process.env.NEXT_PUBLIC_APPLICATION_URL}`
+    ? process.env.NEXT_PUBLIC_APPLICATION_URL
     : "http://localhost:3000";
 }
 

@@ -7,6 +7,10 @@ export const configureDefaultTracking = async (userId: string) => {
   const supabase = await createClient();
   const defaults = await getTrackingDefaults();
 
+  if (!defaults) {
+    throw new Error("No tracking defaults found");
+  }
+
   for (const d of defaults) {
     const { error } = await supabase.from("metric_tracking").insert({
       user_id: userId,
@@ -14,10 +18,12 @@ export const configureDefaultTracking = async (userId: string) => {
       baseline: d.baseline,
       tracked_at: new Date().toISOString(),
     });
+
     if (error) {
       throw new Error("Failed to set up default tracking: " + error.message);
     }
   }
+  console.log("Successfully set up tracking defaults for new user", userId)
 };
 
 export const getTrackingDefaults = async (): Promise<Default[]> => {
