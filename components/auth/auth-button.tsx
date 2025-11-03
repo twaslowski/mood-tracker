@@ -8,6 +8,7 @@ export async function AuthButton() {
 
   // You can also use getUser() which will be slower.
   const { data } = await supabase.auth.getClaims();
+  console.log(data);
 
   const user = data?.claims;
 
