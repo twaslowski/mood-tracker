@@ -15,3 +15,10 @@ resource "vercel_project_domain" "domain_dev" {
 
   git_branch = var.vercel_source_branch
 }
+
+resource "vercel_project_environment_variable" "url" {
+  project_id = var.vercel_project_id
+  key        = "NEXT_PUBLIC_APPLICATION_URL"
+  value      = "https://${var.app_domain}"
+  target     = [local.vercel_environment]
+}

@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function instanceUrl() {
-  return process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
+  return process.env.NEXT_PUBLIC_APPLICATION_URL
+    ? `https://${process.env.NEXT_PUBLIC_APPLICATION_URL}`
     : "http://localhost:3000";
 }
 
