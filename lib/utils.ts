@@ -6,9 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function instanceUrl() {
-  return process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
+  return "https://moody.twaslowski.com";
 }
 
 export const range = (start: number, stop: number): Array<number> =>
