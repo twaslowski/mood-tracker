@@ -1,1 +1,2 @@
-app_domain = "mood.twaslowski.com"
+app_domain           = "moody.twaslowski.com"
+vercel_source_branch = "main"

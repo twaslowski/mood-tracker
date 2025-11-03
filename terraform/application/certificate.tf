@@ -16,7 +16,7 @@ resource "acme_certificate" "certificate" {
     provider = "cloudflare"
     config = {
       CF_DNS_API_TOKEN = var.cloudflare_api_key
-      CF_API_EMAIL = "contact@twaslowski.com"
+      CF_API_EMAIL     = "contact@twaslowski.com"
     }
   }
 }
