@@ -6,7 +6,7 @@ variable "vercel_api_key" {
 }
 
 variable "environment" {
-  description = "The target environment for Vercel deployment (e.g., production, preview)."
+  description = "The target environment for Vercel deployment (production | preview)."
   type        = string
   default     = "production"
 }

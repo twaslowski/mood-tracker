@@ -31,7 +31,12 @@ resource "vercel_project_environment_variable" "supabase_publishable_key" {
   git_branch = var.vercel_source_branch
 }
 
-resource "vercel_project_domain" "domain_production_dev" {
+import {
+  id = "prj_DERvzLFdawxq7KDaTKBs183e0JIK/dev.moody.twaslowski.com"
+  to = vercel_project_domain.domain_production
+}
+
+resource "vercel_project_domain" "domain_production" {
   project_id = vercel_project.mood_tracker.id
   domain     = var.app_domain
 

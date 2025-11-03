@@ -9,6 +9,7 @@ export const OneTapAuth = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "github",
     });
+    console.log(data, error)
     if (!error && data.url) {
       redirect(data.url);
     }
