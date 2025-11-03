@@ -6,6 +6,8 @@ resource "vercel_project" "mood_tracker" {
     type = "github"
     repo = "twaslowski/mood-tracker"
   }
+
+  automatically_expose_system_environment_variables = true
 }
 
 resource "vercel_project_environment_variable" "supabase_url" {
