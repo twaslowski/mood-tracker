@@ -73,6 +73,7 @@ export default function EntryCreationForm({
           <MetricInput
             key={currentTracking.metric.id}
             metric={currentTracking.metric}
+            baseline={currentTracking.baseline}
             onMetricSelect={handleMetricSubmit}
           />
 

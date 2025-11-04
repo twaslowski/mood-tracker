@@ -2,17 +2,23 @@
 
 import React from "react";
 import { type Metric } from "@/types/metric";
-import { range } from "@/lib/utils";
+import { cn, range } from "@/lib/utils";
 
 interface MetricInputProps {
   metric: Metric;
+  baseline: number;
   onMetricSelect: (metricId: string, value: number) => void;
 }
 
 export default function MetricInput({
   metric,
+  baseline,
   onMetricSelect,
 }: MetricInputProps) {
+  const baselineStyling = (value: number, baseline: number): string => {
+    return value === baseline ? "border-blue-300/10 bg-blue-300/10" : "";
+  };
+
   const renderDiscreteInput = () => {
     if (!metric.labels) {
       throw new Error("Discrete metrics must have labels defined.");
@@ -26,7 +32,10 @@ export default function MetricInput({
           .map(([label, value]) => (
             <div
               key={value}
-              className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
+              className={cn(
+                `flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all`,
+                baselineStyling(value, baseline),
+              )}
               onClick={() => onMetricSelect(metric.id, value)}
             >
               <button aria-label={`select-${metric.name}-value-${label}`}>
@@ -45,14 +54,17 @@ export default function MetricInput({
       );
     }
 
-    return range(metric.min_value, metric.max_value).map((val) => (
+    return range(metric.min_value, metric.max_value).map((value) => (
       <div
-        key={val}
-        onClick={() => onMetricSelect(metric.id, val)}
-        className="flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all"
+        key={value}
+        onClick={() => onMetricSelect(metric.id, value)}
+        className={cn(
+          `flex items-center gap-3 p-4 border-2 rounded-lg cursor-pointer transition-all`,
+          baselineStyling(value, baseline),
+        )}
       >
         <button>
-          <p>{val}</p>
+          <p>{value}</p>
         </button>
       </div>
     ));

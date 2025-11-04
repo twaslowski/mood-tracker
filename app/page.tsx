@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CogIcon, RocketIcon } from "lucide-react";
+import { RocketIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -23,16 +23,10 @@ export default function Home() {
         </p>
       </div>
       <div className="justify-center flex space-x-2">
-        <Link href="/auth/sign-up">
-          <Button>
-            <RocketIcon />
-            <p>Sign Up</p>
-          </Button>
-        </Link>
         <Link href="/protected">
-          <Button>
-            <CogIcon />
-            <p>Track</p>
+          <Button size="lg">
+            <RocketIcon />
+            <p>Get Started</p>
           </Button>
         </Link>
       </div>
