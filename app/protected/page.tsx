@@ -4,9 +4,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import SuccessToast from "@/components/entry/success-toast";
 
-export default async function LandingPage() {
+export default async function LandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [_: string]: string | string[] | undefined }>;
+}) {
   const supabase = await createClient();
+  const displaySuccess = (await searchParams).success === "true";
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
@@ -15,6 +21,7 @@ export default async function LandingPage() {
 
   return (
     <div className="flex flex-col items-center justify-center h-full">
+      {displaySuccess && <SuccessToast message="Entry created successfully!" />}
       <div className="max-w-4xl w-full">
         {/* Primary Action */}
         <div className="mb-4">

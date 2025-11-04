@@ -5,7 +5,6 @@ import { type MetricTracking } from "@/types/tracking";
 import { type EntryValue, EntryValueSchema } from "@/types/entryValue";
 import MetricInput from "./metric-input";
 import SubmitButton from "./submit-button";
-import { Toaster } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -57,7 +56,6 @@ export default function EntryCreationForm({
 
   return (
     <div className="bg-primary-foreground/90 rounded-2xl shadow-xl p-8">
-      <Toaster />
       {/*
       <DateTimeInput value={recordedAt} onChange={setRecordedAt} />
       */}

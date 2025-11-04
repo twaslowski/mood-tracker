@@ -23,7 +23,7 @@ export default function SubmitButton({
   const handleSubmit = async () => {
     try {
       await createEntry({ values, recordedAt });
-      router.push("/protected");
+      router.push("/protected?success=true");
     } catch (error) {
       console.log(error);
       toast.error("Failed to create entry. Please try again.");

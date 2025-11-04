@@ -5,6 +5,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import React from "react";
 import { instanceUrl } from "@/lib/utils";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   metadataBase: new URL(instanceUrl()),
@@ -37,6 +38,7 @@ export default function RootLayout({
             <div className="border-b border-b-muted-foreground/10 flex-shrink-0">
               <Header />
             </div>
+            <Toaster />
             <main className="flex-1 overflow-auto">{children}</main>
           </div>
         </ThemeProvider>

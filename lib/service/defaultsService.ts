@@ -23,7 +23,7 @@ export const configureDefaultTracking = async (userId: string) => {
       throw new Error("Failed to set up default tracking: " + error.message);
     }
   }
-  console.log("Successfully set up tracking defaults for new user", userId)
+  console.log("Successfully set up tracking defaults for new user", userId);
 };
 
 export const getTrackingDefaults = async (): Promise<Default[]> => {
