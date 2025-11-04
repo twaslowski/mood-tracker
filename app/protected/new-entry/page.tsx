@@ -1,6 +1,6 @@
 import React from "react";
-import EntryCreationForm from "@/components/entry/entry-creation-form";
 import { getTrackedMetrics } from "@/lib/service/metricService";
+import EntryCreationForm from "@/components/entry/entry-creation-form";
 
 export default async function CreateEntryPage() {
   const trackedMetrics = await getTrackedMetrics();
@@ -16,12 +16,6 @@ export default async function CreateEntryPage() {
         </div>
 
         <EntryCreationForm trackedMetrics={trackedMetrics} />
-
-        <div className="mt-6 text-center text-sm">
-          <p>
-            You can leave metrics blank if you don&apos;t want to record them
-          </p>
-        </div>
       </div>
     </div>
   );
