@@ -22,7 +22,7 @@ export default async function LandingPage({
   return (
     <div className="flex flex-col items-center justify-center h-full">
       {displaySuccess && <SuccessToast message="Entry created successfully!" />}
-      <div className="max-w-4xl w-full">
+      <div className="max-w-4xl">
         {/* Primary Action */}
         <div className="mb-4">
           <Link href="/protected/new-entry">

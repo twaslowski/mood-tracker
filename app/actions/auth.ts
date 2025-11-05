@@ -17,3 +17,18 @@ export async function signInWithGithub() {
     redirect(data.url);
   }
 }
+
+export async function signInWithGoogle() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${instanceUrl()}/auth/callback`,
+    },
+  });
+  console.log(data, error);
+
+  if (!error && data.url) {
+    redirect(data.url);
+  }
+}
