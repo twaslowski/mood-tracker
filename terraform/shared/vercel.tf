@@ -13,7 +13,7 @@ resource "vercel_project" "mood_tracker" {
 resource "vercel_project_environment_variable" "supabase_url" {
   project_id = vercel_project.mood_tracker.id
   key        = "NEXT_PUBLIC_SUPABASE_URL"
-  value      = "https://iwegsqflyrbynymrvfqa.supabase.co"
+  value      = local.supabase_url
   target     = ["production", "preview"]
 }
 
