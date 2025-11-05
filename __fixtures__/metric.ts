@@ -1,7 +1,7 @@
 import { Metric } from "@/types/metric";
 
-export const Mood: Metric = {
-  id: "some-id",
+export const mood: Metric = {
+  id: crypto.randomUUID(),
   name: "Mood",
   description: "Daily mood rating",
   metric_type: "discrete",
@@ -17,8 +17,8 @@ export const Mood: Metric = {
   max_value: 1,
 };
 
-export const Sleep: Metric = {
-  id: "another-id",
+export const sleep: Metric = {
+  id: crypto.randomUUID(),
   name: "Sleep Duration",
   description: "Hours of sleep",
   metric_type: "continuous",

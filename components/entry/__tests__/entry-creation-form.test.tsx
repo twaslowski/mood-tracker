@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import EntryCreationForm from "../entry-creation-form";
-import { MoodTracking } from "../__fixtures__/tracking";
+import { moodTracking } from "@/__fixtures__/tracking";
 
 // Mock app router because <SubmitButton> relies on it
 jest.mock("next/navigation", () => ({
@@ -14,7 +14,7 @@ jest.mock("next/navigation", () => ({
 
 describe("EntryCreationForm", () => {
   it("preselects the baseline value on initial render", () => {
-    render(<EntryCreationForm trackedMetrics={[MoodTracking]} />);
+    render(<EntryCreationForm trackedMetrics={[moodTracking]} />);
     // Select trigger should exist
     const trigger = screen.getByLabelText("select-Mood");
     expect(trigger).toBeInTheDocument();

@@ -20,7 +20,7 @@ export default function MetricInput({
   };
 
   const renderDiscreteInput = () => {
-    if (!metric.labels) {
+    if (!metric.labels || Object.keys(metric.labels).length === 0) {
       throw new Error("Discrete metrics must have labels defined.");
     }
 

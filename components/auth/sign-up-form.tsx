@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,9 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { configureDefaultTracking } from "@/lib/service/defaultsService";
-import { SupabaseClient } from "@supabase/supabase-js";
+import React, { useState } from "react";
+import { signUpWithEmail } from "@/app/actions/auth";
 
 export function SignUpForm({
   className,
@@ -31,7 +29,6 @@ export function SignUpForm({
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();
     setIsLoading(true);
     setError(null);
 
@@ -42,15 +39,7 @@ export function SignUpForm({
     }
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
-      });
-      if (error || !data.user) throw error;
-      await setupDefaults(data.user.id, supabase);
+      await signUpWithEmail(email, password);
       router.push("/auth/sign-up-success");
     } catch (error: unknown) {
       setError(
@@ -60,19 +49,6 @@ export function SignUpForm({
       );
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const setupDefaults = async (userId: string, supabase: SupabaseClient) => {
-    try {
-      void configureDefaultTracking(userId);
-    } catch (error) {
-      await supabase.auth.admin.deleteUser(userId);
-      setError(
-        error instanceof Error
-          ? "Error: " + error.message
-          : "An error occurred",
-      );
     }
   };
 

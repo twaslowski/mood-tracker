@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { instanceUrl } from "@/lib/utils";
+import { configureDefaultTracking } from "@/lib/service/tracking";
 
 export interface Provider {
   name: "github" | "google";
@@ -26,4 +27,35 @@ export async function signInWithProvider(provider: Provider) {
   }
 
   redirect("/auth/error?message=Unable to initiate authentication");
+}
+
+/**
+ * Server action for email signup.
+ * Handles both user creation and default tracking configuration atomically.
+ */
+export async function signUpWithEmail(
+  email: string,
+  password: string,
+): Promise<void> {
+  const supabase = await createClient();
+
+  // Create the user
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error || !data.user) {
+    throw new Error("Sign-up error: " + error?.message);
+  }
+
+  try {
+    await configureDefaultTracking(data.user.id);
+  } catch (error) {
+    console.error(
+      "Failed to set up defaults for new user:",
+      data.user.id,
+      error,
+    );
+  }
 }

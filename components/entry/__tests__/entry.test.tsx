@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { Entry } from "../entry";
-import { Mood, Sleep } from "../__fixtures__/metric";
+import { mood, sleep } from "@/__fixtures__/metric";
 import { EntryValueWithMetric } from "@/types/entryValue";
 
 const entry = {
@@ -25,8 +25,8 @@ describe("entry visualization", () => {
 
   it("should render entries with labels", () => {
     const values: EntryValueWithMetric[] = [
-      { metric_id: Mood.id, value: 0, metric: Mood },
-      { metric_id: Sleep.id, value: 7, metric: Sleep },
+      { metric_id: mood.id, value: 0, metric: mood },
+      { metric_id: sleep.id, value: 7, metric: sleep },
     ];
     const entryWithValues = {
       ...entry,
@@ -36,13 +36,13 @@ describe("entry visualization", () => {
     render(<Entry entry={entryWithValues} />);
 
     const moodBadge = screen.getByLabelText(
-      `entry-${entry.id}-value-${Mood.name}`,
+      `entry-${entry.id}-value-${mood.name}`,
     );
     expect(moodBadge).toBeInTheDocument();
     expect(within(moodBadge).getByText("Neutral")).toBeInTheDocument();
 
     const sleepBadge = screen.getByLabelText(
-      `entry-${entry.id}-value-${Sleep.name}`,
+      `entry-${entry.id}-value-${sleep.name}`,
     );
     expect(sleepBadge).toBeInTheDocument();
     expect(within(sleepBadge).getByText("7")).toBeInTheDocument();
