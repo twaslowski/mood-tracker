@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { EntryValueWithMetricSchema } from "@/types/entryValue";
 
+// The Entry, as it is being used in the application.
+// Does not 1:1 correspond to the database schema; the "values" field is an array of entry_value data.
 export const EntrySchema = z.object({
   id: z.number(),
   user_id: z.string(),
@@ -11,7 +13,7 @@ export const EntrySchema = z.object({
 });
 
 export const CreateEntryInputSchema = z.object({
-  recordedAt: z.union([z.string(), z.date()]),
+  recorded_at: z.union([z.string(), z.date()]),
   values: z.array(
     z.object({
       metric_id: z.string(),

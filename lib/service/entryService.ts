@@ -32,7 +32,7 @@ export const createEntry = async (
     .from("entry")
     .insert({
       user_id: userId,
-      recorded_at: createEntryInput.recordedAt,
+      recorded_at: createEntryInput.recorded_at,
       creation_timestamp: new Date().toISOString(),
       updated_timestamp: new Date().toISOString(),
     })

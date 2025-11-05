@@ -6,7 +6,7 @@ import { type Entry } from "@/types/entry";
 import { type EntryValueWithMetric } from "@/types/entryValue";
 import { Metric } from "@/types/metric";
 import { Button } from "@/components/ui/button";
-import { TrashIcon } from "lucide-react";
+import { CheckIcon, TrashIcon } from "lucide-react";
 import { deleteEntry } from "@/app/actions/entry";
 import toast from "react-hot-toast";
 import { extractErrorMessage } from "@/lib/utils";
@@ -39,6 +39,9 @@ export function Entry({ entry }: { entry: Entry }) {
   const onDelete = async () => {
     try {
       await deleteEntry(entry.id);
+      toast("Entry deleted successfully", {
+        icon: <CheckIcon />,
+      });
     } catch (error: unknown) {
       const message = extractErrorMessage(error);
       toast("Failed to delete entry: " + message, {

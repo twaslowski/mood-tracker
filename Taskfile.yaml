@@ -16,6 +16,11 @@ tasks:
       - task: start-env
       - pnpm run dev
 
+  integration-test:
+    desc: Run integration tests
+    cmds:
+      - pnpm run test:integration
+
   apply:*:
     desc: Apply dev infrastructure changes
     dir: ./terraform/application

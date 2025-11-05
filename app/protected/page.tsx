@@ -9,7 +9,7 @@ import SuccessToast from "@/components/entry/success-toast";
 export default async function LandingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ [_: string]: string | string[] | undefined }>;
+  searchParams: Promise<{ success: string | undefined }>;
 }) {
   const supabase = await createClient();
   const displaySuccess = (await searchParams).success === "true";
