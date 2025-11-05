@@ -91,6 +91,7 @@ describe("configureDefaultTracking", () => {
 
   it("does not insert data when user already has tracking configured", async () => {
     // Mock user validation
+    // @ts-expect-error mockSupabase typing
     mockSupabase.auth.admin.getUserById.mockResolvedValue({
       data: { id: mockUser.id },
       error: null,
@@ -102,6 +103,8 @@ describe("configureDefaultTracking", () => {
       data: [moodTracking],
       error: null,
     });
+
+    // @ts-expect-error mockSupabase typing
     mockSupabase.from.mockReturnValue({
       select: selectMock,
       insert: jest.fn(),
@@ -113,12 +116,16 @@ describe("configureDefaultTracking", () => {
     await configureDefaultTracking(mockUser.id);
 
     // Verify that getUserById was called
+    // @ts-expect-error mockSupabase typing
     expect(mockSupabase.auth.admin.getUserById).toHaveBeenCalledWith(
       mockUser.id,
     );
 
     // Verify that insert was never called
+    // @ts-expect-error mockSupabase typing
     expect(mockSupabase.from).toHaveBeenCalledWith("metric_tracking");
+
+    // @ts-expect-error mockSupabase typing
     expect(mockSupabase.from).not.toHaveBeenCalledWith("tracking_default");
 
     // Verify the log message
@@ -138,6 +145,7 @@ describe("configureDefaultTracking", () => {
     ];
 
     // Mock user validation
+    // @ts-expect-error mockSupabase typing
     mockSupabase.auth.admin.getUserById.mockResolvedValue({
       data: { id: mockUser.id },
       error: null,
@@ -155,6 +163,7 @@ describe("configureDefaultTracking", () => {
       error: null,
     });
 
+    // @ts-expect-error mockSupabase typing
     mockSupabase.from.mockImplementation((table: string) => {
       if (table === "metric_tracking") {
         return {
@@ -177,6 +186,7 @@ describe("configureDefaultTracking", () => {
     await configureDefaultTracking(mockUser.id);
 
     // Verify user validation
+    // @ts-expect-error mockSupabase typing
     expect(mockSupabase.auth.admin.getUserById).toHaveBeenCalledWith(
       mockUser.id,
     );
@@ -210,6 +220,7 @@ describe("configureDefaultTracking", () => {
     const userId = "invalid-user";
 
     // Mock user validation to fail
+    // @ts-expect-error mockSupabase typing
     mockSupabase.auth.admin.getUserById.mockResolvedValue({
       data: null,
       error: { message: "User not found" },
@@ -225,6 +236,7 @@ describe("configureDefaultTracking", () => {
 
   it("throws error when no tracking defaults are found", async () => {
     // Mock user validation
+    // @ts-expect-error mockSupabase typing
     mockSupabase.auth.admin.getUserById.mockResolvedValue({
       data: { id: mockUser.id },
       error: null,
@@ -236,6 +248,7 @@ describe("configureDefaultTracking", () => {
       data: [],
       error: null,
     });
+    // @ts-expect-error mockSupabase typing
     mockSupabase.from.mockReturnValue({
       select: selectMock,
     });
@@ -255,6 +268,7 @@ describe("configureDefaultTracking", () => {
     const mockDefaults = [{ metric_id: "metric-1", baseline: 5 }];
 
     // Mock user validation
+    // @ts-expect-error mockSupabase typing
     mockSupabase.auth.admin.getUserById.mockResolvedValue({
       data: { id: mockUser.id },
       error: null,
@@ -272,6 +286,7 @@ describe("configureDefaultTracking", () => {
       error: { message: "Insert failed" },
     });
 
+    // @ts-expect-error mockSupabase typing
     mockSupabase.from.mockImplementation((table: string) => {
       if (table === "metric_tracking") {
         return {
