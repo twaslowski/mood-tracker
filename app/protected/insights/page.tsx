@@ -8,7 +8,7 @@ export default async function InsightsPage() {
     <div className="flex flex-col max-w-4xl p-4 h-full">
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-semibold mb-4">Your Entry History</h2>
+          <h1 className="text-2xl font-semibold mb-4">Your Entry History</h1>
           {entries.length > 0 ? (
             <div className="space-y-4">
               {entries.map((entry) => (
@@ -17,7 +17,7 @@ export default async function InsightsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <div className="text-muted-foreground mb-4">No entries found</div>
+              <div className="mb-4">No entries found</div>
               <p className="text-sm text-muted-foreground">
                 Start tracking your mood to see insights here
               </p>

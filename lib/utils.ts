@@ -11,5 +11,12 @@ export function instanceUrl() {
     : "http://localhost:3000";
 }
 
+export const extractErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return "An unknown error occurred";
+};
+
 export const range = (start: number, stop: number): Array<number> =>
   Array.from({ length: stop - start + 1 }, (_, index) => start + index);
