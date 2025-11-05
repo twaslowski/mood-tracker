@@ -2,8 +2,17 @@ import Image from "next/image";
 import { RocketIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (!error && data?.user) {
+    console.log("user is already signed in. redirecting to /protected");
+    redirect("/protected");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <Image
