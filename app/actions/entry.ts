@@ -8,7 +8,6 @@ export const deleteEntry = async (entryId: number) => {
   const supabase = await createClient();
   const userId = await getUserId(supabase);
 
-  // Fix: cascade to entry_value table
   const { error, count } = await supabase
     .from("entry")
     .delete()

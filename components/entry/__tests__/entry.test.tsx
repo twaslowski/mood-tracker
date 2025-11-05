@@ -11,6 +11,10 @@ const entry = {
   updated_timestamp: "2024-06-01T12:00:00Z",
 };
 
+jest.mock("@/lib/supabase/server", () => ({
+  createClient: jest.fn(),
+}));
+
 describe("entry visualization", () => {
   it("should render single entry", () => {
     const entryWithoutValues = {
