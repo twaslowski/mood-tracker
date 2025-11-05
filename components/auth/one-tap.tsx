@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { signInWithGithub, signInWithGoogle } from "@/app/actions/auth";
+import { signInWithProvider } from "@/app/actions/auth";
 import Image from "next/image";
 
 export const OneTapAuth = () => {
+  const signInWithGithub = signInWithProvider.bind(null, { name: "github" });
+  const signInWithGoogle = signInWithProvider.bind(null, { name: "google" });
+
   return (
     <div className="flex flex-col mt-4 gap-2">
       <form action={signInWithGithub}>
