@@ -15,7 +15,7 @@ const config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
   },
-  testPathIgnorePatterns: ["/__integration__/"],
+  testPathIgnorePatterns: ["/__tests__/"],
 };
 
 module.exports = createJestConfig(config);

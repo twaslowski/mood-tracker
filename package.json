@@ -8,7 +8,7 @@
     "lint:fix": "eslint --fix .",
     "lint": "eslint .",
     "test": "jest",
-    "test:integration": "jest --testPathPatterns=.*.integration.test.*"
+    "test:integration": "jest -c jest.integration.config.js"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.1",

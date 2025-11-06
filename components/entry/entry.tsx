@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Entry } from "@/types/entry";
 import { type EntryValueWithMetric } from "@/types/entryValue";
-import { Metric } from "@/types/metric";
+import { type Metric } from "@/types/metric";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, TrashIcon } from "lucide-react";
 import { deleteEntry } from "@/app/actions/entry";

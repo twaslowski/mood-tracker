@@ -36,4 +36,5 @@ tasks:
       - pnpm run fmt
       - pnpm run lint
       - pnpm run test
+      - pnpm run test:integration
       - pnpm run build
