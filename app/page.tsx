@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <Image
-        src="/images/moody_logo.png"
+        src="/images/moody-logo.png"
         alt="mood tracker logo"
         width={150}
         height={60}

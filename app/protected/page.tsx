@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import SuccessToast from "@/components/entry/success-toast";
+import Image from "next/image";
 
 export default async function LandingPage({
   searchParams,
@@ -20,8 +21,19 @@ export default async function LandingPage({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
+    <div className="flex flex-col items-center justify-center h-full gap-y-8 px-8">
       {displaySuccess && <SuccessToast message="Entry created successfully!" />}
+      <div className="flex gap-x-4">
+        <Image
+          src="/images/moody-greeting-no-text.png"
+          alt="moody is happy to see you!"
+          height={150}
+          width={200}
+        />
+        <div className="flex flex-col justify-center">
+          <h1 className="text-6xl font-bold text-center mb-2">Welcome back!</h1>
+        </div>
+      </div>
       <div className="max-w-4xl">
         {/* Primary Action */}
         <div className="mb-4">

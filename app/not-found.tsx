@@ -6,10 +6,10 @@ export default function NotFound() {
   return (
     <div className="err flex flex-col h-full items-center justify-center gap-6">
       <Image
-        src="/images/moody_sad.png"
+        src="/images/moody-confused.png"
         alt="sad moody"
-        height={128}
-        width={128}
+        height={256}
+        width={256}
       />
       <Card>
         <CardHeader>

@@ -19,7 +19,7 @@ export default function Error({
       <div className="w-full max-w-sm">
         <div className="flex flex-col items-center justify-center gap-6">
           <Image
-            src="/images/moody_sad.png"
+            src="/images/moody-sad.png"
             alt="sad moody"
             height={128}
             width={128}
