@@ -4,11 +4,16 @@ tasks:
     desc: Start supabase
     cmds:
       - npx supabase start
+      - npx supabase functions serve telegram-webhook --no-verify-jwt --env-file supabase/functions/telegram-webhook/.env &
+      - npx supabase functions serve telegram-auth --no-verify-jwt &
+      - ngrok http 54321 --log=stdout --log-format=logfmt --log-level=info &
 
   stop-env:
     desc: Start supabase
     cmds:
       - npx supabase stop
+      - pkill ngrok || true
+      - pkill functions || true
 
   run:
     desc: Run the development server
