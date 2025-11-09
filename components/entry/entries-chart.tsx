@@ -16,7 +16,7 @@ import {
 import { Entry } from "@/types/entry";
 import { MetricTracking } from "@/types/tracking";
 import { Button } from "@/components/ui/button";
-import {ArrowRight, ChevronLeft, ChevronRight} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const COLORS = [
   "#4c8cff",
@@ -150,7 +150,7 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
   // Prepare chart data
   const chartData = useMemo(() => {
     return prepareChartData(entries, selectedMonth);
-  }, [entries, selectedMonth, metricsConfig]);
+  }, [entries, selectedMonth]);
 
   // Month navigation
   const currentMonthIndex = useMemo(
@@ -243,13 +243,13 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
         </div>
 
         <Button
-            variant="ghost"
+          variant="ghost"
           onClick={nextMonth}
           disabled={!isNextMonthAvailable}
           className={`p-2 rounded-full border ${
             isNextMonthAvailable
-                ? "border-gray-200 text-gray-300"
-                : "border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed"
+              ? "border-gray-200 text-gray-300"
+              : "border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed"
           }`}
           aria-label="Next month"
         >
@@ -263,7 +263,11 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
         style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
       >
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={chartData} key={activeMetricId} margin={{ top: 5, right: 30, left: 3, bottom: 5 }}>
+          <LineChart
+            data={chartData}
+            key={activeMetricId}
+            margin={{ top: 5, right: 30, left: 3, bottom: 5 }}
+          >
             <CartesianGrid
               strokeDasharray="3 3"
               stroke="rgba(255, 255, 255, 0.1)"
