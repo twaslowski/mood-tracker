@@ -35,7 +35,7 @@ export default async function LandingPage({
         </div>
       </div>
       <div className="w-full max-w-4xl px-4 py-8 md:px-8 space-y-4">
-      {/* Primary Action */}
+        {/* Primary Action */}
         <ActionCard
           href="/protected/new-entry"
           title="Create New Entry"

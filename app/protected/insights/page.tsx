@@ -1,29 +1,46 @@
 import { Entry } from "@/components/entry/entry";
 import { getEntriesByUser } from "@/lib/service/entryService";
+import React from "react";
+import { BackNav } from "@/components/back-nav";
+import EntriesChart from "@/components/entry/entries-chart";
+import { getTrackedMetrics } from "@/lib/service/metricService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function InsightsPage() {
-  const entries = await getEntriesByUser();
+  const [entries, trackedMetrics] = await Promise.all([
+    getEntriesByUser(),
+    getTrackedMetrics(),
+  ]);
 
   return (
-    <div className="flex flex-col max-w-4xl p-4 h-full">
+    <div className="flex flex-col p-4 h-full">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold mb-4">Your Entry History</h1>
-          {entries.length > 0 ? (
-            <div className="space-y-4">
-              {entries.map((entry) => (
-                <Entry key={entry.id} entry={entry} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="mb-4">No entries found</div>
-              <p className="text-sm text-muted-foreground">
-                Start tracking your mood to see insights here
-              </p>
-            </div>
-          )}
+          <BackNav href="/protected" />
         </div>
+
+        <Tabs defaultValue="charts" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2 bg-white">
+            <TabsTrigger value="charts">Charts</TabsTrigger>
+            <TabsTrigger value="entries">Entries</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="charts" className="space-y-4">
+            <EntriesChart entries={entries} trackingData={trackedMetrics} />
+          </TabsContent>
+
+          <TabsContent value="entries" className="space-y-4">
+            <div className="grid gap-4">
+              {entries.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">
+                  No entries yet. Create your first entry to see it here.
+                </p>
+              ) : (
+                entries.map((entry) => <Entry key={entry.id} entry={entry} />)
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

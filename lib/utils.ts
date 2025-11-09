@@ -20,7 +20,3 @@ export const extractErrorMessage = (error: unknown): string => {
 
 export const range = (start: number, stop: number): Array<number> =>
   Array.from({ length: stop - start + 1 }, (_, index) => start + index);
-
-export const isEmpty = (obj: Record<string, unknown>): boolean => {
-  return Object.keys(obj).length === 0;
-};
