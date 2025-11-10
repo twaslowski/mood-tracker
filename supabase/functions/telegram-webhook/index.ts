@@ -24,15 +24,6 @@ function generateVerificationCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Generate a secure magic link token
-function generateMagicToken(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
-    "",
-  );
-}
-
 // Send message via Telegram
 async function sendTelegramMessage(chatId: number, text: string) {
   const response = await fetch(
@@ -83,40 +74,40 @@ async function handleNewUser(telegramId: number, chatId: number) {
     return;
   }
 
+  const redirectUrl = `${APP_URL}/auth/telegram/link?telegram_id=${telegramId}&verification_code=${code}`;
   await sendTelegramMessage(
     chatId,
-    `🔐 *Welcome!*\n\nTo link your account, enter this code on the website:\n\n\`${code}\`\n\n⏱ This code expires in 5 minutes.\n\n🌐 Go to: ${APP_URL}/auth/telegram/link`,
+    `🔐 *Welcome!*\n\nTo link your account, enter this code on the website:\n\n\`${code}\`\n\n⏱ This code expires in 5 minutes.\n\n🌐 Go to: ${redirectUrl}`,
   );
 }
 
-// Generate magic link for existing users
-async function handleExistingUser(telegramId: number, chatId: number) {
-  const token = generateMagicToken();
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 60 minutes
-
-  // Store magic link token
-  const { error } = await supabase.from("magic_tokens").insert({
-    token,
-    telegram_id: telegramId,
-    expires_at: expiresAt.toISOString(),
-    used: false,
+async function handleExistingUser(telegramId: number) {
+  const { data, error } = await supabase.auth.admin.generateLink({
+    type: "magiclink",
+    email: `${telegramId}@placeholder.local`,
+    options: {
+      redirectTo: `${APP_URL}/auth/callback`,
+    },
   });
 
-  if (error) {
-    console.error("Error storing magic token:", error);
+  if (error || !data || !data.properties?.action_link) {
+    console.error("Error generating magic link:", error);
     await sendTelegramMessage(
       chatId,
-      "❌ An error occurred. Please try again.",
+      "❌ An error occurred while generating your sign-in link. Please try again.",
     );
     return;
   }
 
-  const magicLink = `${APP_URL}/auth/telegram/link?token=${token}`;
+  const link = encodeURI(data.properties.action_link);
+  console.log(telegramId, link);
 
-  await sendTelegramMessage(
-    chatId,
-    `🔗 *Sign In Link*\n\nClick below to sign in:\n\n${magicLink}\n\n⏱ This link expires in 60 minutes.`,
+  // todo: underscores break and have to be escaped in telegram markdown
+  const result = await sendTelegramMessage(
+    telegramId,
+    `🔗 *Sign In Link*\n\nClick below to sign in:\n\nhttp://127.0.0.1:54321/auth/v1/verify?token=d7fe26c860ac234c3f05ec18e4205f61d08ade408e0e46cd02e922dd&type=signup&redirect_to=http://127.0.0.1:3000\n\n⏱ This link expires in 60 minutes.`,
   );
+  console.log("Telegram send result:", result);
 }
 
 Deno.serve(async (req) => {
@@ -136,7 +127,7 @@ Deno.serve(async (req) => {
     const telegramId = from.id;
     const chatId = chat.id;
 
-    console.log("Received message:", text, "from user:", telegramId);
+    console.log(`Received message '${text}' from user ${telegramId}`);
 
     // Handle /start or /login commands
     if (text === "/start" || text === "/login") {

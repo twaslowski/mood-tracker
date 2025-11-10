@@ -8,11 +8,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 interface VerifyCodeRequest {
   telegram_id: number;
   code: string;
-  email?: string; // Optional: for account creation
-}
-
-interface VerifyTokenRequest {
-  token: string;
+  email?: string;
 }
 
 // Verify and link a new Telegram account
@@ -79,8 +75,9 @@ async function verifyCode(telegramId: number, code: string, email?: string) {
 
   // Generate session for immediate login
   const { data: session, error: sessionError } =
-    await supabase.auth.admin.createSession({
-      user_id: user.user.id,
+    await supabase.auth.admin.generateLink({
+      type: "magiclink",
+      email: email,
     });
 
   if (sessionError || !session) {
@@ -94,59 +91,7 @@ async function verifyCode(telegramId: number, code: string, email?: string) {
   };
 }
 
-// Verify magic link token and create session
-async function verifyToken(token: string) {
-  // Get valid token
-  const { data: magicToken, error: tokenError } = await supabase
-    .from("magic_tokens")
-    .select("telegram_id")
-    .eq("token", token)
-    .eq("used", false)
-    .gt("expires_at", new Date().toISOString())
-    .single();
-
-  if (tokenError || !magicToken) {
-    return { error: "Invalid or expired magic link" };
-  }
-
-  // Get linked user
-  const { data: telegramAccount, error: accountError } = await supabase
-    .from("telegram_accounts")
-    .select("user_id")
-    .eq("telegram_id", magicToken.telegram_id)
-    .single();
-
-  if (accountError || !telegramAccount) {
-    return { error: "Telegram account not found or not linked" };
-  }
-
-  // Mark token as used
-  await supabase.from("magic_tokens").update({ used: true }).eq("token", token);
-
-  // Update last login
-  await supabase
-    .from("telegram_accounts")
-    .update({ last_login_at: new Date().toISOString() })
-    .eq("telegram_id", magicToken.telegram_id);
-
-  // Create session
-  const { data: session, error: sessionError } =
-    await supabase.auth.admin.createSession({
-      user_id: telegramAccount.user_id,
-    });
-
-  if (sessionError || !session) {
-    return { error: "Failed to create session" };
-  }
-
-  return {
-    success: true,
-    session: session.session,
-  };
-}
-
 Deno.serve(async (req) => {
-  // Enable CORS for your web app
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: {
@@ -163,20 +108,8 @@ Deno.serve(async (req) => {
 
     if (action === "verify-code") {
       const body: VerifyCodeRequest = await req.json();
+      console.log("Received verify-code request:", body);
       const result = await verifyCode(body.telegram_id, body.code, body.email);
-
-      return new Response(JSON.stringify(result), {
-        status: result.error ? 400 : 200,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-    }
-
-    if (action === "verify-token") {
-      const body: VerifyTokenRequest = await req.json();
-      const result = await verifyToken(body.token);
 
       return new Response(JSON.stringify(result), {
         status: result.error ? 400 : 200,

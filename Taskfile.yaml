@@ -2,11 +2,13 @@ version: "3"
 tasks:
   start-env:
     desc: Start supabase
+    dotenv:
+      - supabase/functions/telegram-webhook/.env
     cmds:
       - npx supabase start
-      - npx supabase functions serve telegram-webhook --no-verify-jwt --env-file supabase/functions/telegram-webhook/.env &
-      - npx supabase functions serve telegram-auth --no-verify-jwt &
-      - ngrok http 54321 --log=stdout --log-format=logfmt --log-level=info &
+      - ngrok http 54321 --url $NGROK_URL &
+      - curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=${NGROK_URL}/functions/v1/telegram-webhook"
+      - npx supabase functions serve --no-verify-jwt --env-file supabase/functions/.env
 
   stop-env:
     desc: Start supabase

@@ -2,24 +2,25 @@
 
 import React, { useState } from "react";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 export default function TelegramLinkPage() {
-  const [code, setCode] = useState("");
+  const searchParams = useSearchParams();
+  const telegramId = searchParams.get("telegram_id");
+  const verificationCode = searchParams.get("verification_code");
+
+  const [code, setCode] = useState(verificationCode);
   const [email, setEmail] = useState("");
-  const [telegramId, setTelegramId] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState(1); // 1: Get Telegram ID, 2: Enter Code
+  const [step, setStep] = useState(telegramId ? 2 : 1);
 
-  const SUPABASE_FUNCTIONS_URL = "https://localhost:54321/functions/v1";
+  const SUPABASE_FUNCTIONS_URL = "http://localhost:54321/functions/v1";
 
   const handleGetCode = (e) => {
     e.preventDefault();
-    if (!telegramId) {
-      setError("Please enter your Telegram ID");
-      return;
-    }
     setStep(2);
     setError("");
   };
@@ -30,7 +31,7 @@ export default function TelegramLinkPage() {
 
     try {
       const response = await fetch(
-        `${SUPABASE_FUNCTIONS_URL}/auth-telegram?action=verify-code`,
+        `${SUPABASE_FUNCTIONS_URL}/telegram-auth?action=verify-code`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -158,37 +159,33 @@ export default function TelegramLinkPage() {
                     </ol>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Telegram ID (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={telegramId}
-                      onChange={(e) =>
-                        setTelegramId(e.target.value.replace(/\D/g, ""))
-                      }
-                      onKeyPress={(e) => e.key === "Enter" && handleGetCode(e)}
-                      placeholder="123456789"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Find your ID in the bot message or leave blank
-                    </p>
-                  </div>
-
-                  <button
+                  <Button
                     onClick={handleGetCode}
-                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                    className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                   >
                     I Have My Code
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {/* Step 2: Enter Code */}
               {step === 2 && (
                 <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Telegram ID
+                    </label>
+                    <input
+                      type="text"
+                      value={telegramId}
+                      className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      readOnly
+                      tabIndex={-1}
+                    />
+                    <p className="text-xs text-gray-500 mt-1 text-center">
+                      Enter the 6-digit code from Telegram
+                    </p>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Verification Code
