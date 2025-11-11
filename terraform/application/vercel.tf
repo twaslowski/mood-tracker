@@ -22,3 +22,17 @@ resource "vercel_project_environment_variable" "url" {
   value      = "https://${var.app_domain}"
   target     = [local.vercel_environment]
 }
+
+resource "vercel_project_environment_variable" "url" {
+  project_id = var.vercel_project_id
+  key        = "NEXT_PUBLIC_TELEGRAM_BOT_NAME"
+  value      = "https://${var.app_domain}"
+  target     = [local.vercel_environment]
+}
+
+resource "vercel_project_environment_variable" "url" {
+  project_id = var.vercel_project_id
+  key        = "NEXT_PUBLIC_TELEGRAM_BOT_URL"
+  value      = "https://${var.app_domain}"
+  target     = [local.vercel_environment]
+}

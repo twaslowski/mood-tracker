@@ -26,3 +26,13 @@ variable "cloudflare_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "telegram_bot_name" {
+  description = "The Telegram bot name."
+  type        = string
+}
+
+variable "telegram_bot_url" {
+  description = "The Telegram bot URL."
+  type        = string
+}

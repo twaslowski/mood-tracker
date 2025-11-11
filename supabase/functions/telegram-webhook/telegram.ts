@@ -1,4 +1,4 @@
-import { TELEGRAM_BOT_TOKEN } from "./config.ts";
+import { TELEGRAM_BOT_TOKEN } from "./config";
 
 export const markdownEscape = (text: string): string => {
   return text.replace(/(_)/g, "\\$1");

@@ -1,7 +1,10 @@
+// @ts-expect-error cannot find module or type declarations
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import { getCorsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors";
 
+// @ts-expect-error Deno not found, but available at runtime
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+// @ts-expect-error Deno not found, but available at runtime
 const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -9,6 +12,7 @@ const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 interface VerifyCodeRequest {
   telegram_id: number;
   code: string;
+  userId: string;
 }
 
 async function verifyCode(telegramId: number, code: string, userId: string) {
@@ -62,6 +66,7 @@ async function verifyCode(telegramId: number, code: string, userId: string) {
   };
 }
 
+// @ts-expect-error Deno not found, but available at runtime
 Deno.serve(async (req) => {
   const origin = req.headers.get("origin");
   const corsHeaders = getCorsHeaders(origin);
