@@ -27,8 +27,9 @@ export default function Home() {
           refresh_token: refreshToken || "",
         });
 
+        console.log(error);
+
         if (!error) {
-          // Clear the hash from URL
           window.history.replaceState(null, "", window.location.pathname);
           router.push("/protected");
           return;

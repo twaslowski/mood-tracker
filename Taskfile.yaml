@@ -3,7 +3,7 @@ tasks:
   start-env:
     desc: Start supabase
     dotenv:
-      - supabase/functions/telegram-webhook/.env
+      - supabase/functions/.env
     cmds:
       - npx supabase start
       - ngrok http 54321 --url $NGROK_URL &
