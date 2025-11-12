@@ -55,3 +55,38 @@ export const updateBaseline = async (metricId: string, baseline: number) => {
 
   revalidatePath("/protected/settings");
 };
+
+export const createMetric = async (metricData: {
+  name: string;
+  description: string;
+  metric_type: "discrete" | "continuous" | "duration";
+  labels: Record<string, number>;
+  min_value: number | null;
+  max_value: number | null;
+}) => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  const { data, error } = await supabase
+    .from("metric")
+    .insert({
+      name: metricData.name,
+      description: metricData.description,
+      metric_type: metricData.metric_type,
+      labels: metricData.labels,
+      min_value: metricData.min_value,
+      max_value: metricData.max_value,
+      owner_id: userId,
+      creation_timestamp: new Date().toISOString(),
+      update_timestamp: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create metric: ${error.message}`);
+  }
+
+  revalidatePath("/protected/settings");
+  return data;
+};
