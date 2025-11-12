@@ -1,4 +1,4 @@
-create table metric
+create table if not exists metric
 (
     id                 UUID PRIMARY KEY         DEFAULT gen_random_uuid(),
     name               VARCHAR(255)                              NOT NULL,
@@ -14,7 +14,7 @@ create table metric
         unique (name, owner_id)
 );
 
-create table entry
+create table if not exists entry
 (
     id                 SERIAL PRIMARY KEY,
     user_id            VARCHAR(255),
@@ -23,7 +23,7 @@ create table entry
     updated_timestamp  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
-create table entry_value
+create table if not exists entry_value
 (
     entry_id  BIGINT REFERENCES entry (id),
     metric_id UUID REFERENCES metric (id),

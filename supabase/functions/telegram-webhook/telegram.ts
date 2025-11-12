@@ -1,4 +1,4 @@
-import { TELEGRAM_BOT_TOKEN } from "./config";
+import { TELEGRAM_BOT_TOKEN } from "./config.ts";
 
 export const markdownEscape = (text: string): string => {
   return text.replace(/(_)/g, "\\$1");
@@ -14,6 +14,9 @@ export async function sendTelegramMessage(chatId: number, text: string) {
         chat_id: chatId,
         text,
         parse_mode: "Markdown",
+        link_preview_options: {
+          is_disabled: true,
+        },
       }),
     },
   );

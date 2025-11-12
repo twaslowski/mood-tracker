@@ -3,17 +3,17 @@ tasks:
   start-env:
     desc: Start supabase
     dotenv:
-      - supabase/functions/.env
+      - supabase/functions/.env.dev
     cmds:
-      - npx supabase start
-      - ngrok http 54321 --url $NGROK_URL &
-      - curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=${NGROK_URL}/functions/v1/telegram-webhook"
-      - npx supabase functions serve --no-verify-jwt --env-file supabase/functions/.env
+      - supabase start
+      - ngrok http 54321 --url $SUPABASE_URL &
+      - curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=$SUPABASE_URL/functions/v1/telegram-webhook"
+      - supabase functions serve --no-verify-jwt --env-file supabase/functions/.env.dev
 
   stop-env:
     desc: Start supabase
     cmds:
-      - npx supabase stop
+      - supabase stop
       - pkill ngrok || true
       - pkill functions || true
 
@@ -36,6 +36,19 @@ tasks:
     cmds:
       - terraform init -backend-config=config/{{.ENVIRONMENT}}.hcl -reconfigure
       - terraform apply -var-file=config/{{.ENVIRONMENT}}.tfvars -var-file=config/{{.ENVIRONMENT}}.secret.tfvars
+
+  deploy:*:
+    desc: Deploy to specified environment
+    vars:
+      ENVIRONMENT: "{{index .MATCH 0}}"
+    cmds:
+      - task: "apply:{{.ENVIRONMENT}}"
+      - supabase secrets set --env-file supabase/functions/.env.prod
+      - supabase functions deploy telegram-webhook --no-verify-jwt
+      - supabase functions deploy telegram-auth --no-verify-jwt
+      - |
+        source supabase/functions/.env.{{.ENVIRONMENT}}
+        curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=${SUPABASE_URL}/functions/v1/telegram-webhook"
 
   verify:
     desc: Run formatter, linter, and tests

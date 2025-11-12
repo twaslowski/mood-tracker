@@ -1,6 +1,6 @@
-import { TelegramUpdate } from "./types";
-import { sendTelegramMessage } from "./telegram";
-import { isAccountLinked, handleNewUser, handleExistingUser } from "./auth";
+import { TelegramUpdate } from "./types.ts";
+import { sendTelegramMessage } from "./telegram.ts";
+import { isAccountLinked, handleNewUser, handleExistingUser } from "./auth.ts";
 
 // @ts-expect-error Deno not found, but available at runtime
 Deno.serve(async (req) => {

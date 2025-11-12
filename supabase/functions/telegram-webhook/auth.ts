@@ -1,5 +1,5 @@
-import { supabase, APP_URL } from "./config";
-import { sendTelegramMessage, markdownEscape, sendError } from "./telegram";
+import { supabase, APP_URL } from "./config.ts";
+import { sendTelegramMessage, markdownEscape, sendError } from "./telegram.ts";
 
 // Generate a 6-digit verification code
 function generateVerificationCode(): string {
@@ -37,7 +37,7 @@ export async function handleNewUser(telegramId: number, chatId: number) {
   }
 
   const redirectUrl = markdownEscape(
-    `${APP_URL}/auth/telegram/link?telegram_id=${telegramId}&verification_code=${code}`,
+    `${APP_URL}/auth/telegram/verify?telegram_id=${telegramId}&verification_code=${code}`,
   );
   const result = await sendTelegramMessage(
     chatId,
@@ -88,11 +88,11 @@ export async function handleExistingUser(telegramId: number, chatId: number) {
     return;
   }
 
-  const link = markdownEscape(data.properties.action_link);
+  const link = data.properties.action_link;
 
   const result = await sendTelegramMessage(
     telegramId,
-    `🔗 *Sign In Link*\n\nClick below to sign in:\n\n${link}\n\n⏱ This link expires in 60 minutes.`,
+    `🔗 *Sign In Link*\n\nClick below to sign in:\n\n[magic link](${link})\n\n⏱ This link expires in 60 minutes.`,
   );
 
   if (!result.ok) {
