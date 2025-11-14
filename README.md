@@ -13,19 +13,15 @@ This project uses the following services:
 - [Supabase](https://supabase.com/) - Backend as a service providing database, authentication, and storage.
   Hosted on Supabase's cloud. Functionalities used: Auth, Database, Edge functions (for Telegram integration).
 
-The following languages and frameworks are used:
+## Deploying Supabase
 
-- [TailwindCSS](https://tailwindcss.com/) - Utility-first CSS framework for styling.
-- [TypeScript](https://www.typescriptlang.org/) - Typed superset of JavaScript for better developer experience and code quality
+Largely, Supabase is configured via the `supabase/config.toml` file. This applies to both local and prod environments.
+To apply to prod, run `supabase config push`.
 
-You require the following tools to run the project locally:
+To apply database schema migrations, run `supabase db push --project-ref <your-project-ref>`.
+To apply the environment variables required for edge functions,
+run `supabase functions env set --project-ref <your-project-ref> --env-file <env-file>`.
 
-- [Supabase CLI](https://supabase.com/docs/guides/cli) - Command line interface for managing Supabase projects.
-- [Taskfile](https://taskfile.dev/) - Task runner for automating common development tasks.
+## Deploying to Vercel
 
-The Supabase and Vercel deployments are managed via Terraform. The Terraform code is located in the `terraform/` directory.
-You require the following environment variables to deploy the infrastructure:
-
-- `supabase_access_token` - Supabase access token for authenticating with the Supabase CLI.
-- `vercel_token` - Vercel token for authenticating with the Vercel CLI.
-- `app_domain` - Domain name for the application (e.g., `example.com`).
+Vercel is set up via the `vercel.tf`
