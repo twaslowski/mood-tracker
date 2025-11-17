@@ -26,13 +26,13 @@ resource "vercel_project_environment_variable" "url" {
 resource "vercel_project_environment_variable" "telegram_bot_name" {
   project_id = var.vercel_project_id
   key        = "NEXT_PUBLIC_TELEGRAM_BOT_NAME"
-  value      = "https://${var.telegram_bot_name}"
+  value      = var.telegram_bot_name
   target     = [local.vercel_environment]
 }
 
 resource "vercel_project_environment_variable" "telegram_bot_url" {
   project_id = var.vercel_project_id
   key        = "NEXT_PUBLIC_TELEGRAM_BOT_URL"
-  value      = "https://${var.telegram_bot_url}"
+  value      = var.telegram_bot_url
   target     = [local.vercel_environment]
 }
