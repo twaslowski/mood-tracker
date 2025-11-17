@@ -13,9 +13,17 @@ const config = {
   testEnvironment: "jest-environment-jsdom",
   preset: "ts-jest",
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/$1",
+    "^@/(.*)$": "<rootDir>/src/$1",
   },
-  testPathIgnorePatterns: ["/__integration__/"],
+  testMatch: ["**/__tests__/**/*.test.ts?(x)", "**/?(*.)+(spec|test).ts?(x)"],
+  testPathIgnorePatterns: ["/node_modules/", "/__integration__/"],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  collectCoverageFrom: [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/__tests__/**",
+    "!src/**/__fixtures__/**",
+  ],
 };
 
 module.exports = createJestConfig(config);

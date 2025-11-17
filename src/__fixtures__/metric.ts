@@ -29,3 +29,29 @@ export const sleep: Metric = {
   min_value: 0,
   max_value: 24,
 };
+
+export const exercise: Metric = {
+  id: crypto.randomUUID(),
+  name: "Exercise Minutes",
+  description: "Minutes of exercise",
+  metric_type: "continuous",
+  labels: {},
+  creation_timestamp: new Date().toISOString(),
+  update_timestamp: new Date().toISOString(),
+  owner_id: "user-123",
+  min_value: 0,
+  max_value: 180,
+};
+
+export const waterIntake: Metric = {
+  id: crypto.randomUUID(),
+  name: "Water Intake",
+  description: "Glasses of water",
+  metric_type: "continuous",
+  labels: {},
+  creation_timestamp: new Date().toISOString(),
+  update_timestamp: new Date().toISOString(),
+  owner_id: "user-123",
+  min_value: 0,
+  max_value: 12,
+};

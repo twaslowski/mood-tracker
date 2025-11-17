@@ -17,7 +17,7 @@ const eslintConfig = [
     "plugin:jest-dom/recommended",
   ),
   {
-    ignores: ["node_modules/", "dist/", "build/", ".next/"],
+    ignores: ["node_modules/", "dist/", "build/", ".next/", "src/.next"],
   },
 ];
 
