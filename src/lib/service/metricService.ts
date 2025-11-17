@@ -2,6 +2,7 @@ import { type MetricTracking, MetricTrackingSchema } from "@/types/tracking";
 import { createClient } from "@/lib/supabase/server";
 import { getUserId } from "@/lib/service/userService";
 import { Metric, MetricSchema } from "@/types/metric";
+import { z } from "zod";
 
 export const getTrackedMetrics = async (): Promise<MetricTracking[]> => {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ export const getUserTrackedMetrics = async (
     throw new Error(`Error fetching user tracked metrics: ${error?.message}`);
   }
 
-  return data.map((item) => MetricTrackingSchema.parse(item));
+  return z.array(MetricTrackingSchema).parse(data);
 };
 
 export const getAllMetrics = async (): Promise<Metric[]> => {
@@ -37,10 +38,5 @@ export const getAllMetrics = async (): Promise<Metric[]> => {
     throw new Error(`Error fetching all metrics: ${error?.message}`);
   }
 
-  return data.map((item) => MetricSchema.parse(item));
-};
-
-export const getTrackedMetricIds = async (): Promise<Set<string>> => {
-  const trackedMetrics = await getTrackedMetrics();
-  return new Set(trackedMetrics.map((tm) => tm.metric.id));
+  return z.array(MetricSchema).parse(data);
 };
