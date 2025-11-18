@@ -1,8 +1,7 @@
 import { TelegramUpdate } from "./types.ts";
-import { sendTelegramMessage } from "./telegram.ts";
+import { sendTelegramMessage } from "../_shared/telegram.ts";
 import { isAccountLinked, handleNewUser, handleExistingUser } from "./auth.ts";
 
-// @ts-expect-error Deno not found, but available at runtime
 Deno.serve(async (req) => {
   try {
     if (req.method !== "POST") {

@@ -1,4 +1,4 @@
-import { TELEGRAM_BOT_TOKEN } from "./config.ts";
+const TELEGRAM_BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 
 export const markdownEscape = (text: string): string => {
   return text.replace(/(_)/g, "\\$1");

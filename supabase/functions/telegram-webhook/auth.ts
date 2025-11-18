@@ -1,5 +1,5 @@
-import { supabase, APP_URL } from "./config.ts";
-import { sendTelegramMessage, markdownEscape, sendError } from "./telegram.ts";
+import { supabase, APP_URL } from "../_shared/config.ts";
+import { sendTelegramMessage, markdownEscape, sendError } from "../_shared/telegram.ts";
 
 // Generate a 6-digit verification code
 function generateVerificationCode(): string {
