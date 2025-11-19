@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS auto_baseline_schedule
 (
     id            UUID PRIMARY KEY                  DEFAULT gen_random_uuid(),
-    user_id       VARCHAR(255)             NOT NULL UNIQUE,
+    user_id       UUID             NOT NULL UNIQUE,
     cron_schedule VARCHAR(100)             NOT NULL,
     webhook_url   TEXT,
     enabled       BOOLEAN                  NOT NULL DEFAULT true,
@@ -20,8 +20,8 @@ ALTER TABLE auto_baseline_schedule
 CREATE POLICY own_baseline_schedule ON auto_baseline_schedule
     FOR ALL
     TO authenticated
-    USING ((SELECT auth.uid())::VARCHAR IS NOT NULL AND (SELECT auth.uid())::VARCHAR = user_id)
-    WITH CHECK ((SELECT auth.uid())::VARCHAR IS NOT NULL AND (SELECT auth.uid())::VARCHAR = user_id);
+    USING ((SELECT auth.uid()) IS NOT NULL AND (SELECT auth.uid()) = user_id)
+    WITH CHECK ((SELECT auth.uid()) IS NOT NULL AND (SELECT auth.uid()) = user_id);
 
 -- Create index for performance
 CREATE INDEX IF NOT EXISTS idx_auto_baseline_schedule_user_id
@@ -31,7 +31,7 @@ CREATE INDEX IF NOT EXISTS idx_auto_baseline_schedule_enabled
     ON auto_baseline_schedule (enabled) WHERE enabled = true;
 
 -- Function to create a baseline entry for a user using their metric_tracking baselines
-CREATE OR REPLACE FUNCTION create_baseline_entry(p_user_id VARCHAR(255))
+CREATE OR REPLACE FUNCTION create_baseline_entry(p_user_id UUID)
     RETURNS BIGINT AS
 $$
 DECLARE
@@ -48,7 +48,7 @@ BEGIN
            metric_id,
            baseline
     FROM metric_tracking
-    WHERE user_id = p_user_id;
+    WHERE user_id = p_user_id::VARCHAR;
 
     -- Update last_run_at if there's a schedule
     UPDATE auto_baseline_schedule
@@ -59,6 +59,8 @@ BEGIN
     UPDATE auto_baseline_schedule
     SET last_run_at = NOW()
     WHERE user_id = p_user_id;
+
+    PERFORM notify_user(p_user_id, 'A baseline record was automatically created.');
 
     -- Return the created entry ID
     RETURN v_entry_id;

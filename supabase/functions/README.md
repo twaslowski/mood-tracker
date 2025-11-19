@@ -10,8 +10,8 @@
 The schema is located at `supabase/migrations/20251109161430_telegram.sql`. Apply it to your database:
 
 ```shell
-npx supabase migration up  # local
-npx supabase db push       # remote
+supabase migration up
+supabase db push
 ```
 
 ## Step 2: Environment Variables
@@ -39,9 +39,6 @@ The following are automatically available:
 ## Step 3: Deploy Edge Functions
 
 ```bash
-# Install Supabase CLI if needed
-npm install -g supabase
-
 # Login to Supabase
 supabase login
 
@@ -49,8 +46,8 @@ supabase login
 supabase link --project-ref your-project-ref
 
 # Deploy functions
-supabase functions deploy telegram-webhook
-supabase functions deploy auth-telegram
+supabase functions deploy
+supabase functions deploy
 ```
 
 ## Step 3.1: Developing Locally
@@ -58,16 +55,8 @@ supabase functions deploy auth-telegram
 To test functions locally, serve them and use ngrok for webhook tunneling:
 
 ```bash
-npx supabase functions serve telegram-webhook --no-verify-jwt --env-file supabase/functions/telegram-webhook/.env
+supabase functions serve --no-verify-jwt --env-file supabase/functions/.env.dev
 ngrok http 54321
-```
-
-Set up the webhook locally:
-
-```bash
-curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
-  -H "Content-Type: application/json" \
-  -d "{\"url\": \"https://<ngrok-random-id>.ngrok-free.app/functions/v1/telegram-webhook\"}"
 ```
 
 ## Step 4: Configure Telegram Webhook
@@ -78,6 +67,17 @@ Set your webhook URL to point to the edge function:
 curl -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
   -H "Content-Type: application/json" \
   -d "{\"url\": \"https://$SUPABASE_PROJECT_REF.supabase.co/functions/v1/telegram-webhook\"}"
+```
+
+### 4.1: Mocking Telegram Requests Locally
+
+You can use the JSON files in `supabase/functions/__test__` to simulate Telegram requests when testing locally.
+Use them with curl:
+
+```bash
+curl -X POST "http://localhost:54321/functions/v1/telegram-webhook" \
+  -H "Content-Type: application/json" \
+  -d @supabase/functions/__test__/update.json
 ```
 
 ## Step 5: Frontend Integration
