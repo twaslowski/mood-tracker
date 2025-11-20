@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -42,6 +43,7 @@ export default function RootLayout({
             <main className="flex-1 overflow-auto">{children}</main>
           </div>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
