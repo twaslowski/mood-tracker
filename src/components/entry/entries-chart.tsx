@@ -47,7 +47,7 @@ interface MetricConfig {
 
 interface ChartDataPoint {
   timestamp: string;
-  [metricId: string]: number | string; // Dynamic keys for each metric
+  [metricId: string]: number | string | null; // Dynamic keys for each metric
 }
 
 // Assign stable colors based on metric index
@@ -65,9 +65,13 @@ function prepareChartData(
   const monthStart = startOfMonth(new Date(selectedMonth + "-01"));
   const monthEnd = endOfMonth(monthStart);
 
+  // Get all metric IDs present in entries
+  const metricIds = Array.from(
+    new Set(entries.flatMap((e) => e.values.map((v) => v.metric_id))),
+  );
+
   // Group by day and metric, averaging multiple values per day
   const dailyData = new Map<string, Map<string, number[]>>();
-
   entries.forEach((entry) => {
     const entryDate = new Date(entry.recorded_at);
     if (entryDate < monthStart || entryDate > monthEnd) return;
@@ -76,7 +80,6 @@ function prepareChartData(
     if (!dailyData.has(dateKey)) {
       dailyData.set(dateKey, new Map());
     }
-
     const dayData = dailyData.get(dateKey)!;
     entry.values.forEach((value) => {
       if (!dayData.has(value.metric_id)) {
@@ -86,17 +89,28 @@ function prepareChartData(
     });
   });
 
-  // Convert to chart format with averaged values
+  // Generate all days in the month
   const chartData: ChartDataPoint[] = [];
-  dailyData.forEach((metrics, date) => {
-    const dataPoint: ChartDataPoint = { timestamp: date };
-    metrics.forEach((values, metricId) => {
-      dataPoint[metricId] = values.reduce((a, b) => a + b, 0) / values.length;
+  for (
+    let d = new Date(monthStart);
+    d <= monthEnd;
+    d.setDate(d.getDate() + 1)
+  ) {
+    const dateKey = format(d, "yyyy-MM-dd");
+    const metrics = dailyData.get(dateKey);
+    const dataPoint: ChartDataPoint = { timestamp: dateKey };
+    metricIds.forEach((metricId) => {
+      if (metrics && metrics.has(metricId)) {
+        const values = metrics.get(metricId)!;
+        dataPoint[metricId] = values.reduce((a, b) => a + b, 0) / values.length;
+      } else {
+        dataPoint[metricId] = null;
+      }
     });
     chartData.push(dataPoint);
-  });
+  }
 
-  return chartData.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+  return chartData;
 }
 
 export default function EntriesChart({ entries, trackingData }: ChartProps) {
