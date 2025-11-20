@@ -33,6 +33,10 @@ function getMoodColor(
 ): string {
   // Normalize value to 0-1 range
   const normalized = (value - minValue) / (maxValue - minValue);
+  if (value === 0) {
+    // light green for neutral
+    return "rgb(200, 255, 200)";
+  }
 
   // Blue (depressed) to Red (manic) via white in the middle
   if (normalized < 0.5) {
