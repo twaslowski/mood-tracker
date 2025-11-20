@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getUserId } from "@/lib/service/userService";
+import { getUserId } from "@/lib/service/user.ts";
 import { revalidatePath } from "next/cache";
 
 export const trackMetric = async (metricId: string, baseline: number = 0) => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllMetrics, getTrackedMetrics } from "@/lib/service/metricService";
+import { getAllMetrics, getTrackedMetrics } from "@/lib/service/metric.ts";
 import MetricList from "@/components/metric/metric-list";
 import { BackNav } from "@/components/back-nav";
 import MetricCreationButton from "@/components/metric/metric-creation-button";

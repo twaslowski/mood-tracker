@@ -1,6 +1,6 @@
 import { type MetricTracking, MetricTrackingSchema } from "@/types/tracking";
 import { createClient } from "@/lib/supabase/server";
-import { getUserId } from "@/lib/service/userService";
+import { getUserId } from "@/lib/service/user.ts";
 import { Metric, MetricSchema } from "@/types/metric";
 import { z } from "zod";
 

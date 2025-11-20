@@ -1,9 +1,9 @@
 import { Entry } from "@/components/entry/entry";
-import { getEntriesByUser } from "@/lib/service/entryService";
+import { getEntriesByUser } from "@/lib/service/entry.ts";
 import React from "react";
 import { BackNav } from "@/components/back-nav";
 import EntriesChart from "@/components/entry/entries-chart";
-import { getTrackedMetrics } from "@/lib/service/metricService";
+import { getTrackedMetrics } from "@/lib/service/metric.ts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default async function InsightsPage() {

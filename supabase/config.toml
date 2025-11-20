@@ -193,9 +193,3 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/telegram-auth/deno.json"
 entrypoint = "./functions/telegram-auth/index.ts"
-
-[functions.telegram-send]
-enabled = true
-verify_jwt = false
-import_map = "./functions/telegram-send/deno.json"
-entrypoint = "./functions/telegram-send/index.ts"
