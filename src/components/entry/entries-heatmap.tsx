@@ -25,6 +25,8 @@ interface DayData {
   } | null;
 }
 
+const NEUTRAL_COLOR = "rgb(167, 243, 208)"; // bg-green-200
+
 // Calculate color based on mood value - blue for depressed, red for manic
 function getMoodColor(
   value: number,
@@ -34,8 +36,7 @@ function getMoodColor(
   // Normalize value to 0-1 range
   const normalized = (value - minValue) / (maxValue - minValue);
   if (value === 0) {
-    // light green for neutral
-    return "rgb(200, 255, 200)";
+    return NEUTRAL_COLOR;
   }
 
   // Blue (depressed) to Red (manic) via white in the middle
@@ -145,7 +146,9 @@ export default function EntriesHeatmap({
             <span>Depressed</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-white border border-gray-300" />
+            <div
+              className={`w-4 h-4 rounded bg-green-200 border border-gray-300`}
+            />
             <span>Neutral</span>
           </div>
           <div className="flex items-center gap-2">
@@ -160,45 +163,64 @@ export default function EntriesHeatmap({
         {/* Heatmap Grid */}
         <div className="flex gap-1 justify-center">
           {heatmapData.map((monthDays, monthIndex) => (
-            <div key={monthIndex} className="flex flex-col gap-1">
-              {/* Month label */}
-              <div className="text-xs text-center font-medium mb-1 h-6">
-                {format(monthDays[0].date, "MMM")}
-              </div>
-
-              {/* Days in month */}
-              <div className="flex flex-col gap-0.5">
-                {monthDays.map((dayData, dayIndex) => {
-                  const isToday = isSameDay(dayData.date, today);
-                  const isFutureDay = dayData.date > today;
-
-                  let backgroundColor = "white";
-                  let borderColor = "#e5e7eb";
-
-                  if (isFutureDay) {
-                    backgroundColor = "#f9fafb";
-                    borderColor = "#e5e7eb";
-                  } else if (dayData.value !== null && dayData.moodMetric) {
-                    backgroundColor = getMoodColor(
-                      dayData.value,
-                      dayData.moodMetric.minValue,
-                      dayData.moodMetric.maxValue,
-                    );
-                    borderColor = "#d1d5db";
-                  }
-
-                  return (
+            <div key={monthIndex} className="flex gap-1">
+              {/* Day of month column - only for first month */}
+              {monthIndex === 0 && (
+                <div className="flex flex-col gap-0.5 items-end mr-1">
+                  {/* Empty space for month label alignment */}
+                  <div className="h-6 mb-1" />
+                  {/* Render day numbers */}
+                  {monthDays.map((dayData, dayIndex) => (
                     <div
                       key={dayIndex}
-                      className={`w-5 h-5 rounded-sm ${isToday ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
-                      style={{
-                        backgroundColor,
-                        border: `1px solid ${borderColor}`,
-                      }}
-                      title={`${format(dayData.date, "MMM dd, yyyy")}${dayData.value !== null ? `: ${dayData.value.toFixed(1)}` : ""}`}
-                    />
-                  );
-                })}
+                      className="text-xs text-primary w-5 h-5 flex items-center justify-end pr-1"
+                    >
+                      {dayData.date.getDate()}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-1">
+                {/* Month label */}
+                <div className="text-xs text-center font-medium mb-1 h-6">
+                  {format(monthDays[0].date, "MMM")}
+                </div>
+
+                {/* Days in month */}
+                <div className="flex flex-col gap-0.5">
+                  {monthDays.map((dayData, dayIndex) => {
+                    const isToday = isSameDay(dayData.date, today);
+                    const isFutureDay = dayData.date > today;
+
+                    let backgroundColor = "white";
+                    let borderColor = "#e5e7eb";
+
+                    if (isFutureDay) {
+                      backgroundColor = "#f9fafb";
+                      borderColor = "#e5e7eb";
+                    } else if (dayData.value !== null && dayData.moodMetric) {
+                      backgroundColor = getMoodColor(
+                        dayData.value,
+                        dayData.moodMetric.minValue,
+                        dayData.moodMetric.maxValue,
+                      );
+                      borderColor = "#d1d5db";
+                    }
+
+                    return (
+                      <div
+                        key={dayIndex}
+                        className={`w-5 h-5 rounded-sm ${isToday ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
+                        style={{
+                          backgroundColor,
+                          border: `1px solid ${borderColor}`,
+                        }}
+                        title={`${format(dayData.date, "MMM dd, yyyy")}${dayData.value !== null ? `: ${dayData.value.toFixed(1)}` : ""}`}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           ))}

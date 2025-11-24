@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getUserId } from "@/lib/service/user.ts";
 import { revalidatePath } from "next/cache";
+import { MetricType } from "@/types/metric.ts";
 
 export const trackMetric = async (metricId: string, baseline: number = 0) => {
   const supabase = await createClient();
@@ -59,7 +60,7 @@ export const updateBaseline = async (metricId: string, baseline: number) => {
 export const createMetric = async (metricData: {
   name: string;
   description: string;
-  metric_type: "discrete" | "continuous" | "duration";
+  metric_type: MetricType;
   labels: Record<string, number>;
   min_value: number | null;
   max_value: number | null;

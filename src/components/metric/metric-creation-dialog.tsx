@@ -12,9 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createMetric } from "@/app/actions/metric";
-import { XIcon } from "lucide-react";
-
-type MetricType = "discrete" | "continuous" | "duration";
+import { MetricType } from "@/types/metric.ts";
+import { HashIcon, LucideIcon, SmileIcon, XIcon } from "lucide-react";
+import DiscreteMetricSpecification from "@/components/metric/specifications/discrete-metric-specification";
+import ContinuousMetricSpecification from "@/components/metric/specifications/continuous-metric-specification";
+import EventMetricSpecification from "@/components/metric/specifications/event-metric-specification";
 
 interface MetricFormData {
   name: string;
@@ -25,10 +27,50 @@ interface MetricFormData {
   maxValue: number | null;
 }
 
-interface LabelEntry {
-  label: string;
-  value: string;
+export interface MetricTypeDefinition {
+  type: MetricType;
+  title: string;
+  description: string;
+  icon: LucideIcon;
 }
+
+export const METRIC_TYPE_DEFINITIONS: MetricTypeDefinition[] = [
+  {
+    type: "discrete",
+    title: "Choose from labels",
+    description:
+      "Best for feelings or ratings. You’ll pick labels like “Great”, “Okay”, or “Not so good”.",
+    icon: SmileIcon,
+  },
+  {
+    type: "continuous",
+    title: "Enter a number",
+    description:
+      "Best for anything you measure with a number, like hours of sleep or cups of coffee.",
+    icon: HashIcon,
+  },
+  // {
+  //   type: "event",
+  //   title: "Tap if it happened",
+  //   description:
+  //     "Best for simple yes/no moments like working out, drinking alcohol, or taking medication.",
+  //   icon: CheckSquareIcon,
+  // },
+  // {
+  //   type: "streak",
+  //   title: "Track a habit streak",
+  //   description:
+  //       "Best for building momentum — like days meditated or nights without screens.",
+  //   icon: RepeatIcon
+  // },
+  // {
+  //   type: "note",
+  //   title: "Write a reflection",
+  //   description:
+  //       "Best for thoughts, triggers, gratitude, or anything you want to jot down in your own words.",
+  //   icon: Edit3Icon
+  // }
+];
 
 export default function MetricCreationDialog({
   onComplete,
@@ -48,12 +90,7 @@ export default function MetricCreationDialog({
     maxValue: null,
   });
 
-  // For discrete metrics
-  const [labelEntries, setLabelEntries] = useState<LabelEntry[]>([
-    { label: "", value: "" },
-  ]);
-
-  const totalSteps = formData.metricType === "discrete" ? 4 : 4;
+  const totalSteps = 4;
 
   const handleNext = () => {
     setStep((prev) => Math.min(prev + 1, totalSteps));
@@ -68,67 +105,8 @@ export default function MetricCreationDialog({
     handleNext();
   };
 
-  const addLabelEntry = () => {
-    setLabelEntries([...labelEntries, { label: "", value: "" }]);
-  };
-
-  const updateLabelEntry = (
-    index: number,
-    field: "label" | "value",
-    value: string,
-  ) => {
-    const newEntries = [...labelEntries];
-    newEntries[index][field] = value;
-    setLabelEntries(newEntries);
-  };
-
-  const removeLabelEntry = (index: number) => {
-    if (labelEntries.length > 1) {
-      setLabelEntries(labelEntries.filter((_, i) => i !== index));
-    }
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      // Convert label entries to labels object for discrete metrics
-      const labels: Record<string, number> = {};
-      if (formData.metricType === "discrete") {
-        labelEntries.forEach((entry) => {
-          if (entry.label && entry.value) {
-            labels[entry.label] = parseFloat(entry.value);
-          }
-        });
-      }
-
-      await createMetric({
-        name: formData.name,
-        description: formData.description,
-        metric_type: formData.metricType!,
-        labels: formData.metricType === "discrete" ? labels : {},
-        min_value:
-          formData.metricType !== "discrete" ? formData.minValue : null,
-        max_value:
-          formData.metricType !== "discrete" ? formData.maxValue : null,
-      });
-
-      onComplete?.();
-    } catch (error) {
-      console.error("Failed to create metric:", error);
-      alert("Failed to create metric. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const canProceedStep1 = formData.name.trim().length > 0;
   const canProceedStep2 = formData.description.trim().length > 0;
-  const canProceedStep4 =
-    formData.metricType === "discrete"
-      ? labelEntries.some((e) => e.label && e.value)
-      : formData.minValue !== null &&
-        formData.maxValue !== null &&
-        formData.minValue < formData.maxValue;
 
   return (
     <Card className="w-full max-w-2xl mx-auto bg-gray-900">
@@ -226,51 +204,27 @@ export default function MetricCreationDialog({
               </p>
             </div>
             <div className="space-y-3">
-              <Card
-                className="cursor-pointer hover:border-primary transition-colors"
-                onClick={() => handleMetricTypeSelection("discrete")}
-              >
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Choose from specific options
-                  </CardTitle>
-                  <CardDescription>
-                    Best for moods, ratings, or categories. You&apos;ll define
-                    custom labels like &quot;Great&quot;, &quot;Good&quot;,
-                    &quot;Poor&quot;.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card
-                className="cursor-pointer hover:border-primary transition-colors"
-                onClick={() => handleMetricTypeSelection("continuous")}
-              >
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Enter a number in a range
-                  </CardTitle>
-                  <CardDescription>
-                    Best for measurements with numeric values, like hours of
-                    sleep (0-12) or steps taken.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card
-                className="cursor-pointer hover:border-primary transition-colors"
-                onClick={() => handleMetricTypeSelection("duration")}
-              >
-                <CardHeader>
-                  <CardTitle className="text-base">
-                    Track time duration
-                  </CardTitle>
-                  <CardDescription>
-                    Best for tracking how long you did something, like minutes
-                    of meditation or exercise.
-                  </CardDescription>
-                </CardHeader>
-              </Card>
+              {METRIC_TYPE_DEFINITIONS.map((metricTypeDef) => (
+                <Card
+                  key={metricTypeDef.type}
+                  className="cursor-pointer hover:border-primary transition-colors"
+                  onClick={() => handleMetricTypeSelection(metricTypeDef.type)}
+                >
+                  <div className="flex">
+                    <div className="flex items-center justify-center p-4">
+                      <metricTypeDef.icon size={40} className="opacity-70" />
+                    </div>
+                    <CardHeader>
+                      <CardTitle className="text-base">
+                        {metricTypeDef.title}
+                      </CardTitle>
+                      <CardDescription>
+                        {metricTypeDef.description}
+                      </CardDescription>
+                    </CardHeader>
+                  </div>
+                </Card>
+              ))}
             </div>
             <div className="flex justify-between gap-2 mt-6">
               <Button onClick={handleBack} variant="outline">
@@ -281,140 +235,82 @@ export default function MetricCreationDialog({
         )}
 
         {step === 4 && formData.metricType === "discrete" && (
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold mb-2">
-                Define your options
-              </h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Create labels for your metric. Each label needs a name and a
-                numeric value (higher values typically mean &quot;better&quot;).
-              </p>
-            </div>
-            <div className="space-y-3">
-              {labelEntries.map((entry, index) => (
-                <div key={index} className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <Label htmlFor={`label-${index}`}>Label</Label>
-                    <Input
-                      id={`label-${index}`}
-                      placeholder="e.g., Happy, Sad, Neutral"
-                      value={entry.label}
-                      onChange={(e) =>
-                        updateLabelEntry(index, "label", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="w-24">
-                    <Label htmlFor={`value-${index}`}>Value</Label>
-                    <Input
-                      id={`value-${index}`}
-                      type="number"
-                      placeholder="e.g., 1"
-                      value={entry.value}
-                      onChange={(e) =>
-                        updateLabelEntry(index, "value", e.target.value)
-                      }
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeLabelEntry(index)}
-                    disabled={labelEntries.length === 1}
-                  >
-                    ×
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addLabelEntry}
-                className="w-full"
-              >
-                + Add Another Option
-              </Button>
-            </div>
-            <div className="flex justify-between gap-2 mt-6">
-              <Button onClick={handleBack} variant="outline">
-                Back
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!canProceedStep4 || isSubmitting}
-              >
-                {isSubmitting ? "Creating..." : "Create Metric"}
-              </Button>
-            </div>
-          </div>
+          <DiscreteMetricSpecification
+            onBack={handleBack}
+            onSubmit={async (labels) => {
+              setIsSubmitting(true);
+              try {
+                await createMetric({
+                  name: formData.name,
+                  description: formData.description,
+                  metric_type: "discrete",
+                  labels,
+                  min_value: null,
+                  max_value: null,
+                });
+                onComplete?.();
+              } catch (error) {
+                console.error("Failed to create metric:", error);
+                alert("Failed to create metric. Please try again.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            isSubmitting={isSubmitting}
+          />
         )}
 
-        {step === 4 &&
-          (formData.metricType === "continuous" ||
-            formData.metricType === "duration") && (
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Set the value range
-                </h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {formData.metricType === "duration"
-                    ? "What&apos;s the minimum and maximum time duration you might track?"
-                    : "What&apos;s the minimum and maximum value you might record?"}
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="minValue">Minimum Value</Label>
-                  <Input
-                    id="minValue"
-                    type="number"
-                    placeholder="e.g., 0"
-                    value={formData.minValue ?? ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        minValue: e.target.value
-                          ? parseFloat(e.target.value)
-                          : null,
-                      })
-                    }
-                    autoFocus
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="maxValue">Maximum Value</Label>
-                  <Input
-                    id="maxValue"
-                    type="number"
-                    placeholder="e.g., 24"
-                    value={formData.maxValue ?? ""}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        maxValue: e.target.value
-                          ? parseFloat(e.target.value)
-                          : null,
-                      })
-                    }
-                  />
-                </div>
-              </div>
-              <div className="flex justify-between gap-2 mt-6">
-                <Button onClick={handleBack} variant="outline">
-                  Back
-                </Button>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!canProceedStep4 || isSubmitting}
-                >
-                  {isSubmitting ? "Creating..." : "Create Metric"}
-                </Button>
-              </div>
-            </div>
-          )}
+        {step === 4 && formData.metricType === "continuous" && (
+          <ContinuousMetricSpecification
+            onBack={handleBack}
+            onSubmit={async (minValue, maxValue) => {
+              setIsSubmitting(true);
+              try {
+                await createMetric({
+                  name: formData.name,
+                  description: formData.description,
+                  metric_type: formData.metricType!,
+                  labels: {},
+                  min_value: minValue,
+                  max_value: maxValue,
+                });
+                onComplete?.();
+              } catch (error) {
+                console.error("Failed to create metric:", error);
+                alert("Failed to create metric. Please try again.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            isSubmitting={isSubmitting}
+          />
+        )}
+
+        {step === 4 && formData.metricType === "event" && (
+          <EventMetricSpecification
+            onBack={handleBack}
+            onSubmit={async () => {
+              setIsSubmitting(true);
+              try {
+                await createMetric({
+                  name: formData.name,
+                  description: formData.description,
+                  metric_type: "event",
+                  labels: {},
+                  min_value: null,
+                  max_value: null,
+                });
+                onComplete?.();
+              } catch (error) {
+                console.error("Failed to create metric:", error);
+                alert("Failed to create metric. Please try again.");
+              } finally {
+                setIsSubmitting(false);
+              }
+            }}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </CardContent>
     </Card>
   );
