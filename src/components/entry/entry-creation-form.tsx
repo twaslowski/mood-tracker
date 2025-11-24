@@ -6,6 +6,10 @@ import { type EntryValue, EntryValueSchema } from "@/types/entryValue";
 import SubmitButton from "./submit-button";
 import DateTimeInput from "@/components/entry/datetime-input";
 import ValueSelect from "@/components/entry/value-select";
+import { AdditionalMetricPicker } from "@/components/entry/additional-metric-picker.tsx";
+import { Metric } from "@/types/metric.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { XIcon } from "lucide-react";
 
 interface CreateEntryFormProps {
   trackedMetrics: MetricTracking[];
@@ -20,6 +24,7 @@ export default function EntryCreationForm({
   const [submittedValues, setSubmittedValues] = useState<
     Record<string, number>
   >({});
+  const [additionalMetrics, setAdditionalMetrics] = useState<Metric[]>([]);
 
   // Preselect baseline values by default
   useEffect(() => {
@@ -52,6 +57,15 @@ export default function EntryCreationForm({
       );
   };
 
+  const removeAdditionalMetric = (metricId: string) => {
+    setAdditionalMetrics((prev) => prev.filter((m) => m.id !== metricId));
+    setSubmittedValues((prev) => {
+      const updated = { ...prev };
+      delete updated[metricId];
+      return updated;
+    });
+  };
+
   const entryValues = deriveEntryValues();
   const isFormValid = entryValues.length > 0 && !!recordedAt;
 
@@ -62,20 +76,58 @@ export default function EntryCreationForm({
       <div className="border border-primary/70 my-8" />
 
       <div className="space-y-4 mb-4">
-        {trackedMetrics.map((m) => {
-          const metric = m.metric;
+        {trackedMetrics.map((tm) => {
+          const metric = tm.metric;
 
           return (
             <div key={metric.id} className="flex flex-col gap-2">
               <label className="font-semibold">{metric.name}</label>
               <ValueSelect
-                trackedMetric={m}
+                metric={metric}
+                baseline={tm.baseline}
                 handleChange={handleSubmittedValue}
               />
             </div>
           );
         })}
       </div>
+
+      {additionalMetrics.length !== 0 &&
+        additionalMetrics.map((metric) => {
+          return (
+            <div key={metric.id} className="flex flex-col gap-2 mb-4">
+              <label className="font-semibold">{metric.name}</label>
+              <div className="flex w-full gap-2">
+                <ValueSelect
+                  metric={metric}
+                  baseline={0}
+                  handleChange={handleSubmittedValue}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    removeAdditionalMetric(metric.id);
+                  }}
+                >
+                  <XIcon className="h-4 w-4 text-red-500" />
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+
+      <AdditionalMetricPicker
+        addAdditionalMetric={(metric: Metric) => {
+          setAdditionalMetrics((prev) => {
+            if (prev.find((m) => m.id === metric.id)) {
+              return prev;
+            }
+            return [...prev, metric];
+          });
+        }}
+      />
 
       <SubmitButton
         values={entryValues}

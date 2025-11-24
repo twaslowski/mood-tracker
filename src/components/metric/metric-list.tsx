@@ -189,7 +189,8 @@ export default function MetricList({
                   Baseline:
                 </Label>
                 <ValueSelect
-                  trackedMetric={tracking}
+                  metric={metric}
+                  baseline={tracking?.baseline ?? 0}
                   handleChange={handleBaselineUpdate}
                 />
               </div>

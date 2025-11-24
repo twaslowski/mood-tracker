@@ -1,12 +1,12 @@
 import { Metric } from "@/types/metric";
-import { MetricTracking } from "@/types/tracking";
 import { range } from "@/lib/utils";
 import * as Select from "@radix-ui/react-select";
 import { ChevronDownIcon } from "lucide-react";
 import React from "react";
 
 interface ValueSelectProps {
-  trackedMetric: MetricTracking;
+  metric: Metric;
+  baseline: number;
   handleChange: (metricId: string, value: number) => void;
 }
 
@@ -32,19 +32,19 @@ function getMetricOptions(metric: Metric): { label: string; value: number }[] {
 }
 
 export default function ValueSelect({
-  trackedMetric,
+  metric,
+  baseline,
   handleChange,
 }: ValueSelectProps) {
-  const metric = trackedMetric.metric;
   const options = getMetricOptions(metric);
 
   return (
     <Select.Root
-      defaultValue={String(trackedMetric.baseline)}
+      defaultValue={String(baseline)}
       onValueChange={(val) => handleChange(metric.id, Number(val))}
     >
       <Select.Trigger
-        className="inline-flex items-center justify-between rounded-md border border-primary/50 px-3 py-2"
+        className="inline-flex items-center justify-between rounded-md border border-primary/50 px-3 py-2 w-full"
         aria-label={`select-${metric.name}`}
       >
         <Select.Value placeholder={`Select ${metric.name}`} />

@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { createMetric } from "@/app/actions/metric";
+import { XIcon } from "lucide-react";
 
 type MetricType = "discrete" | "continuous" | "duration";
 
@@ -31,8 +32,10 @@ interface LabelEntry {
 
 export default function MetricCreationDialog({
   onComplete,
+  onClose,
 }: {
   onComplete?: () => void;
+  onClose?: () => void;
 }) {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,12 +131,20 @@ export default function MetricCreationDialog({
         formData.minValue < formData.maxValue;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto bg-gray-900">
       <CardHeader>
-        <CardTitle>Create a New Metric</CardTitle>
-        <CardDescription>
-          Step {step} of {totalSteps}
-        </CardDescription>
+        <div className="flex justify-between">
+          <div>
+            <CardTitle>Create a New Metric</CardTitle>
+            <CardDescription>
+              Step {step} of {totalSteps}
+            </CardDescription>
+          </div>
+          <Button onClick={onClose}>
+            <XIcon />
+            Close
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {step === 1 && (
@@ -190,7 +201,11 @@ export default function MetricCreationDialog({
               />
             </div>
             <div className="flex justify-between gap-2 mt-6">
-              <Button onClick={handleBack} variant="outline">
+              <Button
+                onClick={handleBack}
+                variant="outline"
+                className="bg-gray-900"
+              >
                 Back
               </Button>
               <Button onClick={handleNext} disabled={!canProceedStep2}>

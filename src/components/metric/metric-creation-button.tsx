@@ -18,15 +18,12 @@ export default function MetricCreationButton() {
     <>
       <Button onClick={() => setIsOpen(true)}>+ Create Metric</Button>
       {isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="relative w-full max-w-2xl">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300"
-            >
-              ✕ Close
-            </button>
-            <MetricCreationDialog onComplete={handleComplete} />
+            <MetricCreationDialog
+              onComplete={handleComplete}
+              onClose={() => setIsOpen(false)}
+            />
           </div>
         </div>
       )}
