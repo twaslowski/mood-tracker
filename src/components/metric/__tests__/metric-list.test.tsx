@@ -359,21 +359,4 @@ describe("MetricList", () => {
       });
     });
   });
-
-  describe("Metric Type Badges", () => {
-    it("displays correct badge colors for different metric types", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep]}
-          metricTracking={[moodTracking, sleepTracking]}
-        />,
-      );
-
-      const discreteBadge = screen.getByText("discrete");
-      const continuousBadge = screen.getByText("continuous");
-
-      expect(discreteBadge).toHaveClass("bg-blue-500/10");
-      expect(continuousBadge).toHaveClass("bg-green-500/10");
-    });
-  });
 });

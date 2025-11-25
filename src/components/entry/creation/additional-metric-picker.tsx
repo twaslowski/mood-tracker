@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { PlusIcon } from "lucide-react";
 import React from "react";
-import AdditionalMetricPickerDialog from "@/components/entry/additional-metric-picker-dialog.tsx";
+import AdditionalMetricPickerDialog from "@/components/entry/creation/additional-metric-picker-dialog.tsx";
 import { Metric } from "@/types/metric.ts";
 
 export function AdditionalMetricPicker({

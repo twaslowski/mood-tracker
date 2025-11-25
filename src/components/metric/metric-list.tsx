@@ -3,23 +3,13 @@
 import { type MetricTracking } from "@/types/tracking";
 import { type Metric } from "@/types/metric";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
   trackMetric,
   untrackMetric,
   updateBaseline,
 } from "@/app/actions/metric";
 import React, { useState, useTransition, useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import ValueSelect from "@/components/entry/value-select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MetricCard from "@/components/metric/metric-card.tsx";
 
 interface MetricListProps {
   metrics: Metric[];
@@ -124,80 +114,19 @@ export default function MetricList({
     });
   };
 
-  const getMetricTypeColor = (type: string) => {
-    switch (type) {
-      case "discrete":
-        return "bg-blue-500/10 text-blue-500 hover:bg-blue-500/20";
-      case "continuous":
-        return "bg-green-500/10 text-green-500 hover:bg-green-500/20";
-      case "duration":
-        return "bg-purple-500/10 text-purple-500 hover:bg-purple-500/20";
-      default:
-        return "";
-    }
-  };
-
   const renderMetricCard = (metric: Metric) => {
     const tracking = optimisticTracking.get(metric.id);
     const isTracked = !!tracking;
-
     return (
-      <Card
+      <MetricCard
         key={metric.id}
-        className="transition-opacity"
-        style={{ opacity: isPending ? 0.7 : 1 }}
-      >
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                <CardTitle className="text-xl">{metric.name}</CardTitle>
-                <Badge
-                  variant="outline"
-                  className={getMetricTypeColor(metric.metric_type)}
-                >
-                  {metric.metric_type}
-                </Badge>
-              </div>
-              <CardDescription>{metric.description}</CardDescription>
-            </div>
-            <div className="flex items-center space-x-2 ml-4">
-              <Checkbox
-                id={`metric-${metric.id}`}
-                checked={isTracked}
-                onCheckedChange={() => handleToggle(metric, isTracked)}
-                disabled={isPending}
-              />
-              <Label
-                htmlFor={`metric-${metric.id}`}
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-              >
-                Track
-              </Label>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {/* Baseline input for tracked metrics */}
-            {isTracked && (
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                <Label
-                  htmlFor={`baseline-${metric.id}`}
-                  className="text-sm font-medium whitespace-nowrap"
-                >
-                  Your normal:
-                </Label>
-                <ValueSelect
-                  metric={metric}
-                  baseline={tracking?.baseline ?? 0}
-                  handleChange={handleBaselineUpdate}
-                />
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        metric={metric}
+        tracking={tracking}
+        isTracked={isTracked}
+        isPending={isPending}
+        handleToggle={handleToggle}
+        handleBaselineUpdate={handleBaselineUpdate}
+      />
     );
   };
 

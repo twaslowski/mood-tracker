@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import EntryCreationForm from "../entry-creation-form";
+import EntryCreationForm from "../creation/entry-creation-form";
 import { moodTracking } from "@/__fixtures__/tracking";
 
 // router required by the SubmitButton component

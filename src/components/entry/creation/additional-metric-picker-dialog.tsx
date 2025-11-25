@@ -14,6 +14,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client.ts";
 import { Metric, MetricSchema } from "@/types/metric.ts";
 import { z } from "zod";
+import { MetricLabels } from "@/components/metric/metric-labels.tsx";
 
 export default function AdditionalMetricPickerDialog({
   onComplete,
@@ -117,9 +118,7 @@ export default function AdditionalMetricPickerDialog({
                         {metric.description}
                       </p>
                       <div className="flex gap-2 mt-2">
-                        <span className="text-xs px-2 py-1 rounded bg-primary/10 text-primary">
-                          {metric.metric_type}
-                        </span>
+                        <MetricLabels metric={metric} />
                       </div>
                     </div>
                   </div>

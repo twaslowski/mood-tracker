@@ -21,7 +21,7 @@ jest.mock("@/lib/supabase/server", () => ({
 }));
 
 // Mock SuccessToast component to make it testable
-jest.mock("@/components/entry/success-toast", () => ({
+jest.mock("@/components/entry/creation/success-toast", () => ({
   __esModule: true,
   default: ({ message }: { message?: string }) =>
     message ? <div data-testid="success-toast">{message}</div> : null,

@@ -1,6 +1,6 @@
 import React from "react";
 import { getTrackedMetrics } from "@/lib/service/metric.ts";
-import EntryCreationForm from "@/components/entry/entry-creation-form";
+import EntryCreationForm from "@/components/entry/creation/entry-creation-form";
 import { BackNav } from "@/components/back-nav";
 
 export default async function CreateEntryPage() {

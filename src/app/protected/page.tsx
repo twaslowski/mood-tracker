@@ -2,7 +2,7 @@ import React from "react";
 import { BarChart3, Plus, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import SuccessToast from "@/components/entry/success-toast";
+import SuccessToast from "@/components/entry/creation/success-toast";
 import Image from "next/image";
 import { ActionCard } from "@/components/action-card";
 

@@ -29,6 +29,15 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+
+    /* Metric type colors */
+    --metric-discrete: 217 91% 60%;
+    --metric-event: 142 76% 36%;
+    --metric-continuous: 262 83% 58%;
+
+    /* Owner type colors */
+    --owner-system: 0 84% 60%;
+    --owner-user: 45 93% 47%;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -55,6 +64,15 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* Metric type colors */
+    --metric-discrete: 217 91% 60%;
+    --metric-event: 142 76% 36%;
+    --metric-continuous: 262 83% 58%;
+
+    /* Owner type colors */
+    --owner-system: 0 84% 60%;
+    --owner-user: 45 93% 47%;
   }
 }
 
@@ -70,5 +88,49 @@
   }
   .icon {
     @apply bg-indigo-600 dark:bg-indigo-100 rounded-lg p-3;
+  }
+}
+
+@layer components {
+  /* Metric type badge styles */
+  .badge-metric-discrete {
+    background-color: hsl(var(--metric-discrete) / 0.3);
+    color: hsl(var(--metric-discrete));
+  }
+  .badge-metric-discrete:hover {
+    background-color: hsl(var(--metric-discrete) / 0.5);
+  }
+
+  .badge-metric-event {
+    background-color: hsl(var(--metric-event) / 0.3);
+    color: hsl(var(--metric-event));
+  }
+  .badge-metric-event:hover {
+    background-color: hsl(var(--metric-event) / 0.5);
+  }
+
+  .badge-metric-continuous {
+    background-color: hsl(var(--metric-continuous) / 0.3);
+    color: hsl(var(--metric-continuous));
+  }
+  .badge-metric-continuous:hover {
+    background-color: hsl(var(--metric-continuous) / 0.5);
+  }
+
+  /* Owner type badge styles */
+  .badge-owner-system {
+    background-color: hsl(var(--owner-system) / 0.3);
+    color: hsl(var(--owner-system));
+  }
+  .badge-owner-system:hover {
+    background-color: hsl(var(--owner-system) / 0.5);
+  }
+
+  .badge-owner-user {
+    background-color: hsl(var(--owner-user) / 0.3);
+    color: hsl(var(--owner-user));
+  }
+  .badge-owner-user:hover {
+    background-color: hsl(var(--owner-user) / 0.5);
   }
 }
