@@ -16,7 +16,7 @@ import {
   untrackMetric,
   updateBaseline,
 } from "@/app/actions/metric";
-import {deriveHumanReadableMetricType} from "@/types/metric.ts";
+import { deriveHumanReadableMetricType } from "@/types/metric.ts";
 
 // Mock the server actions
 jest.mock("@/app/actions/metric", () => ({
@@ -172,7 +172,9 @@ describe("MetricList", () => {
 
       expect(screen.getByText("Mood")).toBeInTheDocument();
       expect(screen.getByText("Daily mood rating")).toBeInTheDocument();
-      expect(screen.getByText(deriveHumanReadableMetricType("discrete"))).toBeInTheDocument();
+      expect(
+        screen.getByText(deriveHumanReadableMetricType("discrete")),
+      ).toBeInTheDocument();
     });
 
     it("shows track checkbox for each metric", async () => {

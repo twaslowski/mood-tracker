@@ -10,7 +10,7 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 14%;
+    --primary: 0 0% 20%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -81,7 +81,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-gradient-to-b from-blue-100 to-blue-300 dark:from-blue-950 dark:to-blue-800 transition-colors duration-500 text-gray-900 dark:text-white;
+    @apply bg-gradient-to-b from-blue-200 to-blue-400 dark:from-blue-950 dark:to-blue-800 transition-colors duration-500 text-gray-900 dark:text-white;
   }
   .text-secondary {
     @apply text-gray-600 dark:text-gray-100;

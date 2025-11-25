@@ -11,11 +11,17 @@ export default async function LandingPage({
 }: {
   searchParams: Promise<{ success: string | undefined }>;
 }) {
-  const supabase = await createClient();
-  const displaySuccess = (await searchParams).success === "true";
+  const [isLoggedIn, displaySuccess] = await Promise.all([
+    createClient()
+      .then(async (sb) => {
+        const { data } = await sb.auth.getUser();
+        return !!data.user;
+      })
+      .catch(() => false),
+    searchParams.then((params) => params.success === "true"),
+  ]);
 
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
+  if (!isLoggedIn) {
     redirect("/auth/login");
   }
 
