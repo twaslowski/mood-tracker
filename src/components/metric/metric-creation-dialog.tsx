@@ -13,7 +13,13 @@ import {
 } from "@/components/ui/card";
 import { createMetric } from "@/app/actions/metric";
 import { MetricType } from "@/types/metric.ts";
-import { HashIcon, LucideIcon, SmileIcon, XIcon } from "lucide-react";
+import {
+  HashIcon,
+  LucideIcon,
+  SmileIcon,
+  XIcon,
+  CheckSquareIcon,
+} from "lucide-react";
 import DiscreteMetricSpecification from "@/components/metric/specifications/discrete-metric-specification";
 import ContinuousMetricSpecification from "@/components/metric/specifications/continuous-metric-specification";
 import EventMetricSpecification from "@/components/metric/specifications/event-metric-specification";
@@ -49,13 +55,13 @@ export const METRIC_TYPE_DEFINITIONS: MetricTypeDefinition[] = [
       "Best for anything you measure with a number, like hours of sleep or cups of coffee.",
     icon: HashIcon,
   },
-  // {
-  //   type: "event",
-  //   title: "Tap if it happened",
-  //   description:
-  //     "Best for simple yes/no moments like working out, drinking alcohol, or taking medication.",
-  //   icon: CheckSquareIcon,
-  // },
+  {
+    type: "event",
+    title: "Tap if it happened",
+    description:
+      "Best for simple yes/no moments like working out, drinking alcohol, or taking medication.",
+    icon: CheckSquareIcon,
+  },
   // {
   //   type: "streak",
   //   title: "Track a habit streak",

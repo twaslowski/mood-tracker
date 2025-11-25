@@ -48,7 +48,7 @@ export default async function LandingPage({
         {/* Secondary Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <ActionCard
-            href="/protected/settings"
+            href="/protected/metrics"
             title="Manage Metrics"
             description="Create and configure the metrics you want to track"
             icon={Settings}

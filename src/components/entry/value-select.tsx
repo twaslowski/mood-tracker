@@ -17,6 +17,12 @@ function getMetricOptions(metric: Metric): { label: string; value: number }[] {
       .sort((a, b) => b[1] - a[1])
       .map(([label, value]) => ({ label, value }));
   }
+  if (metric.metric_type === "event") {
+    return [
+      { label: "Happened", value: 1 },
+      { label: "Didn't happen", value: 0 },
+    ];
+  }
   // continuous metric
   if (
     metric.min_value !== null &&

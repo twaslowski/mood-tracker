@@ -186,7 +186,7 @@ export default function MetricList({
                   htmlFor={`baseline-${metric.id}`}
                   className="text-sm font-medium whitespace-nowrap"
                 >
-                  Baseline:
+                  Your normal:
                 </Label>
                 <ValueSelect
                   metric={metric}

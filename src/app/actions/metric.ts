@@ -20,7 +20,7 @@ export const trackMetric = async (metricId: string, baseline: number = 0) => {
     throw new Error(`Failed to track metric: ${error.message}`);
   }
 
-  revalidatePath("/protected/settings");
+  revalidatePath("/protected/metrics");
 };
 
 export const untrackMetric = async (metricId: string) => {
@@ -37,7 +37,7 @@ export const untrackMetric = async (metricId: string) => {
     throw new Error(`Failed to untrack metric: ${error.message}`);
   }
 
-  revalidatePath("/protected/settings");
+  revalidatePath("/protected/metrics");
 };
 
 export const updateBaseline = async (metricId: string, baseline: number) => {
@@ -54,7 +54,7 @@ export const updateBaseline = async (metricId: string, baseline: number) => {
     throw new Error(`Failed to update baseline: ${error.message}`);
   }
 
-  revalidatePath("/protected/settings");
+  revalidatePath("/protected/metrics");
 };
 
 export const createMetric = async (metricData: {
@@ -88,6 +88,6 @@ export const createMetric = async (metricData: {
     throw new Error(`Failed to create metric: ${error.message}`);
   }
 
-  revalidatePath("/protected/settings");
+  revalidatePath("/protected/metrics");
   return data;
 };

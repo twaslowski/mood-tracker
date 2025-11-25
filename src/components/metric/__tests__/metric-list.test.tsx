@@ -203,7 +203,7 @@ describe("MetricList", () => {
       );
 
       // Baseline should be visible for tracked metric
-      expect(screen.getByText("Baseline:")).toBeInTheDocument();
+      expect(screen.getByText("Your normal:")).toBeInTheDocument();
 
       // Switch to system tab where both metrics are shown
       const systemTab = screen.getByRole("tab", { name: /System/ });
@@ -214,7 +214,7 @@ describe("MetricList", () => {
       });
 
       // There should still be only one baseline (for mood which is tracked)
-      const baselineLabels = screen.getAllByText("Baseline:");
+      const baselineLabels = screen.getAllByText("Your normal:");
       expect(baselineLabels).toHaveLength(1);
     });
   });
@@ -280,7 +280,7 @@ describe("MetricList", () => {
       render(<MetricList metrics={[mood]} metricTracking={[moodTracking]} />);
 
       // Baseline should be visible for tracked metric
-      const baselineLabel = screen.getByText("Baseline:");
+      const baselineLabel = screen.getByText("Your normal:");
       expect(baselineLabel).toBeInTheDocument();
 
       // ValueSelect component should be rendered
