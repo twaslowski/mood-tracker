@@ -91,3 +91,19 @@ export const createMetric = async (metricData: {
   revalidatePath("/protected/metrics");
   return data;
 };
+
+export const deleteMetric = async (metricId: string) => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  const { error } = await supabase
+    .from("metric")
+    .delete()
+    .eq("id", metricId)
+    .eq("owner_id", userId);
+
+  if (error) {
+    throw new Error(`Failed to delete metric: ${error.message}`);
+  }
+  revalidatePath("/protected/metrics");
+};

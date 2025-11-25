@@ -12,6 +12,17 @@ import ValueSelect from "@/components/entry/value-select";
 import { Metric } from "@/types/metric";
 import { MetricTracking } from "@/types/tracking";
 import { MetricLabels } from "@/components/metric/metric-labels.tsx";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { EllipsisIcon, TrashIcon, CheckIcon } from "lucide-react";
+import { deleteMetric } from "@/app/actions/metric.ts";
+import { extractErrorMessage } from "@/lib/utils.ts";
+import toast from "react-hot-toast";
 
 interface MetricCardProps {
   metric: Metric;
@@ -21,6 +32,20 @@ interface MetricCardProps {
   handleToggle: (metric: Metric, isTracked: boolean) => void;
   handleBaselineUpdate: (metricId: string, newBaseline: number) => void;
 }
+
+const onDeleteMetric = async (metricId: string) => {
+  try {
+    await deleteMetric(metricId);
+    toast("Metric deleted successfully", {
+      icon: <CheckIcon />,
+    });
+  } catch (error: unknown) {
+    const message = extractErrorMessage(error);
+    toast("Failed to delete entry: " + message, {
+      style: { background: "red", color: "white" },
+    });
+  }
+};
 
 const MetricCard: React.FC<MetricCardProps> = ({
   metric,
@@ -57,6 +82,22 @@ const MetricCard: React.FC<MetricCardProps> = ({
           >
             Track
           </Label>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button aria-label="edit-metric" variant="ghost" size="sm">
+                <EllipsisIcon />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onDeleteMetric(metric.id)}
+                disabled={metric.owner_id.toUpperCase() === "SYSTEM"}
+              >
+                <TrashIcon color="red" />
+                Delete Metric
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </CardHeader>
