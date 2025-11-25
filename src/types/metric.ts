@@ -15,5 +15,16 @@ export const MetricSchema = z.object({
   max_value: z.number().nullable(),
 });
 
+export const deriveHumanReadableMetricType = (metricType: MetricType) => {
+  switch (metricType) {
+    case "discrete":
+      return "🎨 Vibe";
+    case "continuous":
+      return "🔢 Measurement";
+    case "event":
+      return "⭐ Moment";
+  }
+};
+
 export type MetricType = z.infer<typeof MetricType>;
 export type Metric = z.infer<typeof MetricSchema>;

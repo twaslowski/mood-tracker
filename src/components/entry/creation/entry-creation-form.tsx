@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { type MetricTracking } from "@/types/tracking";
-import { type EntryValue, EntryValueSchema } from "@/types/entryValue";
+import { type EntryValue, EntryValueSchema } from "@/types/entry-value.ts";
 import SubmitButton from "./submit-button";
 import DateTimeInput from "@/components/entry/creation/datetime-input";
 import ValueSelect from "@/components/entry/value-select";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EntryValueWithMetricSchema } from "@/types/entryValue";
+import { EntryValueWithMetricSchema } from "@/types/entry-value.ts";
 
 // The Entry, as it is being used in the application.
 // Does not 1:1 correspond to the database schema; the "values" field is an array of entry_value data.

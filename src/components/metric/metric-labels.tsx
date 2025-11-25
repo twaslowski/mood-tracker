@@ -1,4 +1,8 @@
-import { Metric, MetricType } from "@/types/metric.ts";
+import {
+  deriveHumanReadableMetricType,
+  Metric,
+  MetricType,
+} from "@/types/metric.ts";
 import { Badge } from "@/components/ui/badge.tsx";
 import React from "react";
 
@@ -20,7 +24,7 @@ const getMetricTypeClass = (metricType: MetricType) => {
 };
 
 const getOwnerLabel = (ownerId: string) => {
-  return ownerId === "SYSTEM" ? "System" : "User";
+  return ownerId === "SYSTEM" ? "🤖 System" : "👤 Yours";
 };
 
 const getOwnerClass = (ownerId: string) => {
@@ -34,7 +38,7 @@ export const MetricLabels: React.FC<MetricLabelProps> = ({ metric }) => {
         variant="outline"
         className={getMetricTypeClass(metric.metric_type)}
       >
-        {metric.metric_type}
+        {deriveHumanReadableMetricType(metric.metric_type)}
       </Badge>
       <Badge variant="outline" className={getOwnerClass(metric.owner_id)}>
         {getOwnerLabel(metric.owner_id)}
