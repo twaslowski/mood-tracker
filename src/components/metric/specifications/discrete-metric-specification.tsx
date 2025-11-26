@@ -14,16 +14,24 @@ interface DiscreteMetricSpecificationProps {
   onBack: () => void;
   onSubmit: (labels: Record<string, number>) => void;
   isSubmitting: boolean;
+  initialLabels?: Record<string, number>;
 }
 
 export default function DiscreteMetricSpecification({
   onBack,
   onSubmit,
   isSubmitting,
+  initialLabels,
 }: DiscreteMetricSpecificationProps) {
-  const [labelEntries, setLabelEntries] = useState<LabelEntry[]>([
-    { label: "", value: "" },
-  ]);
+  const [labelEntries, setLabelEntries] = useState<LabelEntry[]>(() => {
+    if (!initialLabels || Object.keys(initialLabels).length === 0) {
+      return [{ label: "", value: "" }];
+    }
+    return Object.entries(initialLabels).map(([label, value]) => ({
+      label,
+      value: String(value),
+    }));
+  });
 
   const addLabelEntry = () => {
     setLabelEntries([...labelEntries, { label: "", value: "" }]);

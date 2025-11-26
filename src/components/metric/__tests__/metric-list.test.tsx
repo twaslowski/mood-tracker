@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MetricList from "../metric-list";
+import { MetricDialogProvider } from "../metric-dialog-provider.tsx";
 import {
   mood,
   sleep,
@@ -25,6 +26,22 @@ jest.mock("@/app/actions/metric", () => ({
   updateBaseline: jest.fn(),
 }));
 
+// Mock next/navigation
+jest.mock("next/navigation", () => ({
+  useRouter: () => ({
+    refresh: jest.fn(),
+  }),
+}));
+
+// Helper function to render MetricList with required providers
+const renderMetricList = (props: React.ComponentProps<typeof MetricList>) => {
+  return render(
+    <MetricDialogProvider>
+      <MetricList {...props} />
+    </MetricDialogProvider>,
+  );
+};
+
 describe("MetricList", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -32,12 +49,10 @@ describe("MetricList", () => {
 
   describe("Tabs Navigation", () => {
     it("renders all three tabs with correct labels", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[moodTracking, sleepTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [moodTracking, sleepTracking],
+      });
 
       expect(
         screen.getByRole("tab", { name: /Tracked \(2\)/ }),
@@ -51,12 +66,10 @@ describe("MetricList", () => {
     });
 
     it("displays tracked tab by default", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[moodTracking, sleepTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [moodTracking, sleepTracking],
+      });
 
       // Should show tracked metrics
       expect(screen.getByText("Mood")).toBeInTheDocument();
@@ -65,12 +78,10 @@ describe("MetricList", () => {
 
     it("switches to user tab when clicked", async () => {
       const user = userEvent.setup();
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[moodTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [moodTracking],
+      });
 
       const userTab = screen.getByRole("tab", { name: /User \(2\)/ });
       await user.click(userTab);
@@ -84,12 +95,10 @@ describe("MetricList", () => {
 
     it("switches to system tab when clicked", async () => {
       const user = userEvent.setup();
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[exerciseTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [exerciseTracking],
+      });
 
       const systemTab = screen.getByRole("tab", { name: /System \(2\)/ });
       await user.click(systemTab);
@@ -104,12 +113,10 @@ describe("MetricList", () => {
 
   describe("Tab Content", () => {
     it("shows empty state for tracked tab when no metrics are tracked", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [],
+      });
 
       expect(
         screen.getByText(
@@ -120,7 +127,7 @@ describe("MetricList", () => {
 
     it("shows empty state for user tab when no user metrics exist", async () => {
       const user = userEvent.setup();
-      render(<MetricList metrics={[mood, sleep]} metricTracking={[]} />);
+      renderMetricList({ metrics: [mood, sleep], metricTracking: [] });
 
       const userTab = screen.getByRole("tab", { name: /User \(0\)/ });
       await user.click(userTab);
@@ -132,9 +139,10 @@ describe("MetricList", () => {
 
     it("shows empty state for system tab when no system metrics exist", async () => {
       const user = userEvent.setup();
-      render(
-        <MetricList metrics={[exercise, waterIntake]} metricTracking={[]} />,
-      );
+      renderMetricList({
+        metrics: [exercise, waterIntake],
+        metricTracking: [],
+      });
 
       const systemTab = screen.getByRole("tab", { name: /System \(0\)/ });
       await user.click(systemTab);
@@ -145,12 +153,10 @@ describe("MetricList", () => {
     });
 
     it("correctly counts metrics in each tab", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[moodTracking, exerciseTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [moodTracking, exerciseTracking],
+      });
 
       expect(
         screen.getByRole("tab", { name: /Tracked \(2\)/ }),
@@ -166,9 +172,10 @@ describe("MetricList", () => {
 
   describe("Metric Cards", () => {
     it("displays metric name, description, and type badge", () => {
-      render(
-        <MetricList metrics={[mood, sleep]} metricTracking={[moodTracking]} />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep],
+        metricTracking: [moodTracking],
+      });
 
       expect(screen.getByText("Mood")).toBeInTheDocument();
       expect(screen.getByText("Daily mood rating")).toBeInTheDocument();
@@ -179,7 +186,7 @@ describe("MetricList", () => {
 
     it("shows track checkbox for each metric", async () => {
       const user = userEvent.setup();
-      render(<MetricList metrics={[mood, sleep]} metricTracking={[]} />);
+      renderMetricList({ metrics: [mood, sleep], metricTracking: [] });
 
       const systemTab = screen.getByRole("tab", { name: /System/ });
       await user.click(systemTab);
@@ -191,9 +198,10 @@ describe("MetricList", () => {
     });
 
     it("checks the checkbox for tracked metrics", () => {
-      render(
-        <MetricList metrics={[mood, sleep]} metricTracking={[moodTracking]} />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep],
+        metricTracking: [moodTracking],
+      });
 
       const checkboxes = screen.getAllByRole("checkbox");
       expect(checkboxes[0]).toBeChecked();
@@ -201,9 +209,10 @@ describe("MetricList", () => {
 
     it("shows baseline input only for tracked metrics", async () => {
       const user = userEvent.setup();
-      render(
-        <MetricList metrics={[mood, sleep]} metricTracking={[moodTracking]} />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep],
+        metricTracking: [moodTracking],
+      });
 
       // Baseline should be visible for tracked metric
       expect(screen.getByText("Your normal:")).toBeInTheDocument();
@@ -227,7 +236,7 @@ describe("MetricList", () => {
       const user = userEvent.setup();
       (trackMetric as jest.Mock).mockResolvedValue(undefined);
 
-      render(<MetricList metrics={[mood, sleep]} metricTracking={[]} />);
+      renderMetricList({ metrics: [mood, sleep], metricTracking: [] });
 
       const systemTab = screen.getByRole("tab", { name: /System/ });
       await user.click(systemTab);
@@ -246,9 +255,10 @@ describe("MetricList", () => {
       const user = userEvent.setup();
       (untrackMetric as jest.Mock).mockResolvedValue(undefined);
 
-      render(
-        <MetricList metrics={[mood, sleep]} metricTracking={[moodTracking]} />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep],
+        metricTracking: [moodTracking],
+      });
 
       const checkbox = screen.getAllByRole("checkbox")[0];
       await user.click(checkbox);
@@ -262,7 +272,7 @@ describe("MetricList", () => {
       const user = userEvent.setup();
       (trackMetric as jest.Mock).mockResolvedValue(undefined);
 
-      render(<MetricList metrics={[mood, sleep]} metricTracking={[]} />);
+      renderMetricList({ metrics: [mood, sleep], metricTracking: [] });
 
       const systemTab = screen.getByRole("tab", { name: /System/ });
       await user.click(systemTab);
@@ -280,7 +290,7 @@ describe("MetricList", () => {
     it("renders baseline selector for tracked metrics", async () => {
       (updateBaseline as jest.Mock).mockResolvedValue(undefined);
 
-      render(<MetricList metrics={[mood]} metricTracking={[moodTracking]} />);
+      renderMetricList({ metrics: [mood], metricTracking: [moodTracking] });
 
       // Baseline should be visible for tracked metric
       const baselineLabel = screen.getByText("Your normal:");
@@ -295,12 +305,10 @@ describe("MetricList", () => {
   describe("Metric Categorization", () => {
     it("correctly categorizes system and user metrics", async () => {
       const user = userEvent.setup();
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [],
+      });
 
       // Check user tab
       const userTab = screen.getByRole("tab", { name: /User \(2\)/ });
@@ -322,12 +330,10 @@ describe("MetricList", () => {
     });
 
     it("shows tracked metrics in tracked tab regardless of owner", () => {
-      render(
-        <MetricList
-          metrics={[mood, sleep, exercise, waterIntake]}
-          metricTracking={[moodTracking, exerciseTracking]}
-        />,
-      );
+      renderMetricList({
+        metrics: [mood, sleep, exercise, waterIntake],
+        metricTracking: [moodTracking, exerciseTracking],
+      });
 
       // Tracked tab should show both system and user metrics that are tracked
       expect(screen.getByText("Mood")).toBeInTheDocument(); // system
@@ -338,7 +344,7 @@ describe("MetricList", () => {
       const user = userEvent.setup();
       (trackMetric as jest.Mock).mockResolvedValue(undefined);
 
-      render(<MetricList metrics={[mood, sleep]} metricTracking={[]} />);
+      renderMetricList({ metrics: [mood, sleep], metricTracking: [] });
 
       // Initially 0 tracked
       expect(

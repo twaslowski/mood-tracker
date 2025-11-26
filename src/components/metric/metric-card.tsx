@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Card,
@@ -19,10 +21,11 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { EllipsisIcon, TrashIcon, CheckIcon } from "lucide-react";
+import { EllipsisIcon, TrashIcon, CheckIcon, Edit3Icon } from "lucide-react";
 import { deleteMetric } from "@/app/actions/metric.ts";
 import { extractErrorMessage } from "@/lib/utils.ts";
 import toast from "react-hot-toast";
+import { useMetricDialog } from "@/components/metric/metric-dialog-provider.tsx";
 
 interface MetricCardProps {
   metric: Metric;
@@ -54,74 +57,85 @@ const MetricCard: React.FC<MetricCardProps> = ({
   isPending,
   handleToggle,
   handleBaselineUpdate,
-}) => (
-  <Card
-    key={metric.id}
-    className="transition-opacity"
-    style={{ opacity: isPending ? 0.7 : 1 }}
-  >
-    <CardHeader>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <CardTitle className="text-xl">{metric.name}</CardTitle>
-            <MetricLabels metric={metric} />
+}) => {
+  const { openEditDialog } = useMetricDialog();
+
+  return (
+    <Card
+      key={metric.id}
+      className="transition-opacity"
+      style={{ opacity: isPending ? 0.7 : 1 }}
+    >
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <CardTitle className="text-xl">{metric.name}</CardTitle>
+              <MetricLabels metric={metric} />
+            </div>
+            <CardDescription>{metric.description}</CardDescription>
           </div>
-          <CardDescription>{metric.description}</CardDescription>
-        </div>
-        <div className="flex items-center space-x-2 ml-4">
-          <Checkbox
-            id={`metric-${metric.id}`}
-            checked={isTracked}
-            onCheckedChange={() => handleToggle(metric, isTracked)}
-            disabled={isPending}
-          />
-          <Label
-            htmlFor={`metric-${metric.id}`}
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-          >
-            Track
-          </Label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button aria-label="edit-metric" variant="ghost" size="sm">
-                <EllipsisIcon />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => onDeleteMetric(metric.id)}
-                disabled={metric.owner_id.toUpperCase() === "SYSTEM"}
-              >
-                <TrashIcon color="red" />
-                Delete Metric
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </CardHeader>
-    <CardContent>
-      <div className="space-y-3">
-        {/* Baseline input for tracked metrics */}
-        {isTracked && (
-          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-            <Label
-              htmlFor={`baseline-${metric.id}`}
-              className="text-sm font-medium whitespace-nowrap"
-            >
-              Your normal:
-            </Label>
-            <ValueSelect
-              metric={metric}
-              baseline={tracking?.baseline ?? 0}
-              handleChange={handleBaselineUpdate}
+          <div className="flex items-center space-x-2 ml-4">
+            <Checkbox
+              id={`metric-${metric.id}`}
+              checked={isTracked}
+              onCheckedChange={() => handleToggle(metric, isTracked)}
+              disabled={isPending}
             />
+            <Label
+              htmlFor={`metric-${metric.id}`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+            >
+              Track
+            </Label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button aria-label="edit-metric" variant="ghost" size="sm">
+                  <EllipsisIcon />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => openEditDialog(metric)}
+                  disabled={metric.owner_id.toUpperCase() === "SYSTEM"}
+                >
+                  <Edit3Icon />
+                  Edit Metric
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => onDeleteMetric(metric.id)}
+                  disabled={metric.owner_id.toUpperCase() === "SYSTEM"}
+                >
+                  <TrashIcon color="red" />
+                  Delete Metric
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        )}
-      </div>
-    </CardContent>
-  </Card>
-);
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {/* Baseline input for tracked metrics */}
+          {isTracked && (
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+              <Label
+                htmlFor={`baseline-${metric.id}`}
+                className="text-sm font-medium whitespace-nowrap"
+              >
+                Your normal:
+              </Label>
+              <ValueSelect
+                metric={metric}
+                baseline={tracking?.baseline ?? 0}
+                handleChange={handleBaselineUpdate}
+              />
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default MetricCard;

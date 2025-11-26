@@ -92,6 +92,44 @@ export const createMetric = async (metricData: {
   return data;
 };
 
+export const updateMetric = async (
+  metricId: string,
+  metricData: {
+    name: string;
+    description: string;
+    metric_type: MetricType;
+    labels: Record<string, number>;
+    min_value: number | null;
+    max_value: number | null;
+  },
+) => {
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  const { data, error } = await supabase
+    .from("metric")
+    .update({
+      name: metricData.name,
+      description: metricData.description,
+      metric_type: metricData.metric_type,
+      labels: metricData.labels,
+      min_value: metricData.min_value,
+      max_value: metricData.max_value,
+      update_timestamp: new Date().toISOString(),
+    })
+    .eq("id", metricId)
+    .eq("owner_id", userId)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to update metric: ${error.message}`);
+  }
+
+  revalidatePath("/protected/metrics");
+  return data;
+};
+
 export const deleteMetric = async (metricId: string) => {
   const supabase = await createClient();
   const userId = await getUserId(supabase);

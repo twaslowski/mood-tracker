@@ -11,8 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createMetric } from "@/app/actions/metric";
-import { MetricType } from "@/types/metric.ts";
+import { createMetric, updateMetric } from "@/app/actions/metric";
+import { MetricType, Metric } from "@/types/metric.ts";
 import {
   HashIcon,
   LucideIcon,
@@ -81,19 +81,23 @@ export const METRIC_TYPE_DEFINITIONS: MetricTypeDefinition[] = [
 export default function MetricCreationDialog({
   onComplete,
   onClose,
+  mode = "create",
+  metric,
 }: {
   onComplete?: () => void;
   onClose?: () => void;
+  mode?: "create" | "edit";
+  metric?: Metric;
 }) {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(mode === "edit" && metric ? 4 : 1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<MetricFormData>({
-    name: "",
-    description: "",
-    metricType: null,
-    labels: {},
-    minValue: null,
-    maxValue: null,
+    name: metric?.name ?? "",
+    description: metric?.description ?? "",
+    metricType: metric?.metric_type ?? null,
+    labels: metric?.labels ?? {},
+    minValue: metric?.min_value ?? null,
+    maxValue: metric?.max_value ?? null,
   });
 
   const totalSteps = 4;
@@ -119,7 +123,9 @@ export default function MetricCreationDialog({
       <CardHeader>
         <div className="flex justify-between">
           <div>
-            <CardTitle>Create a New Metric</CardTitle>
+            <CardTitle>
+              {mode === "edit" ? "Edit Metric" : "Create a New Metric"}
+            </CardTitle>
             <CardDescription>
               Step {step} of {totalSteps}
             </CardDescription>
@@ -243,21 +249,33 @@ export default function MetricCreationDialog({
         {step === 4 && formData.metricType === "discrete" && (
           <DiscreteMetricSpecification
             onBack={handleBack}
+            initialLabels={mode === "edit" ? formData.labels : undefined}
             onSubmit={async (labels) => {
               setIsSubmitting(true);
               try {
-                await createMetric({
-                  name: formData.name,
-                  description: formData.description,
-                  metric_type: "discrete",
-                  labels,
-                  min_value: null,
-                  max_value: null,
-                });
+                if (mode === "edit" && metric) {
+                  await updateMetric(metric.id, {
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: "discrete",
+                    labels,
+                    min_value: null,
+                    max_value: null,
+                  });
+                } else {
+                  await createMetric({
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: "discrete",
+                    labels,
+                    min_value: null,
+                    max_value: null,
+                  });
+                }
                 onComplete?.();
               } catch (error) {
-                console.error("Failed to create metric:", error);
-                alert("Failed to create metric. Please try again.");
+                console.error(`Failed to ${mode} metric:`, error);
+                alert(`Failed to ${mode} metric. Please try again.`);
               } finally {
                 setIsSubmitting(false);
               }
@@ -272,18 +290,29 @@ export default function MetricCreationDialog({
             onSubmit={async (minValue, maxValue) => {
               setIsSubmitting(true);
               try {
-                await createMetric({
-                  name: formData.name,
-                  description: formData.description,
-                  metric_type: formData.metricType!,
-                  labels: {},
-                  min_value: minValue,
-                  max_value: maxValue,
-                });
+                if (mode === "edit" && metric) {
+                  await updateMetric(metric.id, {
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: formData.metricType!,
+                    labels: {},
+                    min_value: minValue,
+                    max_value: maxValue,
+                  });
+                } else {
+                  await createMetric({
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: formData.metricType!,
+                    labels: {},
+                    min_value: minValue,
+                    max_value: maxValue,
+                  });
+                }
                 onComplete?.();
               } catch (error) {
-                console.error("Failed to create metric:", error);
-                alert("Failed to create metric. Please try again.");
+                console.error(`Failed to ${mode} metric:`, error);
+                alert(`Failed to ${mode} metric. Please try again.`);
               } finally {
                 setIsSubmitting(false);
               }
@@ -298,18 +327,28 @@ export default function MetricCreationDialog({
             onSubmit={async () => {
               setIsSubmitting(true);
               try {
-                await createMetric({
-                  name: formData.name,
-                  description: formData.description,
-                  metric_type: "event",
-                  labels: {},
-                  min_value: null,
-                  max_value: null,
-                });
-                onComplete?.();
+                if (mode === "edit" && metric) {
+                  await updateMetric(metric.id, {
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: "event",
+                    labels: formData.labels,
+                    min_value: null,
+                    max_value: null,
+                  });
+                } else {
+                  await createMetric({
+                    name: formData.name,
+                    description: formData.description,
+                    metric_type: "event",
+                    labels: {},
+                    min_value: null,
+                    max_value: null,
+                  });
+                }
               } catch (error) {
-                console.error("Failed to create metric:", error);
-                alert("Failed to create metric. Please try again.");
+                console.error(`Failed to ${mode} metric:`, error);
+                alert(`Failed to ${mode} metric. Please try again.`);
               } finally {
                 setIsSubmitting(false);
               }
