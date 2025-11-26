@@ -6,13 +6,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { DotLoader } from "react-spinners";
 
 export default function Home() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const supabase = createClient();
 
+  // The below code is currently used to handle the auth callback from Supabase when using OAuth providers
   useEffect(() => {
     const handleAuthCallback = async () => {
       // Check for hash fragments (implicit flow)
@@ -63,8 +65,9 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-pulse text-primary-500">Loading...</div>
+      <div className="flex h-full items-center justify-center">
+        <DotLoader loading={true} size={32} color="currentColor" />
+        <span className={`ml-3`}>Loading</span>
       </div>
     );
   }
