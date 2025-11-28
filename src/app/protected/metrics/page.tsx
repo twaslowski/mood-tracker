@@ -13,7 +13,7 @@ export default async function SettingsPage() {
 
   return (
     <MetricDialogProvider>
-      <div className="h-full p-4">
+      <div className="h-full p-2">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <BackNav href="/protected" />

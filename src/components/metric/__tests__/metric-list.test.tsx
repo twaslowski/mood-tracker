@@ -33,6 +33,10 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
+jest.mock("@/hooks/use-is-mobile.ts", () => ({
+  useIsMobile: jest.fn(() => ({ isMobile: false, isLoading: false })),
+}));
+
 // Helper function to render MetricList with required providers
 const renderMetricList = (props: React.ComponentProps<typeof MetricList>) => {
   return render(

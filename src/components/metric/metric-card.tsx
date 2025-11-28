@@ -26,6 +26,7 @@ import { deleteMetric } from "@/app/actions/metric.ts";
 import { extractErrorMessage } from "@/lib/utils.ts";
 import toast from "react-hot-toast";
 import { useMetricDialog } from "@/components/metric/metric-dialog-provider.tsx";
+import { useIsMobile } from "@/hooks/use-is-mobile.ts";
 
 interface MetricCardProps {
   metric: Metric;
@@ -59,6 +60,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   handleBaselineUpdate,
 }) => {
   const { openEditDialog } = useMetricDialog();
+  const { isMobile } = useIsMobile();
 
   return (
     <Card
@@ -71,7 +73,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <CardTitle className="text-xl">{metric.name}</CardTitle>
-              <MetricLabels metric={metric} />
+              {!isMobile && <MetricLabels metric={metric} />}
             </div>
             <CardDescription>{metric.description}</CardDescription>
           </div>

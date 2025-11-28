@@ -50,7 +50,7 @@ export default function ValueSelect({
       onValueChange={(val) => handleChange(metric.id, Number(val))}
     >
       <Select.Trigger
-        className="inline-flex items-center justify-between rounded-md border border-primary/50 px-3 py-2 w-full"
+        className="inline-flex items-center justify-between rounded-md border border-primary/50 px-3 py-1 w-full"
         aria-label={`select-${metric.name}`}
       >
         <Select.Value placeholder={`Select ${metric.name}`} />

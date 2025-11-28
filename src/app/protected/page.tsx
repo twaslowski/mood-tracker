@@ -28,7 +28,7 @@ export default async function LandingPage({
   return (
     <div className="flex flex-col items-center h-full gap-y-6 px-4 md:justify-center">
       {displaySuccess && <SuccessToast message="Entry created successfully!" />}
-      <div className="flex flex-row gap-4 items-center">
+      <div className="flex flex-row gap-4 items-center pt-8">
         <Image
           src="/images/moody-greeting-no-text.png"
           alt="moody is happy to see you!"

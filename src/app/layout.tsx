@@ -10,9 +10,20 @@ import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   metadataBase: new URL(instanceUrl()),
-  title: "mood-tracker",
-  description:
-    "A simple mood tracking app built with Next.js, Tailwind CSS, and Supabase.",
+  title: "moody",
+  description: "Your personal mental health diary",
+  icons: {
+    icon: "/favicon/favicon.ico",
+    shortcut: "/favicon/android-chrome-192x192.png",
+    apple: "/favicon/apple-touch-icon.png",
+  },
+  manifest: `/favicon/site.webmanifest`,
+  authors: [
+    {
+      name: "Tobias Waslowski",
+      url: "https://twaslowski.com",
+    },
+  ],
 };
 
 const geistSans = Geist({
