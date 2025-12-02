@@ -75,20 +75,16 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <Image
-        src="/images/moody-logo.png"
+        src="/images/pulselog.png"
         alt="mood tracker logo"
         width={150}
         height={60}
-        className="mb-4"
       />
       <h1 className="text-6xl font-bold text-primary-500 text-center mb-2">
-        moody
+        Pulselog
       </h1>
       <div className="text-xl text-primary-400 mb-8 text-center">
-        <p>Track your mood. Understand your patterns.</p>
-        <p>
-          Understand <b>yourself</b>.
-        </p>
+        <p>Track what matters to you. Not what matters to apps.</p>
       </div>
       <div className="justify-center flex space-x-2">
         <Link href="/protected">

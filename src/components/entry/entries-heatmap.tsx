@@ -103,6 +103,7 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
   );
 
   // Prepare heatmap data for the current year
+  // todo: if this is simply empty, display a message
   const heatmapData = useMemo(() => {
     const now = new Date();
     const yearStart = startOfYear(now);

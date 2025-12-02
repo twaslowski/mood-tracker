@@ -10,8 +10,8 @@ import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   metadataBase: new URL(instanceUrl()),
-  title: "moody",
-  description: "Your personal mental health diary",
+  title: "Pulselog",
+  description: "Track your mental health, your way",
   icons: {
     icon: "/favicon/favicon.ico",
     shortcut: "/favicon/android-chrome-192x192.png",
