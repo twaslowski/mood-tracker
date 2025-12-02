@@ -20,6 +20,11 @@ variable "app_domain" {
   type        = string
 }
 
+variable "zone_id" {
+  description = "Cloudflare Zone ID for the domain."
+  type        = string
+}
+
 # DNS & CERT VARS
 variable "cloudflare_api_key" {
   description = "The API key for Cloudflare."

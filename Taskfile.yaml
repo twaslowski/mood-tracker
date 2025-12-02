@@ -50,7 +50,7 @@ tasks:
         source supabase/functions/.env.{{.ENVIRONMENT}}
         curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=${SUPABASE_URL}/functions/v1/telegram-webhook"
 
-  verify:
+  build:
     desc: Run formatter, linter, and tests
     cmds:
       - pnpm run fmt

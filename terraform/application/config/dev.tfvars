@@ -1,4 +1,5 @@
 vercel_source_branch = "dev"
-app_domain           = "dev.moody.twaslowski.com"
+app_domain           = "dev.pulselog.me"
 telegram_bot_name = "@moody-qa"
 telegram_bot_url = "https://t.me/open_mood_tracker_qa_bot"
+zone_id              = "86a8c207a61ad80da2fd1616f1fac5f3"

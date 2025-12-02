@@ -1,4 +1,5 @@
-app_domain           = "moody.twaslowski.com"
+app_domain           = "pulselog.me"
 vercel_source_branch = "main"
 telegram_bot_url     = "https://t.me/open_mood_tracker_bot"
 telegram_bot_name    = "@open_mood_tracker_bot"
+zone_id              = "86a8c207a61ad80da2fd1616f1fac5f3"

@@ -80,11 +80,11 @@ port = 54324
 
 [auth]
 enabled = true
-site_url = "https://moody.twaslowski.com"
+site_url = "https://pulselog.me"
 additional_redirect_urls = [
     "http://localhost:3000/",
-    "https://moody.twaslowski.com",
-    "https://*.moody.twaslowski.com"
+    "https://pulselog.me",
+    "https://*.pulselog.me"
 ]
 
 jwt_expiry = 3600
