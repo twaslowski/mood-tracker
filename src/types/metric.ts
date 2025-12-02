@@ -11,8 +11,8 @@ export const MetricSchema = z.object({
   creation_timestamp: z.string(),
   update_timestamp: z.string(),
   metric_type: MetricType,
-  min_value: z.number().nullable(),
-  max_value: z.number().nullable(),
+  min_value: z.number(),
+  max_value: z.number(),
 });
 
 export const deriveHumanReadableMetricType = (metricType: MetricType) => {

@@ -68,6 +68,16 @@ export const createMetric = async (metricData: {
   const supabase = await createClient();
   const userId = await getUserId(supabase);
 
+  let min_value = metricData.min_value;
+  let max_value = metricData.max_value;
+
+  if (metricData.min_value === null) {
+    min_value = Math.min(...Object.values(metricData.labels));
+  }
+  if (metricData.max_value === null) {
+    max_value = Math.max(...Object.values(metricData.labels));
+  }
+
   const { data, error } = await supabase
     .from("metric")
     .insert({
@@ -75,8 +85,8 @@ export const createMetric = async (metricData: {
       description: metricData.description,
       metric_type: metricData.metric_type,
       labels: metricData.labels,
-      min_value: metricData.min_value,
-      max_value: metricData.max_value,
+      min_value: min_value,
+      max_value: max_value,
       owner_id: userId,
       creation_timestamp: new Date().toISOString(),
       update_timestamp: new Date().toISOString(),
