@@ -10,6 +10,8 @@ import { AdditionalMetricPicker } from "@/components/entry/creation/additional-m
 import { Metric } from "@/types/metric.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { XIcon } from "lucide-react";
+import { Label } from "@/components/ui/label.tsx";
+import { Input } from "@/components/ui/input.tsx";
 
 interface CreateEntryFormProps {
   trackedMetrics: MetricTracking[];
@@ -25,6 +27,7 @@ export default function EntryCreationForm({
     Record<string, number>
   >({});
   const [additionalMetrics, setAdditionalMetrics] = useState<Metric[]>([]);
+  const [comment, setComment] = useState("");
 
   // Preselect baseline values by default
   useEffect(() => {
@@ -129,8 +132,21 @@ export default function EntryCreationForm({
         }}
       />
 
+      <div>
+        <Label htmlFor="entry-comment">Comments</Label>
+        <Input
+          id="entry-comment"
+          type="text"
+          placeholder="Do you have any notes or thoughts?"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          style={{ minHeight: 48 }}
+        />
+      </div>
+
       <SubmitButton
         values={entryValues}
+        comment={comment}
         recorded_at={recordedAt}
         disabled={!isFormValid}
       />

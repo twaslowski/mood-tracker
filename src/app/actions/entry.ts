@@ -34,6 +34,7 @@ export const createEntry = async (
     .insert({
       user_id: userId,
       recorded_at: createEntryInput.recorded_at,
+      comment: createEntryInput.comment,
     })
     .select("id")
     .single();

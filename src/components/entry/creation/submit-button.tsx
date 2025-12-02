@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
   values: EntryValue[];
+  comment?: string;
   recorded_at: string;
   disabled?: boolean;
 }
 
 export default function SubmitButton({
   values,
+  comment,
   recorded_at,
   disabled,
 }: SubmitButtonProps) {
@@ -23,10 +25,10 @@ export default function SubmitButton({
 
   const handleSubmit = async () => {
     try {
-      await createEntry({ values, recorded_at });
+      await createEntry({ comment, values, recorded_at });
       router.push("/protected?success=true");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Failed to create entry. Please try again.");
     }
   };

@@ -10,10 +10,10 @@ import { CheckIcon, TrashIcon } from "lucide-react";
 import { deleteEntry } from "@/app/actions/entry";
 import toast from "react-hot-toast";
 import { extractErrorMessage } from "@/lib/utils";
+import { EntryComment } from "@/components/entry/comment.tsx";
 
 export function Entry({ entry }: { entry: Entry }) {
-  const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDateTime = (date: Date) => {
     return date.toLocaleString("en-US", {
       year: "numeric",
       month: "short",
@@ -77,6 +77,7 @@ export function Entry({ entry }: { entry: Entry }) {
                   </span>
                 </Badge>
               ))}
+              {entry.comment && <EntryComment comment={entry.comment} />}
             </div>
             {entry.values.length === 0 && (
               <p className="text-sm text-muted-foreground italic">

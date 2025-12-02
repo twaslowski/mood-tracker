@@ -29,7 +29,7 @@ export default function Home() {
           refresh_token: refreshToken || "",
         });
 
-        console.log(error);
+        console.error(error);
 
         if (!error) {
           window.history.replaceState(null, "", window.location.pathname);

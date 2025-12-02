@@ -28,11 +28,12 @@ export default async function InsightsPage() {
           </TabsList>
 
           <TabsContent value="charts" className="space-y-4">
+            {/* todo: refactor the EntriesChart to also get rid of trackingData */}
             <EntriesChart entries={entries} trackingData={trackedMetrics} />
           </TabsContent>
 
           <TabsContent value="heatmap" className="space-y-4">
-            <EntriesHeatmap entries={entries} trackingData={trackedMetrics} />
+            <EntriesHeatmap entries={entries} />
           </TabsContent>
 
           <TabsContent value="entries" className="space-y-4">

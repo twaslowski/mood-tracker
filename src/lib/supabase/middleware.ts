@@ -42,7 +42,7 @@ export async function updateSession(request: NextRequest) {
     const { data } = await supabase.auth.getClaims();
     user = data?.claims;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   if (

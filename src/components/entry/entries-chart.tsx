@@ -73,10 +73,9 @@ function prepareChartData(
   // Group by day and metric, averaging multiple values per day
   const dailyData = new Map<string, Map<string, number[]>>();
   entries.forEach((entry) => {
-    const entryDate = new Date(entry.recorded_at);
-    if (entryDate < monthStart || entryDate > monthEnd) return;
+    if (entry.recorded_at < monthStart || entry.recorded_at > monthEnd) return;
 
-    const dateKey = format(entryDate, "yyyy-MM-dd");
+    const dateKey = format(entry.recorded_at, "yyyy-MM-dd");
     if (!dailyData.has(dateKey)) {
       dailyData.set(dateKey, new Map());
     }

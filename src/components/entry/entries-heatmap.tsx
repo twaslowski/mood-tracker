@@ -7,19 +7,21 @@ import {
   eachDayOfInterval,
   isSameDay,
 } from "date-fns";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Entry } from "@/types/entry";
-import { MetricTracking } from "@/types/tracking";
+import { Metric } from "@/types/metric.ts";
+import { EntryValue } from "@/types/entry-value.ts";
 
 interface HeatmapProps {
   entries: Entry[];
-  trackingData: MetricTracking[];
 }
 
+// todo: DayData should be supplied with a comment from Entry
 interface DayData {
   date: Date;
+  comment?: string;
   value: number | null;
-  moodMetric: {
+  bounds: {
     minValue: number;
     maxValue: number;
   } | null;
@@ -55,14 +57,50 @@ function getMoodColor(
   }
 }
 
-export default function EntriesHeatmap({
-  entries,
-  trackingData,
-}: HeatmapProps) {
-  // Find the Mood metric
+const extractAvailableMetrics = (entries: Entry[]): Map<string, Metric> => {
+  const metrics = new Map<string, Metric>();
+  entries.forEach((entry) => {
+    entry.values.forEach((value) => {
+      metrics.set(value.metric.name.toLowerCase(), value.metric);
+    });
+  });
+  return metrics;
+};
+
+const allValues = (
+  entries: Entry[],
+  metricId: string,
+): Map<string, EntryValue> => {
+  const valuesMap = new Map<string, EntryValue>();
+  entries.forEach((entry) => {
+    entry.values.forEach((value) => {
+      if (value.metric.id === metricId) {
+        const dateKey = `${entry.recorded_at.getFullYear()}-${entry.recorded_at.getMonth()}-${entry.recorded_at.getDate()}`;
+        valuesMap.set(dateKey, value);
+      }
+    });
+  });
+  return valuesMap;
+};
+
+export default function EntriesHeatmap({ entries }: HeatmapProps) {
+  const availableMetrics: Map<string, Metric> = useMemo(
+    () => extractAvailableMetrics(entries),
+    [entries],
+  );
+
   const moodMetric = useMemo(() => {
-    return trackingData.find((td) => td.metric.name.toLowerCase() === "mood");
-  }, [trackingData]);
+    return availableMetrics.get("mood");
+  }, [availableMetrics]);
+
+  const [selectedMetric] = useState<Metric>(
+    moodMetric ?? availableMetrics.values().toArray()[0],
+  );
+
+  const values = useMemo(
+    () => allValues(entries, selectedMetric.id),
+    [entries],
+  );
 
   // Prepare heatmap data for the current year
   const heatmapData = useMemo(() => {
@@ -71,44 +109,21 @@ export default function EntriesHeatmap({
     const yearEnd = endOfYear(now);
     const allDays = eachDayOfInterval({ start: yearStart, end: yearEnd });
 
-    // Create a map of date to mood value
-    const dateToMood = new Map<string, number>();
-
-    if (moodMetric) {
-      entries.forEach((entry) => {
-        const moodValue = entry.values.find(
-          (v) => v.metric_id === moodMetric.metric.id,
-        );
-        if (moodValue) {
-          const dateKey = format(new Date(entry.recorded_at), "yyyy-MM-dd");
-          // If multiple entries per day, take the average
-          if (dateToMood.has(dateKey)) {
-            const existing = dateToMood.get(dateKey)!;
-            dateToMood.set(dateKey, (existing + moodValue.value) / 2);
-          } else {
-            dateToMood.set(dateKey, moodValue.value);
-          }
-        }
-      });
-    }
-
-    // Group days by month
     const monthsData: DayData[][] = [];
     for (let month = 0; month < 12; month++) {
       const monthDays: DayData[] = [];
       allDays.forEach((day) => {
         if (day.getMonth() === month) {
-          const dateKey = format(day, "yyyy-MM-dd");
-          const value = dateToMood.get(dateKey) ?? null;
+          const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+          const value = values.get(dayKey) ?? null;
+          // todo: minValue and maxValue should be made NOT NULL, can be derived from labels upon creation
           monthDays.push({
             date: day,
-            value,
-            moodMetric: moodMetric
-              ? {
-                  minValue: moodMetric.metric.min_value ?? 0,
-                  maxValue: moodMetric.metric.max_value ?? 10,
-                }
-              : null,
+            value: value ? value.value : null,
+            bounds: {
+              minValue: selectedMetric.min_value ?? 0,
+              maxValue: selectedMetric.max_value ?? 10,
+            },
           });
         }
       });
@@ -116,25 +131,37 @@ export default function EntriesHeatmap({
     }
 
     return monthsData;
-  }, [entries, moodMetric]);
-
-  if (!moodMetric) {
-    return (
-      <div className="w-full p-4 text-center text-muted-foreground">
-        No &quot;Mood&quot; metric found. Please track a metric named
-        &quot;Mood&quot; to use this chart.
-      </div>
-    );
-  }
+  }, [values, selectedMetric]);
 
   const today = new Date();
+  console.log(values);
 
   return (
     <div className="w-full overflow-x-auto">
       <div className="min-w-full p-4">
-        <h3 className="text-lg font-semibold mb-4 text-center">
-          {format(today, "yyyy")} Mood Calendar
-        </h3>
+        <div>
+          {/*<Button*/}
+          {/*  variant="ghost"*/}
+          {/*  onClick={() => {}}*/}
+          {/*  disabled={true}*/}
+          {/*  className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed`}*/}
+          {/*  aria-label="previous-year"*/}
+          {/*>*/}
+          {/*  <ChevronLeft />*/}
+          {/*</Button>*/}
+          <h3 className="text-lg font-semibold mb-4 text-center">
+            {format(today, "yyyy")} Mood Calendar
+          </h3>
+          {/*<Button*/}
+          {/*  variant="ghost"*/}
+          {/*  onClick={() => {}}*/}
+          {/*  disabled={true}*/}
+          {/*  className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed`}*/}
+          {/*  aria-label="previous-year"*/}
+          {/*>*/}
+          {/*  <ChevronRight />*/}
+          {/*</Button>*/}
+        </div>
 
         {/* Legend */}
         <div className="flex items-center justify-center gap-4 mb-4 text-sm">
@@ -157,6 +184,13 @@ export default function EntriesHeatmap({
               style={{ backgroundColor: "rgb(255, 100, 100)" }}
             />
             <span>Manic</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className="w-4 h-4 rounded"
+              style={{ backgroundColor: "rgb(255, 255, 255)" }}
+            />
+            <span>No Data</span>
           </div>
         </div>
 
@@ -199,11 +233,11 @@ export default function EntriesHeatmap({
                     if (isFutureDay) {
                       backgroundColor = "#f9fafb";
                       borderColor = "#e5e7eb";
-                    } else if (dayData.value !== null && dayData.moodMetric) {
+                    } else if (dayData.value !== null && dayData.bounds) {
                       backgroundColor = getMoodColor(
                         dayData.value,
-                        dayData.moodMetric.minValue,
-                        dayData.moodMetric.maxValue,
+                        dayData.bounds.minValue,
+                        dayData.bounds.maxValue,
                       );
                       borderColor = "#d1d5db";
                     }
