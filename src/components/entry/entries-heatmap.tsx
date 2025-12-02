@@ -99,7 +99,7 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
 
   const values = useMemo(
     () => allValues(entries, selectedMetric.id),
-    [entries],
+    [entries, selectedMetric],
   );
 
   // Prepare heatmap data for the current year

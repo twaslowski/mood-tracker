@@ -57,6 +57,33 @@ export const updateBaseline = async (metricId: string, baseline: number) => {
   revalidatePath("/protected/metrics");
 };
 
+function extractBounds(metricData: {
+  labels: Record<string, number>;
+  min_value: number | null;
+  max_value: number | null;
+}) {
+  let min_value = metricData.min_value;
+  let max_value = metricData.max_value;
+
+  const labels_min = Math.min(...Object.values(metricData.labels));
+  const labels_max = Math.max(...Object.values(metricData.labels));
+
+  if (labels_min && min_value !== null && labels_min < min_value) {
+    throw new Error("Labels contain values below the specified min_value");
+  }
+  if (labels_max && max_value !== null && labels_max > max_value) {
+    throw new Error("Labels contain values above the specified max_value");
+  }
+
+  if (metricData.min_value === null) {
+    min_value = labels_min;
+  }
+  if (metricData.max_value === null) {
+    max_value = labels_max;
+  }
+  return { min_value, max_value };
+}
+
 export const createMetric = async (metricData: {
   name: string;
   description: string;
@@ -67,16 +94,7 @@ export const createMetric = async (metricData: {
 }) => {
   const supabase = await createClient();
   const userId = await getUserId(supabase);
-
-  let min_value = metricData.min_value;
-  let max_value = metricData.max_value;
-
-  if (metricData.min_value === null) {
-    min_value = Math.min(...Object.values(metricData.labels));
-  }
-  if (metricData.max_value === null) {
-    max_value = Math.max(...Object.values(metricData.labels));
-  }
+  const { min_value, max_value } = extractBounds(metricData);
 
   const { data, error } = await supabase
     .from("metric")
@@ -116,6 +134,8 @@ export const updateMetric = async (
   const supabase = await createClient();
   const userId = await getUserId(supabase);
 
+  const { min_value, max_value } = extractBounds(metricData);
+
   const { data, error } = await supabase
     .from("metric")
     .update({
@@ -123,8 +143,8 @@ export const updateMetric = async (
       description: metricData.description,
       metric_type: metricData.metric_type,
       labels: metricData.labels,
-      min_value: metricData.min_value,
-      max_value: metricData.max_value,
+      min_value: min_value,
+      max_value: max_value,
       update_timestamp: new Date().toISOString(),
     })
     .eq("id", metricId)

@@ -333,8 +333,8 @@ export default function MetricCreationDialog({
                     description: formData.description,
                     metric_type: "event",
                     labels: formData.labels,
-                    min_value: null,
-                    max_value: null,
+                    min_value: 0,
+                    max_value: 1,
                   });
                 } else {
                   await createMetric({
@@ -342,8 +342,8 @@ export default function MetricCreationDialog({
                     description: formData.description,
                     metric_type: "event",
                     labels: {},
-                    min_value: null,
-                    max_value: null,
+                    min_value: 0,
+                    max_value: 1,
                   });
                 }
               } catch (error) {

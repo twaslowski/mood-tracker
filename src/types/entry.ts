@@ -17,6 +17,7 @@ export const EntrySchema = z.object({
 
 export const CreateEntryInputSchema = z.object({
   recorded_at: isoDateString,
+  // todo: should this be optional or nullable?
   comment: z.string().optional(),
   values: z.array(
     z.object({
@@ -31,6 +32,7 @@ export const DBEntrySchema = z
   .object({
     id: z.number(),
     user_id: z.string(),
+    // todo: should this be optional or nullable?
     comment: z.string().optional(),
     recorded_at: isoDateString.pipe(z.coerce.date()),
     creation_timestamp: isoDateString.pipe(z.coerce.date()),
