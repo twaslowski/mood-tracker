@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
   values: EntryValue[];
-  comment?: string;
+  comment: string;
   recorded_at: string;
   disabled?: boolean;
 }

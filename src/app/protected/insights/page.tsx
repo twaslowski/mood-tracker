@@ -6,12 +6,49 @@ import EntriesChart from "@/components/entry/entries-chart";
 import EntriesHeatmap from "@/components/entry/entries-heatmap";
 import { getTrackedMetrics } from "@/lib/service/metric.ts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card.tsx";
 
 export default async function InsightsPage() {
   const [entries, trackedMetrics] = await Promise.all([
     getEntriesByUser(),
     getTrackedMetrics(),
   ]);
+
+  if (entries.length === 0) {
+    return (
+      <div className="flex flex-col p-4 h-full">
+        <div className="space-y-6">
+          <div>
+            <BackNav href="/protected" />
+          </div>
+          <Card className="max-w-2xl flex flex-col items-center justify-center text-center mx-auto">
+            <CardHeader>
+              <CardTitle className="text-xl">No entries found.</CardTitle>
+              <CardDescription>
+                <p>
+                  Start logging your moods and metrics to see insights here!
+                </p>
+                <p>
+                  Create your first entry:{" "}
+                  <a
+                    href="/protected/new-entry"
+                    className="text-blue-500 underline"
+                  >
+                    New Entry
+                  </a>
+                </p>
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col p-4 h-full">
@@ -38,13 +75,9 @@ export default async function InsightsPage() {
 
           <TabsContent value="entries" className="space-y-4">
             <div className="grid gap-4">
-              {entries.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
-                  No entries yet. Create your first entry to see it here.
-                </p>
-              ) : (
-                entries.map((entry) => <Entry key={entry.id} entry={entry} />)
-              )}
+              {entries.map((entry) => (
+                <Entry key={entry.id} entry={entry} />
+              ))}
             </div>
           </TabsContent>
         </Tabs>

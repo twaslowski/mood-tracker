@@ -9,7 +9,7 @@ export const EntrySchema = z.object({
   id: z.number(),
   user_id: z.string(),
   recorded_at: isoDateString.pipe(z.coerce.date()),
-  comment: z.string().optional(),
+  comment: z.string(),
   creation_timestamp: isoDateString.pipe(z.coerce.date()),
   updated_timestamp: isoDateString.pipe(z.coerce.date()),
   values: z.array(EntryValueWithMetricSchema),
@@ -17,8 +17,7 @@ export const EntrySchema = z.object({
 
 export const CreateEntryInputSchema = z.object({
   recorded_at: isoDateString,
-  // todo: should this be optional or nullable?
-  comment: z.string().optional(),
+  comment: z.string(),
   values: z.array(
     z.object({
       metric_id: z.string(),
@@ -32,8 +31,7 @@ export const DBEntrySchema = z
   .object({
     id: z.number(),
     user_id: z.string(),
-    // todo: should this be optional or nullable?
-    comment: z.string().optional(),
+    comment: z.string(),
     recorded_at: isoDateString.pipe(z.coerce.date()),
     creation_timestamp: isoDateString.pipe(z.coerce.date()),
     updated_timestamp: isoDateString.pipe(z.coerce.date()),
