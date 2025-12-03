@@ -75,10 +75,11 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <Image
-        src="/images/pulselog.png"
-        alt="mood tracker logo"
+        src="/images/moody-logo.png"
+        alt="pulselog logo"
         width={150}
         height={60}
+        className="pb-4"
       />
       <h1 className="text-6xl font-bold text-primary-500 text-center mb-2">
         Pulselog
