@@ -36,3 +36,17 @@ resource "vercel_project_environment_variable" "telegram_bot_url" {
   value      = var.telegram_bot_url
   target     = [local.vercel_environment]
 }
+
+resource "vercel_project_environment_variable" "supabase_url" {
+  project_id = var.vercel_project_id
+  key        = "NEXT_PUBLIC_SUPABASE_URL"
+  value      = var.supabase_url
+  target     = [local.vercel_environment]
+}
+
+resource "vercel_project_environment_variable" "supabase_publishable_key" {
+  project_id = var.vercel_project_id
+  key        = "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+  value      = var.supabase_publishable_key
+  target     = [local.vercel_environment]
+}

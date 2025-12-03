@@ -1,9 +1,16 @@
 resource "supabase_project" "production" {
-  organization_id   = "znyzmuexwtcdboygolnu"
+  organization_id   = var.supabase_organization_id
   name              = "mood-tracker"
-  database_password = "tf-example"
+  database_password = random_password.password.result
   region            = "eu-west-1"
+
   lifecycle {
     ignore_changes = [database_password]
   }
+}
+
+resource "random_password" "password" {
+  length           = 32
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
 }

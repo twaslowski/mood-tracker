@@ -8,11 +8,6 @@ resource "acme_registration" "account" {
   email_address   = "contact@twaslowski.com"
 }
 
-moved {
-  from = acme_certificate.certificate
-  to   = acme_certificate.app_domain_certificate
-}
-
 resource "acme_certificate" "app_domain_certificate" {
   account_key_pem = acme_registration.account.account_key_pem
   common_name     = cloudflare_dns_record.app_domain.name

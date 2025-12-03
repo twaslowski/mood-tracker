@@ -43,7 +43,7 @@ tasks:
       ENVIRONMENT: "{{index .MATCH 0}}"
     cmds:
       - task: "apply:{{.ENVIRONMENT}}"
-      - supabase secrets set --env-file supabase/functions/.env.prod
+      - supabase secrets set --env-file supabase/functions/.env.{{.ENVIRONMENT}}
       - supabase functions deploy telegram-webhook --no-verify-jwt
       - supabase functions deploy telegram-auth --no-verify-jwt
       - |

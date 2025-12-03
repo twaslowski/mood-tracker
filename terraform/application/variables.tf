@@ -41,3 +41,13 @@ variable "telegram_bot_url" {
   description = "The Telegram bot URL."
   type        = string
 }
+
+variable "supabase_publishable_key" {
+  description = "The Supabase publishable key."
+  type        = string
+}
+
+variable "supabase_url" {
+  description = "The Supabase project URL."
+  type        = string
+}

@@ -4,6 +4,11 @@ variable "supabase_access_token" {
   sensitive   = true
 }
 
+variable "supabase_organization_id" {
+  description = "The organization ID for Supabase."
+  type        = string
+}
+
 variable "vercel_api_key" {
   description = "The API key for Vercel."
   type        = string
