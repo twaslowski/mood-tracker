@@ -1,5 +1,5 @@
 import { Entry as EntryType } from "@/types/entry";
-import { Entry } from "@/components/entry/entry";
+import { Entry } from "./entry";
 import React from "react";
 
 export default function EntriesList({ entries }: { entries: EntryType[] }) {

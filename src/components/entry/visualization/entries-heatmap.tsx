@@ -178,8 +178,8 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
   const today = new Date();
 
   return (
-    <div className="w-full">
-      <div className="min-w-full max-w-2xl">
+    <div className="w-full mb-8">
+      <div className="mx-auto max-w-2xl">
         <div className="flex items-center justify-center gap-3 mb-6">
           <Button
             variant="ghost"

@@ -1,17 +1,14 @@
 import { getEntriesByUser } from "@/lib/service/entry.ts";
 import React from "react";
 import { BackNav } from "@/components/back-nav";
-import EntriesChart from "@/components/entry/entries-chart";
-import EntriesHeatmap from "@/components/entry/entries-heatmap";
 import { getTrackedMetrics } from "@/lib/service/metric.ts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardDescription,
 } from "@/components/ui/card.tsx";
-import EntriesList from "@/components/entry/entries-list.tsx";
+import InsightsViewer from "@/components/entry/visualization/insights-viewer";
 
 export default async function InsightsPage() {
   const [entries, trackedMetrics] = await Promise.all([
@@ -57,26 +54,7 @@ export default async function InsightsPage() {
           <BackNav href="/protected" />
         </div>
 
-        <Tabs defaultValue={"heatmap"} className="w-full">
-          <TabsList className="grid grid-cols-3 md:max-w-xl mx-auto justify-center mb-4">
-            <TabsTrigger value="charts">Charts</TabsTrigger>
-            <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
-            <TabsTrigger value="entries">Entries</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="charts" className="space-y-4">
-            {/* todo: refactor the EntriesChart to also get rid of trackingData */}
-            <EntriesChart entries={entries} trackingData={trackedMetrics} />
-          </TabsContent>
-
-          <TabsContent value="heatmap" className="space-y-4">
-            <EntriesHeatmap entries={entries} />
-          </TabsContent>
-
-          <TabsContent value="entries" className="space-y-4">
-            <EntriesList entries={entries} />
-          </TabsContent>
-        </Tabs>
+        <InsightsViewer entries={entries} trackingData={trackedMetrics} />
       </div>
     </div>
   );
