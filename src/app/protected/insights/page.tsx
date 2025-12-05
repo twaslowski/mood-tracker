@@ -1,4 +1,3 @@
-import { Entry } from "@/components/entry/entry";
 import { getEntriesByUser } from "@/lib/service/entry.ts";
 import React from "react";
 import { BackNav } from "@/components/back-nav";
@@ -12,6 +11,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card.tsx";
+import EntriesList from "@/components/entry/entries-list.tsx";
 
 export default async function InsightsPage() {
   const [entries, trackedMetrics] = await Promise.all([
@@ -57,8 +57,8 @@ export default async function InsightsPage() {
           <BackNav href="/protected" />
         </div>
 
-        <Tabs defaultValue="charts" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3 bg-white">
+        <Tabs defaultValue={"heatmap"} className="w-full">
+          <TabsList className="grid grid-cols-3 md:max-w-xl mx-auto justify-center mb-4">
             <TabsTrigger value="charts">Charts</TabsTrigger>
             <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
             <TabsTrigger value="entries">Entries</TabsTrigger>
@@ -74,11 +74,7 @@ export default async function InsightsPage() {
           </TabsContent>
 
           <TabsContent value="entries" className="space-y-4">
-            <div className="grid gap-4">
-              {entries.map((entry) => (
-                <Entry key={entry.id} entry={entry} />
-              ))}
-            </div>
+            <EntriesList entries={entries} />
           </TabsContent>
         </Tabs>
       </div>

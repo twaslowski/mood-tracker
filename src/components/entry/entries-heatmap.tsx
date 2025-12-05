@@ -7,10 +7,12 @@ import {
   isSameDay,
   startOfYear,
 } from "date-fns";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Entry } from "@/types/entry";
 import { Metric } from "@/types/metric.ts";
 import { EntryValue } from "@/types/entry-value.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface HeatmapProps {
   entries: Entry[];
@@ -84,6 +86,14 @@ const allValues = (
 };
 
 export default function EntriesHeatmap({ entries }: HeatmapProps) {
+  // Extract available years from entries
+  const availableYears = useMemo(() => {
+    const years = new Set(
+      entries.map((e) => e.recorded_at.getFullYear().toString()),
+    );
+    return Array.from(years).sort();
+  }, [entries]);
+
   const availableMetrics: Map<string, Metric> = useMemo(
     () => extractAvailableMetrics(entries),
     [entries],
@@ -97,17 +107,28 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
     moodMetric ?? availableMetrics.values().toArray()[0],
   );
 
+  const [selectedYear, setSelectedYear] = useState<string>(
+    availableYears[availableYears.length - 1] ||
+      new Date().getFullYear().toString(),
+  );
+
+  // Update selected year when available years change
+  useEffect(() => {
+    if (availableYears.length > 0 && !availableYears.includes(selectedYear)) {
+      setSelectedYear(availableYears[availableYears.length - 1]);
+    }
+  }, [availableYears, selectedYear]);
+
   const values = useMemo(
     () => allValues(entries, selectedMetric.id),
     [entries, selectedMetric],
   );
 
-  // Prepare heatmap data for the current year
-  // todo: if this is simply empty, display a message
+  // Prepare heatmap data for the selected year
   const heatmapData = useMemo(() => {
-    const now = new Date();
-    const yearStart = startOfYear(now);
-    const yearEnd = endOfYear(now);
+    const year = parseInt(selectedYear);
+    const yearStart = startOfYear(new Date(year, 0, 1));
+    const yearEnd = endOfYear(new Date(year, 0, 1));
     const allDays = eachDayOfInterval({ start: yearStart, end: yearEnd });
 
     const monthsData: DayData[][] = [];
@@ -117,13 +138,12 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
         if (day.getMonth() === month) {
           const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
           const value = values.get(dayKey) ?? null;
-          // todo: minValue and maxValue should be made NOT NULL, can be derived from labels upon creation
           monthDays.push({
             date: day,
             value: value ? value.value : null,
             bounds: {
-              minValue: selectedMetric.min_value ?? 0,
-              maxValue: selectedMetric.max_value ?? 10,
+              minValue: selectedMetric.min_value,
+              maxValue: selectedMetric.max_value,
             },
           });
         }
@@ -132,36 +152,64 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
     }
 
     return monthsData;
-  }, [values, selectedMetric]);
+  }, [values, selectedMetric, selectedYear]);
+
+  // Year navigation
+  const currentYearIndex = useMemo(
+    () => availableYears.indexOf(selectedYear),
+    [availableYears, selectedYear],
+  );
+
+  const previousYear = useCallback(() => {
+    if (currentYearIndex > 0) {
+      setSelectedYear(availableYears[currentYearIndex - 1]);
+    }
+  }, [availableYears, currentYearIndex]);
+
+  const nextYear = useCallback(() => {
+    if (currentYearIndex < availableYears.length - 1) {
+      setSelectedYear(availableYears[currentYearIndex + 1]);
+    }
+  }, [availableYears, currentYearIndex]);
+
+  const isPreviousYearAvailable = currentYearIndex > 0;
+  const isNextYearAvailable = currentYearIndex < availableYears.length - 1;
 
   const today = new Date();
-  console.log(values);
 
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-full p-4">
-        <div>
-          {/*<Button*/}
-          {/*  variant="ghost"*/}
-          {/*  onClick={() => {}}*/}
-          {/*  disabled={true}*/}
-          {/*  className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed`}*/}
-          {/*  aria-label="previous-year"*/}
-          {/*>*/}
-          {/*  <ChevronLeft />*/}
-          {/*</Button>*/}
-          <h3 className="text-lg font-semibold mb-4 text-center">
-            {format(today, "yyyy")} Mood Calendar
+    <div className="w-full">
+      <div className="min-w-full max-w-2xl">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Button
+            variant="ghost"
+            onClick={previousYear}
+            disabled={!isPreviousYearAvailable}
+            className={`p-2 rounded-full border ${
+              isPreviousYearAvailable
+                ? "border-gray-300 hover:bg-gray-100 text-gray-700"
+                : "border-gray-200 text-gray-300 cursor-not-allowed"
+            }`}
+            aria-label="Previous year"
+          >
+            <ChevronLeft />
+          </Button>
+          <h3 className="text-lg font-semibold min-w-[120px] text-center">
+            {selectedYear}
           </h3>
-          {/*<Button*/}
-          {/*  variant="ghost"*/}
-          {/*  onClick={() => {}}*/}
-          {/*  disabled={true}*/}
-          {/*  className={`p-2 rounded-full border border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed`}*/}
-          {/*  aria-label="previous-year"*/}
-          {/*>*/}
-          {/*  <ChevronRight />*/}
-          {/*</Button>*/}
+          <Button
+            variant="ghost"
+            onClick={nextYear}
+            disabled={!isNextYearAvailable}
+            className={`p-2 rounded-full border ${
+              isNextYearAvailable
+                ? "border-gray-300 hover:bg-gray-100 text-gray-700"
+                : "border-gray-200 text-gray-300 cursor-not-allowed"
+            }`}
+            aria-label="Next year"
+          >
+            <ChevronRight />
+          </Button>
         </div>
 
         {/* Legend */}

@@ -53,16 +53,11 @@ export function Entry({ entry }: { entry: Entry }) {
   return (
     <Card className="max-w-xl">
       <CardHeader className="pb-4">
-        <CardTitle className="text-lg">
-          {formatDateTime(entry.recorded_at)}
-        </CardTitle>
+        <CardTitle>{formatDateTime(entry.recorded_at)}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-start">
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-muted-foreground mb-3">
-              Recorded Values
-            </h4>
             <div className="flex flex-wrap gap-2">
               {entry.values.map((value: EntryValueWithMetric, index) => (
                 <Badge
@@ -85,7 +80,11 @@ export function Entry({ entry }: { entry: Entry }) {
               </p>
             )}
           </div>
-          <Button variant="ghost" size="lg" onClick={onDelete}>
+          <Button
+            variant="ghost"
+            className="h-8 rounded-md px-5 text-xs"
+            onClick={onDelete}
+          >
             <TrashIcon color="red" />
           </Button>
         </div>
