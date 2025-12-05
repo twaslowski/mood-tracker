@@ -54,7 +54,7 @@ You may have to adjust the `.env.local` file, which contains the publishable key
 
 ## Testing & Building
 
-Running `task build` formats, lints, tests and builds Pulselog. 
+Running `task build` formats, lints, tests and builds Pulselog.
 It is essentially your whole CI workflow in a single command.
 
 ## Configuring Supabase & Vercel

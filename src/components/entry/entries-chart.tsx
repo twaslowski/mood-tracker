@@ -135,12 +135,12 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
     }));
   }, [trackingData]);
 
-  // State - only one active metric at a time
+  // State - support multiple active metrics (up to 2)
   const [selectedMonth, setSelectedMonth] = useState<string>(
     availableMonths[availableMonths.length - 1] || "",
   );
-  const [activeMetricId, setActiveMetricId] = useState<string | null>(
-    metricsConfig[0]?.metricId || null,
+  const [activeMetricIds, setActiveMetricIds] = useState<string[]>(
+    metricsConfig[0]?.metricId ? [metricsConfig[0].metricId] : [],
   );
 
   // Update selected month when available months change
@@ -153,12 +153,12 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
     }
   }, [availableMonths, selectedMonth]);
 
-  // Update active metric when metrics config changes
+  // Update active metrics when metrics config changes
   useEffect(() => {
-    if (metricsConfig.length > 0 && !activeMetricId) {
-      setActiveMetricId(metricsConfig[0].metricId);
+    if (metricsConfig.length > 0 && activeMetricIds.length === 0) {
+      setActiveMetricIds([metricsConfig[0].metricId]);
     }
-  }, [metricsConfig, activeMetricId]);
+  }, [metricsConfig, activeMetricIds]);
 
   // Prepare chart data
   const chartData = useMemo(() => {
@@ -186,49 +186,63 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
   const isPreviousMonthAvailable = currentMonthIndex > 0;
   const isNextMonthAvailable = currentMonthIndex < availableMonths.length - 1;
 
-  // Toggle metric - only one can be active
-  const selectMetric = useCallback((metricId: string) => {
-    setActiveMetricId(metricId);
+  // Toggle metric - up to 2 can be active
+  const toggleMetric = useCallback((metricId: string) => {
+    setActiveMetricIds((prev) => {
+      if (prev.includes(metricId)) {
+        // Deselect if already selected (but keep at least one)
+        return prev.length > 1 ? prev.filter((id) => id !== metricId) : prev;
+      } else {
+        // Add if less than 2 are selected
+        return prev.length < 2 ? [...prev, metricId] : [prev[1], metricId];
+      }
+    });
   }, []);
 
-  // Get the active metric configuration
-  const activeMetric = useMemo(
-    () => metricsConfig.find((m) => m.metricId === activeMetricId),
-    [metricsConfig, activeMetricId],
+  // Get the active metric configurations
+  const activeMetrics = useMemo(
+    () => metricsConfig.filter((m) => activeMetricIds.includes(m.metricId)),
+    [metricsConfig, activeMetricIds],
   );
 
-  // Y-axis domain based on active metric
+  // Y-axis domain based on all active metrics
   const yAxisDomain = useMemo(() => {
-    if (!activeMetric) return [0, 10];
+    if (activeMetrics.length === 0) return [0, 10];
 
-    const padding = (activeMetric.maxValue - activeMetric.minValue) * 0.05;
-    return [activeMetric.minValue - padding, activeMetric.maxValue + padding];
-  }, [activeMetric]);
+    const allMins = activeMetrics.map((m) => m.minValue);
+    const allMaxs = activeMetrics.map((m) => m.maxValue);
+    const minValue = Math.min(...allMins);
+    const maxValue = Math.max(...allMaxs);
 
-  // Y-axis ticks for discrete metrics
+    const padding = (maxValue - minValue) * 0.05;
+    return [minValue - padding, maxValue + padding];
+  }, [activeMetrics]);
+
+  // Y-axis ticks for discrete metrics (only when single metric is active)
   const yAxisTicks = useMemo(() => {
-    if (!activeMetric || activeMetric.type !== "discrete") return undefined;
+    if (activeMetrics.length !== 1 || activeMetrics[0].type !== "discrete")
+      return undefined;
 
     // Sort labels by their numeric value
-    return Object.entries(activeMetric.labels)
+    return Object.entries(activeMetrics[0].labels)
       .sort(([, valueA], [, valueB]) => valueA - valueB)
       .map(([, value]) => value);
-  }, [activeMetric]);
+  }, [activeMetrics]);
 
-  // Y-axis tick formatter for discrete metrics
+  // Y-axis tick formatter for discrete metrics (only when single metric is active)
   const yAxisTickFormatter = useCallback(
     (value: number) => {
-      if (!activeMetric || activeMetric.type !== "discrete") {
+      if (activeMetrics.length !== 1 || activeMetrics[0].type !== "discrete") {
         return Math.round(value).toString();
       }
 
       // Find the label for this value
-      const labelEntry = Object.entries(activeMetric.labels).find(
+      const labelEntry = Object.entries(activeMetrics[0].labels).find(
         ([, val]) => val === value,
       );
       return labelEntry ? labelEntry[0] : value.toString();
     },
-    [activeMetric],
+    [activeMetrics],
   );
 
   return (
@@ -278,7 +292,7 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
             data={chartData}
-            key={activeMetricId}
+            key={activeMetricIds.join(",")}
             margin={{ top: 5, right: 30, left: 3, bottom: 5 }}
           >
             <CartesianGrid
@@ -299,9 +313,16 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
               domain={yAxisDomain}
               ticks={yAxisTicks}
               tickFormatter={yAxisTickFormatter}
-              allowDecimals={activeMetric?.type !== "discrete"}
+              allowDecimals={
+                activeMetrics.length !== 1 ||
+                activeMetrics[0]?.type !== "discrete"
+              }
               stroke="rgba(255, 255, 255, 0.7)"
-              tick={{ fill: "rgba(255, 255, 255, 0.7)" }}
+              tick={
+                activeMetricIds.length === 2
+                  ? false
+                  : { fill: "rgba(255, 255, 255, 0.7)" }
+              }
             />
             <Tooltip
               contentStyle={{
@@ -313,44 +334,47 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
               labelStyle={{ color: "white" }}
             />
 
-            {/* Min/max range for active metric */}
-            {activeMetric && (
+            {/* Min/max range and baseline for each active metric */}
+            {activeMetrics.map((metric) => (
               <ReferenceArea
-                y1={activeMetric.minValue}
-                y2={activeMetric.maxValue}
-                fill={activeMetric.color}
+                key={`area-${metric.metricId}`}
+                y1={metric.minValue}
+                y2={metric.maxValue}
+                fill={metric.color}
                 fillOpacity={0.1}
                 stroke="none"
               />
-            )}
+            ))}
 
-            {/* Baseline reference line */}
-            {activeMetric && (
+            {activeMetrics.map((metric, index) => (
               <ReferenceLine
-                y={activeMetric.baseline}
-                stroke={activeMetric.color}
+                key={`baseline-${metric.metricId}`}
+                y={metric.baseline}
+                stroke={metric.color}
                 strokeWidth={2}
                 strokeDasharray="3 3"
                 label={{
-                  value: `${activeMetric.name} Baseline`,
+                  value: `${metric.name} Baseline`,
                   fill: "rgba(255, 255, 255, 0.7)",
-                  position: "insideTopRight",
+                  position:
+                    index === 0 ? "insideTopRight" : "insideBottomRight",
                 }}
               />
-            )}
+            ))}
 
-            {/* Active metric line */}
-            {activeMetric && (
+            {/* Lines for each active metric */}
+            {activeMetrics.map((metric) => (
               <Line
+                key={`line-${metric.metricId}`}
                 type="monotone"
-                dataKey={activeMetric.metricId}
-                stroke={activeMetric.color}
+                dataKey={metric.metricId}
+                stroke={metric.color}
                 strokeWidth={2}
                 dot={{ r: 3 }}
-                name={activeMetric.name}
+                name={metric.name}
                 connectNulls={false}
               />
-            )}
+            ))}
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -360,11 +384,11 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
         {metricsConfig.map((metric) => (
           <Button
             key={metric.metricId}
-            onClick={() => selectMetric(metric.metricId)}
+            onClick={() => toggleMetric(metric.metricId)}
             variant="outline"
             size="sm"
             className={`px-2 py-1 h-auto text-xs font-medium transition-all duration-200 ${
-              activeMetricId === metric.metricId
+              activeMetricIds.includes(metric.metricId)
                 ? "bg-white border-gray-400 text-gray-900 shadow-sm"
                 : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100"
             }`}
@@ -372,7 +396,7 @@ export default function EntriesChart({ entries, trackingData }: ChartProps) {
             <div className="flex items-center gap-1.5">
               <div
                 className={`w-2.5 h-2.5 rounded-full ${
-                  activeMetricId === metric.metricId
+                  activeMetricIds.includes(metric.metricId)
                     ? "opacity-100"
                     : "opacity-40"
                 }`}
