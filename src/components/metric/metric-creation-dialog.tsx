@@ -69,13 +69,6 @@ export const METRIC_TYPE_DEFINITIONS: MetricTypeDefinition[] = [
   //       "Best for building momentum — like days meditated or nights without screens.",
   //   icon: RepeatIcon
   // },
-  // {
-  //   type: "note",
-  //   title: "Write a reflection",
-  //   description:
-  //       "Best for thoughts, triggers, gratitude, or anything you want to jot down in your own words.",
-  //   icon: Edit3Icon
-  // }
 ];
 
 export default function MetricCreationDialog({

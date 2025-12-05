@@ -3,12 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-interface LabelEntry {
-  label: string;
-  value: string;
-}
+import { GripVertical, Trash2 } from "lucide-react";
 
 interface DiscreteMetricSpecificationProps {
   onBack: () => void;
@@ -23,98 +18,136 @@ export default function DiscreteMetricSpecification({
   isSubmitting,
   initialLabels,
 }: DiscreteMetricSpecificationProps) {
-  const [labelEntries, setLabelEntries] = useState<LabelEntry[]>(() => {
+  const [labels, setLabels] = useState<string[]>(() => {
     if (!initialLabels || Object.keys(initialLabels).length === 0) {
-      return [{ label: "", value: "" }];
+      return [""];
     }
-    return Object.entries(initialLabels).map(([label, value]) => ({
-      label,
-      value: String(value),
-    }));
+    // Sort by value descending to reconstruct the original order (best to worst)
+    return Object.entries(initialLabels)
+      .sort(([, a], [, b]) => b - a)
+      .map(([label]) => label);
   });
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const addLabelEntry = () => {
-    setLabelEntries([...labelEntries, { label: "", value: "" }]);
+  const addLabel = () => {
+    setLabels([...labels, ""]);
   };
 
-  const updateLabelEntry = (
-    index: number,
-    field: "label" | "value",
-    value: string,
-  ) => {
-    const newEntries = [...labelEntries];
-    newEntries[index][field] = value;
-    setLabelEntries(newEntries);
-  };
-
-  const removeLabelEntry = (index: number) => {
-    if (labelEntries.length > 1) {
-      setLabelEntries(labelEntries.filter((_, i) => i !== index));
+  const updateLabel = (index: number, value: string) => {
+    const newLabels = [...labels];
+    newLabels[index] = value;
+    setLabels(newLabels);
+    // Clear error when user makes changes
+    if (error) {
+      setError(null);
     }
+  };
+
+  const removeLabel = (index: number) => {
+    if (labels.length > 1) {
+      setLabels(labels.filter((_, i) => i !== index));
+    }
+  };
+
+  const moveLabel = (fromIndex: number, toIndex: number) => {
+    const newLabels = [...labels];
+    const [movedLabel] = newLabels.splice(fromIndex, 1);
+    newLabels.splice(toIndex, 0, movedLabel);
+    setLabels(newLabels);
+    setDraggedIndex(null);
   };
 
   const handleSubmit = () => {
-    const labels: Record<string, number> = {};
-    labelEntries.forEach((entry) => {
-      if (entry.label && entry.value) {
-        labels[entry.label] = parseFloat(entry.value);
-      }
+    const filledLabels = labels.filter((label) => label.trim() !== "");
+
+    // Check for duplicate labels (case-insensitive)
+    const normalizedLabels = filledLabels.map((label) =>
+      label.trim().toLowerCase(),
+    );
+    const uniqueLabels = new Set(normalizedLabels);
+
+    if (uniqueLabels.size !== normalizedLabels.length) {
+      setError("Duplicate labels found. Each label must be unique.");
+      return;
+    }
+
+    // Clear any previous errors
+    setError(null);
+
+    const result: Record<string, number> = {};
+
+    // Assign values in descending order (best to worst)
+    // First label (best) gets the highest value
+    filledLabels.forEach((label, index) => {
+      result[label] = filledLabels.length - index;
     });
-    onSubmit(labels);
+
+    onSubmit(result);
   };
 
-  const canProceed = labelEntries.some((e) => e.label && e.value);
+  const canProceed = labels.some((label) => label.trim() !== "");
 
   return (
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-semibold mb-2">Define your options</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Create labels for your metric. Each label needs a name and a numeric
-          value (higher values typically mean &quot;better&quot;).
+          Create labels and sort them from best to worst, if possible.
         </p>
       </div>
-      <div className="space-y-3">
-        {labelEntries.map((entry, index) => (
-          <div key={index} className="flex gap-2 items-end">
+      <div className="space-y-2">
+        {error && (
+          <div className="p-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+        {labels.map((label, index) => (
+          <div
+            key={index}
+            draggable
+            onDragStart={() => setDraggedIndex(index)}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => {
+              if (draggedIndex !== null && draggedIndex !== index) {
+                moveLabel(draggedIndex, index);
+              }
+            }}
+            onDragEnd={() => setDraggedIndex(null)}
+            className={`flex gap-2 items-center p-3 rounded border transition-colors ${
+              draggedIndex === index
+                ? "opacity-50 bg-muted"
+                : "hover:bg-muted/50"
+            }`}
+          >
+            <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing" />
             <div className="flex-1">
-              <Label htmlFor={`label-${index}`}>Label</Label>
               <Input
-                id={`label-${index}`}
                 placeholder="e.g., Happy, Sad, Neutral"
-                value={entry.label}
-                onChange={(e) =>
-                  updateLabelEntry(index, "label", e.target.value)
-                }
+                value={label}
+                onChange={(e) => updateLabel(index, e.target.value)}
+                className="h-9"
+                aria-label="input-label-name"
               />
             </div>
-            <div className="w-24">
-              <Label htmlFor={`value-${index}`}>Value</Label>
-              <Input
-                id={`value-${index}`}
-                type="number"
-                placeholder="e.g., 1"
-                value={entry.value}
-                onChange={(e) =>
-                  updateLabelEntry(index, "value", e.target.value)
-                }
-              />
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              onClick={() => removeLabelEntry(index)}
-              disabled={labelEntries.length === 1}
-            >
-              ×
-            </Button>
+            {labels.length > 1 && (
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeLabel(index)}
+                className="h-9 w-9 flex-shrink-0"
+                aria-label="remove-label"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         ))}
         <Button
           type="button"
           variant="outline"
-          onClick={addLabelEntry}
+          onClick={addLabel}
           className="w-full"
         >
           + Add Another Option

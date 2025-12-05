@@ -50,10 +50,6 @@ export default async function InsightsPage() {
   return (
     <div className="flex flex-col p-4 h-full">
       <div className="space-y-6">
-        <div>
-          <BackNav href="/protected" />
-        </div>
-
         <InsightsViewer entries={entries} trackingData={trackedMetrics} />
       </div>
     </div>
