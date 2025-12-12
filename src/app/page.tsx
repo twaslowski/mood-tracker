@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { RocketIcon } from "lucide-react";
+import { InfoIcon, RocketIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { USPSection } from "@/components/usp-section";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -73,28 +74,42 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <Image
-        src="/images/moody-logo.png"
-        alt="pulselog logo"
-        width={150}
-        height={60}
-        className="pb-4"
-      />
-      <h1 className="text-6xl font-bold text-primary-500 text-center mb-2">
-        Pulselog
-      </h1>
-      <div className="text-xl text-primary-400 mb-8 text-center">
-        <p>Track what matters to you. Not what matters to apps.</p>
+    <div className="flex flex-col items-center justify-center h-full px-4">
+      {/* Header with title */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+        <div className="bg-white/50 rounded-full">
+          <Image
+            src="/images/pulselog.png"
+            alt="pulselog logo"
+            width={150}
+            height={60}
+          />
+        </div>
+        <div>
+          <h1 className="text-6xl font-bold text-primary-500">Pulselog</h1>
+          <div className="text-xl text-primary-400 max-w-2xl">
+            <p>Track your life your way.</p>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 px-8">
+          <Link href="/protected">
+            <Button size="lg">
+              <RocketIcon />
+              <p>Get Started</p>
+            </Button>
+          </Link>
+          <Link href={"/about"}>
+            <Button size="lg" variant="outline">
+              <InfoIcon />
+              <p>Learn More</p>
+            </Button>
+          </Link>
+        </div>
       </div>
-      <div className="justify-center flex space-x-2">
-        <Link href="/protected">
-          <Button size="lg">
-            <RocketIcon />
-            <p>Get Started</p>
-          </Button>
-        </Link>
-      </div>
+
+      {/* CTA Buttons */}
+
+      <USPSection />
     </div>
   );
 }
