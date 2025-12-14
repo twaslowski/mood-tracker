@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { InfoIcon, RocketIcon } from "lucide-react";
+import { RocketIcon, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { USPSection } from "@/components/usp-section";
+import { FeaturesSection } from "@/components/features-section";
+import { HowItWorksSection } from "@/components/how-it-works-section";
+import { TrustSection } from "@/components/trust-section";
+import { Footer } from "@/components/footer";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -74,42 +77,121 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4">
-      {/* Header with title */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
-        <div className="bg-white/50 rounded-full">
-          <Image
-            src="/images/pulselog.png"
-            alt="pulselog logo"
-            width={150}
-            height={60}
-          />
-        </div>
-        <div>
-          <h1 className="text-6xl font-bold text-primary-500">Pulselog</h1>
-          <div className="text-xl text-primary-400 max-w-2xl">
-            <p>Track your life your way.</p>
+    <div className="flex flex-col w-full">
+      {/* Hero Section */}
+      <section className="min-h-screen flex flex-col items-center justify-center flex-1 px-4 py-16 md:py-24">
+        <div className="w-full max-w-4xl mx-auto">
+          {/* Logo and Title */}
+          <div className="flex flex-col items-center gap-4 mb-8 md:mb-12">
+            <div className="bg-white/20 rounded-full p-2">
+              <Image
+                src="/images/pulselog.png"
+                alt="pulselog logo"
+                width={180}
+                height={72}
+              />
+            </div>
+            <div className="text-center">
+              <h1 className="text-5xl md:text-7xl font-bold text-primary-500 mb-4">
+                Pulselog
+              </h1>
+              <p className="text-xl md:text-2xl text-primary-300 max-w-2xl mx-auto mb-6">
+                Track your life your way
+              </p>
+              <p className="text-base md:text-lg text-primary-400 max-w-2xl mx-auto mb-8">
+                The simple tracking app that respects your data. Create custom
+                metrics, log in seconds, and discover patterns that matter to
+                you.
+              </p>
+            </div>
+          </div>
+
+          {/* Primary CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 md:mb-16">
+            <Link href="/protected" className="flex-1 sm:flex-none">
+              <Button size="lg" className="w-full">
+                <RocketIcon className="w-5 h-5" />
+                Get Started
+              </Button>
+            </Link>
+            <Link href="#features" className="flex-1 sm:flex-none">
+              <Button size="lg" variant="outline" className="w-full">
+                <span>Learn More</span>
+                <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="flex flex-col gap-2 px-8">
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="w-full px-4 py-16">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Everything You Need
+            </h2>
+            <p className="text-lg text-primary-300 max-w-2xl mx-auto">
+              Packed with features designed to make tracking effortless and
+              insights actionable.
+            </p>
+          </div>
+          <FeaturesSection />
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="w-full px-4 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Get Started in Minutes
+            </h2>
+            <p className="text-lg text-primary-300 max-w-2xl mx-auto">
+              Pulselog is designed for speed. From signup to your first log,
+              just 4 simple steps.
+            </p>
+          </div>
+          <HowItWorksSection />
+        </div>
+      </section>
+
+      {/* Trust & Security Section */}
+      <section className="w-full px-4 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Built with Privacy First
+            </h2>
+            <p className="text-lg text-primary-300 max-w-2xl mx-auto">
+              Your data is your own. Complete control, complete transparency.
+            </p>
+          </div>
+          <TrustSection />
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="w-full px-4 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ready to start tracking?
+          </h2>
+          <p className="text-lg text-primary-300 mb-8 max-w-2xl mx-auto">
+            Join others who are taking control of their data and gaining
+            insights into what drives their days.
+          </p>
           <Link href="/protected">
-            <Button size="lg">
-              <RocketIcon />
-              <p>Get Started</p>
-            </Button>
-          </Link>
-          <Link href={"/about"}>
-            <Button size="lg" variant="outline">
-              <InfoIcon />
-              <p>Learn More</p>
+            <Button size="lg" className="gap-2">
+              <RocketIcon className="w-5 h-5" />
+              Get Started
             </Button>
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* CTA Buttons */}
-
-      <USPSection />
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
