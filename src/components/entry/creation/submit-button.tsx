@@ -42,7 +42,7 @@ export default function SubmitButton({
       <Button
         onClick={handleSubmit}
         disabled={disabled}
-        className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
+        className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
       >
         <Save className="w-5 h-5" />
         Save Entry

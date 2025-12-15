@@ -128,7 +128,7 @@ export default function Home() {
       <section id="features" className="w-full px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Everything You Need
             </h2>
             <p className="text-lg text-primary-300 max-w-2xl mx-auto">
@@ -144,7 +144,7 @@ export default function Home() {
       <section className="w-full px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Get Started in Minutes
             </h2>
             <p className="text-lg text-primary-300 max-w-2xl mx-auto">
@@ -160,7 +160,7 @@ export default function Home() {
       <section className="w-full px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
               Built with Privacy First
             </h2>
             <p className="text-lg text-primary-300 max-w-2xl mx-auto">
@@ -174,7 +174,7 @@ export default function Home() {
       {/* Final CTA Section */}
       <section className="w-full px-4 py-16 md:py-24">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Ready to start tracking?
           </h2>
           <p className="text-lg text-primary-300 mb-8 max-w-2xl mx-auto">

@@ -64,7 +64,7 @@ export function FeaturesSection() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-2">
+                  <h3 className="text-lg font-semibold mb-2">
                     {feature.title}
                   </h3>
                   <p className="text-sm text-primary-300">

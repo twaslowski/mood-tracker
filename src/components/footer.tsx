@@ -10,12 +10,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Product */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Product</h4>
+            <h4 className="font-semibold mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-primary-300">
               <li>
                 <Link
                   href="/protected"
-                  className="hover:text-white transition-colors"
+                  className="hover:transition-colors"
                 >
                   Get Started
                 </Link>
@@ -23,7 +23,7 @@ export function Footer() {
               <li>
                 <Link
                   href="/#features"
-                  className="hover:text-white transition-colors"
+                  className="hover:transition-colors"
                 >
                   Features
                 </Link>
@@ -33,7 +33,7 @@ export function Footer() {
                   href="https://github.com/twaslowski/pulselog"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
+                  className="hover:transition-colors"
                 >
                   GitHub
                 </a>
@@ -43,7 +43,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Company</h4>
+            <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-primary-300">
               <li className="text-primary-400">Coming soon</li>
             </ul>
@@ -51,7 +51,7 @@ export function Footer() {
 
           {/* Social */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Connect</h4>
+            <h4 className="font-semibold mb-4">Connect</h4>
             <div className="flex gap-4">
               <a
                 href="mailto:hello@pulselog.me"
