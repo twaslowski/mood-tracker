@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { type Entry } from "@/types/entry";
 import { type EntryValue, EntryValueSchema } from "@/types/entry-value.ts";
 import { type Metric } from "@/types/metric.ts";
@@ -30,23 +30,19 @@ export default function EntryEditDialog({
   const [recordedAt, setRecordedAt] = useState(
     new Date(entry.recorded_at).toISOString().slice(0, 16),
   );
-  const [submittedValues, setSubmittedValues] = useState<
-    Record<string, number>
-  >({});
+
+  const initialValues: Record<string, number> = {};
+  entry.values.forEach((value) => {
+    initialValues[value.metric.id] = value.value;
+  });
+
+  const [submittedValues, setSubmittedValues] =
+    useState<Record<string, number>>(initialValues);
   const [comment, setComment] = useState(entry.comment || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [metrics, setMetrics] = useState<Metric[]>(
     entry.values.map((v) => v.metric),
   );
-
-  // Initialize values from the entry
-  useEffect(() => {
-    const initialValues: Record<string, number> = {};
-    entry.values.forEach((value) => {
-      initialValues[value.metric.id] = value.value;
-    });
-    setSubmittedValues(initialValues);
-  }, [entry]);
 
   const handleSubmittedValue = (metricId: string, value: number) => {
     setSubmittedValues((prev) => ({

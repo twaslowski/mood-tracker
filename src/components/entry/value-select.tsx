@@ -46,7 +46,7 @@ export default function ValueSelect({
 
   return (
     <Select.Root
-      defaultValue={String(baseline)}
+      value={baseline !== undefined ? String(baseline) : undefined}
       onValueChange={(val) => handleChange(metric.id, Number(val))}
     >
       <Select.Trigger
