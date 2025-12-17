@@ -8,8 +8,10 @@ import { Metric } from "@/types/metric.ts";
 
 export function AdditionalMetricPicker({
   addAdditionalMetric,
+  excludedMetricIds,
 }: {
   addAdditionalMetric: (metric: Metric) => void;
+  excludedMetricIds?: string[];
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
@@ -32,6 +34,7 @@ export function AdditionalMetricPicker({
                 setIsOpen(false);
               }}
               onClose={() => setIsOpen(false)}
+              excludedMetricIds={excludedMetricIds}
             />
           </div>
         </div>

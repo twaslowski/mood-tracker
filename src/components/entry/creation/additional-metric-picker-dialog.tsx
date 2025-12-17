@@ -19,9 +19,11 @@ import { MetricLabels } from "@/components/metric/metric-labels.tsx";
 export default function AdditionalMetricPickerDialog({
   onComplete,
   onClose,
+  excludedMetricIds = [],
 }: {
   onComplete: (metric: Metric) => void;
   onClose: () => void;
+  excludedMetricIds?: string[];
 }) {
   const [allMetrics, setAllMetrics] = useState<Metric[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -33,6 +35,7 @@ export default function AdditionalMetricPickerDialog({
       const { data, error } = await supabase
         .from("metric")
         .select("*")
+        .not("id", "in", `(${excludedMetricIds.join(",")})`)
         .order("name");
 
       if (error) {
@@ -48,7 +51,7 @@ export default function AdditionalMetricPickerDialog({
       setLoading(false);
     };
     void loadMetrics();
-  }, []);
+  }, [excludedMetricIds]);
 
   const filteredMetrics = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();

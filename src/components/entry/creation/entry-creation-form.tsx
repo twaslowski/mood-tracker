@@ -26,16 +26,24 @@ export default function EntryCreationForm({
   const [submittedValues, setSubmittedValues] = useState<
     Record<string, number>
   >({});
-  const [additionalMetrics, setAdditionalMetrics] = useState<Metric[]>([]);
+  const [metrics, setMetrics] = useState<Metric[]>(
+    trackedMetrics.map((tm) => tm.metric),
+  );
   const [comment, setComment] = useState("");
 
-  // Preselect baseline values by default
+  // Helper function to get baseline for a metric if it's tracked
+  const getBaseline = (metricId: string): number => {
+    const tracked = trackedMetrics.find((tm) => tm.metric.id === metricId);
+    return tracked ? tracked.baseline : 0;
+  };
+
+  // Preselect baseline values by default for tracked metrics
   useEffect(() => {
     setSubmittedValues((prev) => {
       const updated = { ...prev };
       trackedMetrics.forEach((tm) => {
         if (updated[tm.metric.id] === undefined) {
-          updated[tm.metric.id] = tm.baseline; // baseline guaranteed number
+          updated[tm.metric.id] = tm.baseline;
         }
       });
       return updated;
@@ -60,8 +68,8 @@ export default function EntryCreationForm({
       );
   };
 
-  const removeAdditionalMetric = (metricId: string) => {
-    setAdditionalMetrics((prev) => prev.filter((m) => m.id !== metricId));
+  const removeMetric = (metricId: string) => {
+    setMetrics((prev) => prev.filter((m) => m.id !== metricId));
     setSubmittedValues((prev) => {
       const updated = { ...prev };
       delete updated[metricId];
@@ -79,57 +87,40 @@ export default function EntryCreationForm({
       <div className="border border-primary/70 my-8" />
 
       <div className="space-y-4 mb-4">
-        {trackedMetrics.map((tm) => {
-          const metric = tm.metric;
-
-          return (
-            <div key={metric.id} className="flex flex-col gap-2">
-              <label className="font-semibold">{metric.name}</label>
+        {metrics.map((metric) => (
+          <div key={metric.id} className="flex flex-col gap-2">
+            <label className="font-semibold">{metric.name}</label>
+            <div className="flex w-full gap-2">
               <ValueSelect
                 metric={metric}
-                baseline={tm.baseline}
+                baseline={getBaseline(metric.id)}
                 handleChange={handleSubmittedValue}
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  removeMetric(metric.id);
+                }}
+              >
+                <XIcon className="h-4 w-4 text-red-500" />
+              </Button>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
-
-      {additionalMetrics.length !== 0 &&
-        additionalMetrics.map((metric) => {
-          return (
-            <div key={metric.id} className="flex flex-col gap-2 mb-4">
-              <label className="font-semibold">{metric.name}</label>
-              <div className="flex w-full gap-2">
-                <ValueSelect
-                  metric={metric}
-                  baseline={0}
-                  handleChange={handleSubmittedValue}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    removeAdditionalMetric(metric.id);
-                  }}
-                >
-                  <XIcon className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
-            </div>
-          );
-        })}
 
       <AdditionalMetricPicker
         addAdditionalMetric={(metric: Metric) => {
-          setAdditionalMetrics((prev) => {
+          setMetrics((prev) => {
             if (prev.find((m) => m.id === metric.id)) {
               return prev;
             }
             return [...prev, metric];
           });
         }}
+        excludedMetricIds={metrics.map((m) => m.id)}
       />
 
       <div>

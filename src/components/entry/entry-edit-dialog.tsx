@@ -35,7 +35,9 @@ export default function EntryEditDialog({
   >({});
   const [comment, setComment] = useState(entry.comment || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [additionalMetrics, setAdditionalMetrics] = useState<Metric[]>([]);
+  const [metrics, setMetrics] = useState<Metric[]>(
+    entry.values.map((v) => v.metric),
+  );
 
   // Initialize values from the entry
   useEffect(() => {
@@ -51,6 +53,15 @@ export default function EntryEditDialog({
       ...prev,
       [metricId]: value,
     }));
+  };
+
+  const removeMetric = (metricId: string) => {
+    setMetrics((prev) => prev.filter((m) => m.id !== metricId));
+    setSubmittedValues((prev) => {
+      const updated = { ...prev };
+      delete updated[metricId];
+      return updated;
+    });
   };
 
   const deriveEntryValues = (): EntryValue[] => {
@@ -119,28 +130,13 @@ export default function EntryEditDialog({
 
             {/* Metric Values */}
             <div className="space-y-4">
-              {entry.values.map((value) => {
-                const metric = value.metric;
-                return (
-                  <div key={metric.id} className="flex flex-col gap-2">
-                    <label className="font-semibold">{metric.name}</label>
-                    <ValueSelect
-                      metric={metric}
-                      baseline={submittedValues[metric.id] ?? value.value}
-                      handleChange={handleSubmittedValue}
-                    />
-                  </div>
-                );
-              })}
-
-              {/* Additional Metrics */}
-              {additionalMetrics.map((metric) => (
+              {metrics.map((metric) => (
                 <div key={metric.id} className="flex flex-col gap-2">
                   <label className="font-semibold">{metric.name}</label>
                   <div className="flex w-full gap-2">
                     <ValueSelect
                       metric={metric}
-                      baseline={submittedValues[metric.id] ?? 0}
+                      baseline={submittedValues[metric.id]}
                       handleChange={handleSubmittedValue}
                     />
                     <Button
@@ -148,14 +144,7 @@ export default function EntryEditDialog({
                       variant="ghost"
                       size="icon"
                       onClick={() => {
-                        setAdditionalMetrics((prev) =>
-                          prev.filter((m) => m.id !== metric.id),
-                        );
-                        setSubmittedValues((prev) => {
-                          const updated = { ...prev };
-                          delete updated[metric.id];
-                          return updated;
-                        });
+                        removeMetric(metric.id);
                       }}
                     >
                       <XIcon className="h-4 w-4 text-red-500" />
@@ -168,16 +157,14 @@ export default function EntryEditDialog({
             {/* Additional Metric Picker */}
             <AdditionalMetricPicker
               addAdditionalMetric={(metric: Metric) => {
-                setAdditionalMetrics((prev) => {
-                  if (
-                    prev.find((m) => m.id === metric.id) ||
-                    entry.values.find((v) => v.metric.id === metric.id)
-                  ) {
+                setMetrics((prev) => {
+                  if (prev.find((m) => m.id === metric.id)) {
                     return prev;
                   }
                   return [...prev, metric];
                 });
               }}
+              excludedMetricIds={metrics.map((m) => m.id)}
             />
 
             {/* Comment Input */}
