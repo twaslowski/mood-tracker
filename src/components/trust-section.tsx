@@ -40,9 +40,7 @@ export function TrustSection() {
                   <Icon className="w-6 h-6 text-primary-400" />
                 </div>
               </div>
-              <h3 className="text-lg font-semibold mb-2">
-                {point.title}
-              </h3>
+              <h3 className="text-lg font-semibold mb-2">{point.title}</h3>
               <p className="text-sm text-primary-300">{point.description}</p>
             </div>
           );

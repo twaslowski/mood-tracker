@@ -41,9 +41,7 @@ export function HowItWorksSection() {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary-500 font-bold text-lg">
                   {step.number}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  {step.title}
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
                 <p className="text-sm text-primary-300">{step.description}</p>
               </div>
             </div>

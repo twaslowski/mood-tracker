@@ -59,7 +59,7 @@ export default function ValueSelect({
         </Select.Icon>
       </Select.Trigger>
       <Select.Portal>
-        <Select.Content className="overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
+        <Select.Content className="overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md z-[100]">
           <Select.Viewport className="p-1">
             {options.map((opt) => (
               <Select.Item

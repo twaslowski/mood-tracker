@@ -1,18 +1,19 @@
-"use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Entry } from "@/types/entry";
 import { type EntryValueWithMetric } from "@/types/entry-value.ts";
 import { type Metric } from "@/types/metric";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, TrashIcon } from "lucide-react";
-import { deleteEntry } from "@/app/actions/entry";
-import toast from "react-hot-toast";
-import { extractErrorMessage } from "@/lib/utils";
+import { TrashIcon, EditIcon } from "lucide-react";
 import { EntryComment } from "@/components/entry/comment.tsx";
 
-export function Entry({ entry }: { entry: Entry }) {
+interface EntryProps {
+  entry: Entry;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+export function Entry({ entry, onEdit, onDelete }: EntryProps) {
   const formatDateTime = (date: Date) => {
     return date.toLocaleString("en-US", {
       year: "numeric",
@@ -36,24 +37,28 @@ export function Entry({ entry }: { entry: Entry }) {
     );
   };
 
-  const onDelete = async () => {
-    try {
-      await deleteEntry(entry.id);
-      toast("Entry deleted successfully", {
-        icon: <CheckIcon />,
-      });
-    } catch (error: unknown) {
-      const message = extractErrorMessage(error);
-      toast("Failed to delete entry: " + message, {
-        style: { background: "red", color: "white" },
-      });
-    }
-  };
-
   return (
-    <Card className="max-w-xl">
+    <Card>
       <CardHeader className="pb-4">
-        <CardTitle>{formatDateTime(entry.recorded_at)}</CardTitle>
+        <div className="flex flex-row justify-between gap-x-4 items-center">
+          <CardTitle>{formatDateTime(entry.recorded_at)}</CardTitle>
+          <div className="flex flex-row">
+            <Button
+              variant="ghost"
+              className="h-8 rounded-md text-xs"
+              onClick={onEdit}
+            >
+              <EditIcon />
+            </Button>
+            <Button
+              variant="ghost"
+              className="h-8 rounded-md text-xs"
+              onClick={onDelete}
+            >
+              <TrashIcon color="red" />
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-start">
@@ -80,13 +85,6 @@ export function Entry({ entry }: { entry: Entry }) {
               </p>
             )}
           </div>
-          <Button
-            variant="ghost"
-            className="h-8 rounded-md px-5 text-xs"
-            onClick={onDelete}
-          >
-            <TrashIcon color="red" />
-          </Button>
         </div>
       </CardContent>
     </Card>
