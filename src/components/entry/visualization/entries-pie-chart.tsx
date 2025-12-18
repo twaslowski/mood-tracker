@@ -25,25 +25,41 @@ interface PieChartProps {
   trackingData: MetricTracking[];
 }
 
-const COLORS = [
-  "#4c8cff",
-  "#ff6b6b",
-  "#1dd1a1",
-  "#feca57",
-  "#ff9ff3",
-  "#8e44ad",
-  "#e67e22",
-  "#34495e",
-  "#3498db",
-  "#2ecc71",
-  "#e74c3c",
-  "#f39c12",
-];
+const NEUTRAL_COLOR = "rgb(167, 243, 208)"; // bg-green-200
+
+// Calculate color based on mood value - blue for depressed, red for manic
+function getMoodColor(
+  value: number,
+  minValue: number,
+  maxValue: number,
+): string {
+  // Normalize value to 0-1 range
+  const normalized = (value - minValue) / (maxValue - minValue);
+  if (value === 0) {
+    return NEUTRAL_COLOR;
+  }
+
+  // Blue (depressed) to Red (manic) via white in the middle
+  if (normalized < 0.5) {
+    // Blue to white (0 to 0.5)
+    const intensity = normalized * 2; // 0 to 1
+    const blueStrength = Math.round(100 + 155 * intensity); // 100 to 255
+    const redGreen = Math.round(intensity * 255); // 0 to 255
+    return `rgb(${redGreen}, ${redGreen}, ${blueStrength})`;
+  } else {
+    // White to red (0.5 to 1)
+    const intensity = (normalized - 0.5) * 2; // 0 to 1
+    const red = 255;
+    const greenBlue = Math.round(255 * (1 - intensity)); // 255 to 0
+    return `rgb(${red}, ${greenBlue}, ${greenBlue})`;
+  }
+}
 
 interface PieDataPoint {
   name: string;
   value: number;
   percentage: number;
+  numericValue: number; // Store the original numeric value for color calculation
   [key: string]: string | number;
 }
 
@@ -116,6 +132,7 @@ export default function EntriesPieChart({
           name,
           value: count,
           percentage: (count / totalCount) * 100,
+          numericValue: value,
         };
       })
       .sort((a, b) => b.value - a.value); // Sort by count descending
@@ -206,7 +223,11 @@ export default function EntriesPieChart({
                 {pieData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    fill={getMoodColor(
+                      entry.numericValue,
+                      selectedMetric?.metric.min_value ?? 0,
+                      selectedMetric?.metric.max_value ?? 10,
+                    )}
                   />
                 ))}
               </Pie>
