@@ -1,6 +1,6 @@
 "use client";
 
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { format } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
@@ -17,99 +17,16 @@ import { Entry } from "@/types/entry";
 import { MetricTracking } from "@/types/tracking";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-const COLORS = [
-  "#4c8cff",
-  "#ff6b6b",
-  "#1dd1a1",
-  "#feca57",
-  "#ff9ff3",
-  "#8e44ad",
-  "#e67e22",
-  "#34495e",
-];
+import {
+  type MetricConfig,
+  buildMetricConfigs,
+  extractAvailableMonths,
+  prepareMonthlyChartData,
+} from "@/lib/visualization-utils";
 
 interface ChartProps {
   entries: Entry[];
   trackingData: MetricTracking[];
-}
-
-interface MetricConfig {
-  metricId: string;
-  minValue: number;
-  maxValue: number;
-  baseline: number;
-  name: string;
-  type: string;
-  labels: Record<string, number>;
-  color: string;
-}
-
-interface ChartDataPoint {
-  timestamp: string;
-  [metricId: string]: number | string | null; // Dynamic keys for each metric
-}
-
-// Assign stable colors based on metric index
-function assignMetricColor(index: number): string {
-  return COLORS[index % COLORS.length];
-}
-
-// Transform entries into chart-ready format
-function prepareChartData(
-  entries: Entry[],
-  selectedMonth: string,
-): ChartDataPoint[] {
-  if (!selectedMonth) return [];
-
-  const monthStart = startOfMonth(new Date(selectedMonth + "-01"));
-  const monthEnd = endOfMonth(monthStart);
-
-  // Get all metric IDs present in entries
-  const metricIds = Array.from(
-    new Set(entries.flatMap((e) => e.values.map((v) => v.metric_id))),
-  );
-
-  // Group by day and metric, averaging multiple values per day
-  const dailyData = new Map<string, Map<string, number[]>>();
-  entries.forEach((entry) => {
-    if (entry.recorded_at < monthStart || entry.recorded_at > monthEnd) return;
-
-    const dateKey = format(entry.recorded_at, "yyyy-MM-dd");
-    if (!dailyData.has(dateKey)) {
-      dailyData.set(dateKey, new Map());
-    }
-    const dayData = dailyData.get(dateKey)!;
-    entry.values.forEach((value) => {
-      if (!dayData.has(value.metric_id)) {
-        dayData.set(value.metric_id, []);
-      }
-      dayData.get(value.metric_id)!.push(value.value);
-    });
-  });
-
-  // Generate all days in the month
-  const chartData: ChartDataPoint[] = [];
-  for (
-    let d = new Date(monthStart);
-    d <= monthEnd;
-    d.setDate(d.getDate() + 1)
-  ) {
-    const dateKey = format(d, "yyyy-MM-dd");
-    const metrics = dailyData.get(dateKey);
-    const dataPoint: ChartDataPoint = { timestamp: dateKey };
-    metricIds.forEach((metricId) => {
-      if (metrics && metrics.has(metricId)) {
-        const values = metrics.get(metricId)!;
-        dataPoint[metricId] = values.reduce((a, b) => a + b, 0) / values.length;
-      } else {
-        dataPoint[metricId] = null;
-      }
-    });
-    chartData.push(dataPoint);
-  }
-
-  return chartData;
 }
 
 export default function EntriesLineChart({
@@ -117,26 +34,16 @@ export default function EntriesLineChart({
   trackingData,
 }: ChartProps) {
   // Extract available months from entries
-  const availableMonths = useMemo(() => {
-    const months = new Set(
-      entries.map((e) => format(new Date(e.recorded_at), "yyyy-MM")),
-    );
-    return Array.from(months).sort();
-  }, [entries]);
+  const availableMonths = useMemo(
+    () => extractAvailableMonths(entries),
+    [entries],
+  );
 
   // Build metric configurations with stable colors
-  const metricsConfig = useMemo<MetricConfig[]>(() => {
-    return trackingData.map((td, index) => ({
-      metricId: td.metric.id,
-      minValue: td.metric.min_value ?? 0,
-      maxValue: td.metric.max_value ?? 10,
-      baseline: td.baseline,
-      name: td.metric.name,
-      type: td.metric.metric_type,
-      labels: td.metric.labels,
-      color: assignMetricColor(index),
-    }));
-  }, [trackingData]);
+  const metricsConfig = useMemo<MetricConfig[]>(
+    () => buildMetricConfigs(trackingData),
+    [trackingData],
+  );
 
   // State - support multiple active metrics (up to 2)
   const [selectedMonth, setSelectedMonth] = useState<string>(
@@ -164,9 +71,10 @@ export default function EntriesLineChart({
   }, [metricsConfig, activeMetricIds]);
 
   // Prepare chart data
-  const chartData = useMemo(() => {
-    return prepareChartData(entries, selectedMonth);
-  }, [entries, selectedMonth]);
+  const chartData = useMemo(
+    () => prepareMonthlyChartData(entries, selectedMonth),
+    [entries, selectedMonth],
+  );
 
   // Month navigation
   const currentMonthIndex = useMemo(

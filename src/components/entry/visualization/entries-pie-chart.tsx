@@ -19,40 +19,11 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
+import { getMoodColor } from "@/lib/visualization-utils";
 
 interface PieChartProps {
   entries: Entry[];
   trackingData: MetricTracking[];
-}
-
-const NEUTRAL_COLOR = "rgb(167, 243, 208)"; // bg-green-200
-
-// Calculate color based on mood value - blue for depressed, red for manic
-function getMoodColor(
-  value: number,
-  minValue: number,
-  maxValue: number,
-): string {
-  // Normalize value to 0-1 range
-  const normalized = (value - minValue) / (maxValue - minValue);
-  if (value === 0) {
-    return NEUTRAL_COLOR;
-  }
-
-  // Blue (depressed) to Red (manic) via white in the middle
-  if (normalized < 0.5) {
-    // Blue to white (0 to 0.5)
-    const intensity = normalized * 2; // 0 to 1
-    const blueStrength = Math.round(100 + 155 * intensity); // 100 to 255
-    const redGreen = Math.round(intensity * 255); // 0 to 255
-    return `rgb(${redGreen}, ${redGreen}, ${blueStrength})`;
-  } else {
-    // White to red (0.5 to 1)
-    const intensity = (normalized - 0.5) * 2; // 0 to 1
-    const red = 255;
-    const greenBlue = Math.round(255 * (1 - intensity)); // 255 to 0
-    return `rgb(${red}, ${greenBlue}, ${greenBlue})`;
-  }
 }
 
 interface PieDataPoint {

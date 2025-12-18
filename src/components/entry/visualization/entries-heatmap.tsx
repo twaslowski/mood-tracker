@@ -10,9 +10,14 @@ import {
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Entry } from "@/types/entry";
 import { Metric } from "@/types/metric.ts";
-import { EntryValue } from "@/types/entry-value.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  extractAvailableMetrics,
+  extractAvailableYears,
+  getMoodColor,
+  groupValuesByDate,
+} from "@/lib/visualization-utils";
 
 interface HeatmapProps {
   entries: Entry[];
@@ -29,71 +34,12 @@ interface DayData {
   } | null;
 }
 
-const NEUTRAL_COLOR = "rgb(167, 243, 208)"; // bg-green-200
-
-// Calculate color based on mood value - blue for depressed, red for manic
-function getMoodColor(
-  value: number,
-  minValue: number,
-  maxValue: number,
-): string {
-  // Normalize value to 0-1 range
-  const normalized = (value - minValue) / (maxValue - minValue);
-  if (value === 0) {
-    return NEUTRAL_COLOR;
-  }
-
-  // Blue (depressed) to Red (manic) via white in the middle
-  if (normalized < 0.5) {
-    // Blue to white (0 to 0.5)
-    const intensity = normalized * 2; // 0 to 1
-    const blueStrength = Math.round(100 + 155 * intensity); // 100 to 255
-    const redGreen = Math.round(intensity * 255); // 0 to 255
-    return `rgb(${redGreen}, ${redGreen}, ${blueStrength})`;
-  } else {
-    // White to red (0.5 to 1)
-    const intensity = (normalized - 0.5) * 2; // 0 to 1
-    const red = 255;
-    const greenBlue = Math.round(255 * (1 - intensity)); // 255 to 0
-    return `rgb(${red}, ${greenBlue}, ${greenBlue})`;
-  }
-}
-
-const extractAvailableMetrics = (entries: Entry[]): Map<string, Metric> => {
-  const metrics = new Map<string, Metric>();
-  entries.forEach((entry) => {
-    entry.values.forEach((value) => {
-      metrics.set(value.metric.name.toLowerCase(), value.metric);
-    });
-  });
-  return metrics;
-};
-
-const allValues = (
-  entries: Entry[],
-  metricId: string,
-): Map<string, EntryValue[]> => {
-  const valuesMap = new Map<string, EntryValue[]>();
-  entries.forEach((entry) => {
-    entry.values.forEach((value) => {
-      if (value.metric.id === metricId) {
-        const dateKey = `${entry.recorded_at.getFullYear()}-${entry.recorded_at.getMonth()}-${entry.recorded_at.getDate()}`;
-        const existing = valuesMap.get(dateKey) || [];
-        valuesMap.set(dateKey, [...existing, value]);
-      }
-    });
-  });
-  return valuesMap;
-};
-
 export default function EntriesHeatmap({ entries }: HeatmapProps) {
   // Extract available years from entries
-  const availableYears = useMemo(() => {
-    const years = new Set(
-      entries.map((e) => e.recorded_at.getFullYear().toString()),
-    );
-    return Array.from(years).sort();
-  }, [entries]);
+  const availableYears = useMemo(
+    () => extractAvailableYears(entries),
+    [entries],
+  );
 
   const availableMetrics: Map<string, Metric> = useMemo(
     () => extractAvailableMetrics(entries),
@@ -121,7 +67,7 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
   }, [availableYears, selectedYear]);
 
   const values = useMemo(
-    () => allValues(entries, selectedMetric.id),
+    () => groupValuesByDate(entries, selectedMetric.id),
     [entries, selectedMetric],
   );
 
