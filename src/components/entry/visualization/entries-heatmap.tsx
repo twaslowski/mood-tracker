@@ -22,7 +22,7 @@ interface HeatmapProps {
 interface DayData {
   date: Date;
   comment?: string;
-  value: number | null;
+  values: number[];
   bounds: {
     minValue: number;
     maxValue: number;
@@ -72,13 +72,14 @@ const extractAvailableMetrics = (entries: Entry[]): Map<string, Metric> => {
 const allValues = (
   entries: Entry[],
   metricId: string,
-): Map<string, EntryValue> => {
-  const valuesMap = new Map<string, EntryValue>();
+): Map<string, EntryValue[]> => {
+  const valuesMap = new Map<string, EntryValue[]>();
   entries.forEach((entry) => {
     entry.values.forEach((value) => {
       if (value.metric.id === metricId) {
         const dateKey = `${entry.recorded_at.getFullYear()}-${entry.recorded_at.getMonth()}-${entry.recorded_at.getDate()}`;
-        valuesMap.set(dateKey, value);
+        const existing = valuesMap.get(dateKey) || [];
+        valuesMap.set(dateKey, [...existing, value]);
       }
     });
   });
@@ -137,10 +138,10 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
       allDays.forEach((day) => {
         if (day.getMonth() === month) {
           const dayKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
-          const value = values.get(dayKey) ?? null;
+          const dayValues = values.get(dayKey) ?? [];
           monthDays.push({
             date: day,
-            value: value ? value.value : null,
+            values: dayValues.map((v) => v.value),
             bounds: {
               minValue: selectedMetric.min_value,
               maxValue: selectedMetric.max_value,
@@ -275,31 +276,60 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
                   {monthDays.map((dayData, dayIndex) => {
                     const isToday = isSameDay(dayData.date, today);
                     const isFutureDay = dayData.date > today;
+                    const hasValues = dayData.values.length > 0;
+                    const hasMultipleValues = dayData.values.length > 1;
 
-                    let backgroundColor = "white";
+                    let style: React.CSSProperties = {};
                     let borderColor = "#e5e7eb";
 
                     if (isFutureDay) {
-                      backgroundColor = "#f9fafb";
+                      style.backgroundColor = "#f9fafb";
                       borderColor = "#e5e7eb";
-                    } else if (dayData.value !== null && dayData.bounds) {
-                      backgroundColor = getMoodColor(
-                        dayData.value,
-                        dayData.bounds.minValue,
-                        dayData.bounds.maxValue,
-                      );
+                    } else if (hasValues && dayData.bounds) {
                       borderColor = "#d1d5db";
+
+                      if (hasMultipleValues) {
+                        // Create gradient for multiple values
+                        const colors = dayData.values.map((value) =>
+                          getMoodColor(
+                            value,
+                            dayData.bounds!.minValue,
+                            dayData.bounds!.maxValue,
+                          )
+                        );
+                        const percentage = 100 / colors.length;
+                        const gradientStops = colors
+                          .map((color, i) => {
+                            const start = i * percentage;
+                            const end = (i + 1) * percentage;
+                            return `${color} ${start}%, ${color} ${end}%`;
+                          })
+                          .join(", ");
+                        style.background = `linear-gradient(90deg, ${gradientStops})`;
+                      } else {
+                        // Single value - solid color
+                        style.backgroundColor = getMoodColor(
+                          dayData.values[0],
+                          dayData.bounds.minValue,
+                          dayData.bounds.maxValue,
+                        );
+                      }
+                    } else {
+                      style.backgroundColor = "white";
                     }
+
+                    style.border = `1px solid ${borderColor}`;
+
+                    const tooltipText = hasValues
+                      ? `${format(dayData.date, "MMM dd, yyyy")}: ${dayData.values.map((v) => v.toFixed(1)).join(", ")}`
+                      : format(dayData.date, "MMM dd, yyyy");
 
                     return (
                       <div
                         key={dayIndex}
                         className={`w-5 h-5 rounded-sm ${isToday ? "ring-2 ring-blue-500 ring-offset-1" : ""}`}
-                        style={{
-                          backgroundColor,
-                          border: `1px solid ${borderColor}`,
-                        }}
-                        title={`${format(dayData.date, "MMM dd, yyyy")}${dayData.value !== null ? `: ${dayData.value.toFixed(1)}` : ""}`}
+                        style={style}
+                        title={tooltipText}
                       />
                     );
                   })}
