@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Entry } from "@/types/entry";
 import { MetricTracking } from "@/types/tracking";
-import EntriesChart from "./entries-chart";
+import EntriesCharts from "./entries-charts";
 import EntriesHeatmap from "./entries-heatmap";
 import EntriesList from "./entries-list";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -64,7 +64,7 @@ export default function InsightsViewer({
         {/* Render selected view */}
         <div className="space-y-4">
           {selectedView === "charts" && (
-            <EntriesChart entries={entries} trackingData={trackingData} />
+            <EntriesCharts entries={entries} trackingData={trackingData} />
           )}
           {selectedView === "heatmap" && <EntriesHeatmap entries={entries} />}
           {selectedView === "entries" && <EntriesList entries={entries} />}

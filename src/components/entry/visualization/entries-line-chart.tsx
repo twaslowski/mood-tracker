@@ -112,7 +112,10 @@ function prepareChartData(
   return chartData;
 }
 
-export default function EntriesChart({ entries, trackingData }: ChartProps) {
+export default function EntriesLineChart({
+  entries,
+  trackingData,
+}: ChartProps) {
   // Extract available months from entries
   const availableMonths = useMemo(() => {
     const months = new Set(

@@ -7,7 +7,7 @@ import {
   isSameDay,
   startOfYear,
 } from "date-fns";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Entry } from "@/types/entry";
 import { Metric } from "@/types/metric.ts";
 import { EntryValue } from "@/types/entry-value.ts";
@@ -279,7 +279,7 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
                     const hasValues = dayData.values.length > 0;
                     const hasMultipleValues = dayData.values.length > 1;
 
-                    let style: React.CSSProperties = {};
+                    const style: React.CSSProperties = {};
                     let borderColor = "#e5e7eb";
 
                     if (isFutureDay) {
@@ -295,7 +295,7 @@ export default function EntriesHeatmap({ entries }: HeatmapProps) {
                             value,
                             dayData.bounds!.minValue,
                             dayData.bounds!.maxValue,
-                          )
+                          ),
                         );
                         const percentage = 100 / colors.length;
                         const gradientStops = colors
