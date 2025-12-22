@@ -93,7 +93,7 @@ export default function EntryCreationForm({
             <div className="flex w-full gap-2">
               <ValueSelect
                 metric={metric}
-                baseline={getBaseline(metric.id)}
+                baseline={submittedValues[metric.id] ?? getBaseline(metric.id)}
                 handleChange={handleSubmittedValue}
               />
               <Button

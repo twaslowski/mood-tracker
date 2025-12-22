@@ -1,12 +1,13 @@
 import requests
+import os
 from datetime import datetime
 from collections import defaultdict
 
 # ----------------------------
 # Configuration
 # ----------------------------
-USERNAME = "<your_chesscom_username>"
-EMAIL = "<your-email>"
+USERNAME = os.environ["USER"]
+EMAIL = os.environ["EMAIL"]
 YEAR = 2025
 MONTH = 12
 
