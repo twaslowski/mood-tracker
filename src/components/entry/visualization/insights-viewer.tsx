@@ -6,11 +6,12 @@ import { MetricTracking } from "@/types/tracking";
 import EntriesCharts from "./entries-charts";
 import EntriesHeatmap from "./entries-heatmap";
 import EntriesList from "./entries-list";
+import EntriesStats from "./entries-stats";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calendar, List } from "lucide-react";
+import { BarChart3, Calendar, List, TrendingUp } from "lucide-react";
 import useIsMobile from "@/hooks/use-is-mobile.ts";
 
-type ViewType = "charts" | "heatmap" | "entries";
+type ViewType = "charts" | "heatmap" | "entries" | "stats";
 
 interface ViewOption {
   value: ViewType;
@@ -20,6 +21,7 @@ interface ViewOption {
 
 const viewOptions: ViewOption[] = [
   { value: "charts", label: "Charts", icon: BarChart3 },
+  { value: "stats", label: "Stats", icon: TrendingUp },
   { value: "heatmap", label: "Heatmap", icon: Calendar },
   { value: "entries", label: "Entries", icon: List },
 ];
@@ -45,7 +47,7 @@ export default function InsightsViewer({
         onValueChange={(value) => setSelectedView(value as ViewType)}
         className="w-full"
       >
-        <TabsList className="mb-4 grid w-full grid-cols-3">
+        <TabsList className="mb-4 grid w-full grid-cols-4">
           {viewOptions.map((option) => {
             const Icon = option.icon;
             return (
@@ -65,6 +67,9 @@ export default function InsightsViewer({
         <div className="space-y-4">
           {selectedView === "charts" && (
             <EntriesCharts entries={entries} trackingData={trackingData} />
+          )}
+          {selectedView === "stats" && (
+            <EntriesStats entries={entries} trackingData={trackingData} />
           )}
           {selectedView === "heatmap" && <EntriesHeatmap entries={entries} />}
           {selectedView === "entries" && <EntriesList entries={entries} />}
