@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
@@ -16,29 +16,30 @@ import {
 import { Entry } from "@/types/entry";
 import { MetricTracking } from "@/types/tracking";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   type MetricConfig,
   buildMetricConfigs,
-  extractAvailableMonths,
-  prepareMonthlyChartData,
 } from "@/lib/visualization-utils";
 
 interface ChartProps {
   entries: Entry[];
   trackingData: MetricTracking[];
+  startDate: Date;
+  endDate: Date;
+}
+
+interface ChartDataPoint {
+  timestamp: string;
+  date: Date;
+  [metricId: string]: number | string | Date | null;
 }
 
 export default function EntriesLineChart({
   entries,
   trackingData,
+  startDate,
+  endDate,
 }: ChartProps) {
-  // Extract available months from entries
-  const availableMonths = useMemo(
-    () => extractAvailableMonths(entries),
-    [entries],
-  );
-
   // Build metric configurations with stable colors
   const metricsConfig = useMemo<MetricConfig[]>(
     () => buildMetricConfigs(trackingData),
@@ -46,22 +47,9 @@ export default function EntriesLineChart({
   );
 
   // State - support multiple active metrics (up to 2)
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    availableMonths[availableMonths.length - 1] || "",
-  );
   const [activeMetricIds, setActiveMetricIds] = useState<string[]>(
     metricsConfig[0]?.metricId ? [metricsConfig[0].metricId] : [],
   );
-
-  // Update selected month when available months change
-  useEffect(() => {
-    if (
-      availableMonths.length > 0 &&
-      !availableMonths.includes(selectedMonth)
-    ) {
-      setSelectedMonth(availableMonths[availableMonths.length - 1]);
-    }
-  }, [availableMonths, selectedMonth]);
 
   // Update active metrics when metrics config changes
   useEffect(() => {
@@ -70,32 +58,111 @@ export default function EntriesLineChart({
     }
   }, [metricsConfig, activeMetricIds]);
 
-  // Prepare chart data
-  const chartData = useMemo(
-    () => prepareMonthlyChartData(entries, selectedMonth),
-    [entries, selectedMonth],
+  // Prepare chart data from entries
+  const chartData = useMemo(() => {
+    // Filter entries within the date range
+    const filteredEntries = entries.filter(
+      (entry) => entry.recorded_at >= startDate && entry.recorded_at <= endDate,
+    );
+
+    // Group by day and metric, collecting all values per day
+    const dailyData = new Map<string, Map<string, number[]>>();
+    filteredEntries.forEach((entry) => {
+      const dateKey = format(entry.recorded_at, "yyyy-MM-dd");
+      if (!dailyData.has(dateKey)) {
+        dailyData.set(dateKey, new Map());
+      }
+      const dayData = dailyData.get(dateKey)!;
+      entry.values.forEach((value) => {
+        if (!dayData.has(value.metric_id)) {
+          dayData.set(value.metric_id, []);
+        }
+        dayData.get(value.metric_id)!.push(value.value);
+      });
+    });
+
+    // Get all metric IDs from trackingData
+    const allMetricIds = trackingData.map((td) => td.metric.id);
+
+    // Generate all days in the range
+    const dataPoints: ChartDataPoint[] = [];
+    const currentDate = new Date(startDate);
+
+    while (currentDate <= endDate) {
+      const dateKey = format(currentDate, "yyyy-MM-dd");
+      const metrics = dailyData.get(dateKey);
+
+      const dataPoint: ChartDataPoint = {
+        timestamp: dateKey,
+        date: new Date(currentDate),
+      };
+
+      // Add all metrics with averaged values or null
+      allMetricIds.forEach((metricId) => {
+        if (metrics && metrics.has(metricId)) {
+          const values = metrics.get(metricId)!;
+          dataPoint[metricId] =
+            values.reduce((a, b) => a + b, 0) / values.length;
+        } else {
+          dataPoint[metricId] = null;
+        }
+      });
+
+      dataPoints.push(dataPoint);
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dataPoints;
+  }, [entries, startDate, endDate, trackingData]);
+
+  // Calculate time span to determine x-axis formatting
+  const timeSpanDays = useMemo(() => {
+    return differenceInDays(endDate, startDate);
+  }, [startDate, endDate]);
+
+  // X-axis tick formatter based on time span
+  const xAxisTickFormatter = useCallback(
+    (timestamp: string) => {
+      const date = new Date(timestamp);
+      if (timeSpanDays <= 7) {
+        // For week or less: show day and month
+        return format(date, "MMM d");
+      } else if (timeSpanDays <= 31) {
+        // For month or less: show day
+        return format(date, "d");
+      } else if (timeSpanDays <= 90) {
+        // For quarter or less: show month and day
+        return format(date, "MMM d");
+      } else if (timeSpanDays <= 365) {
+        // For year or less: show month
+        return format(date, "MMM");
+      } else {
+        // For more than a year: show month and year
+        return format(date, "MMM yy");
+      }
+    },
+    [timeSpanDays],
   );
 
-  // Month navigation
-  const currentMonthIndex = useMemo(
-    () => availableMonths.indexOf(selectedMonth),
-    [availableMonths, selectedMonth],
-  );
+  // Determine tick interval based on time span
+  const xAxisTicks = useMemo(() => {
+    if (chartData.length === 0) return undefined;
 
-  const previousMonth = useCallback(() => {
-    if (currentMonthIndex > 0) {
-      setSelectedMonth(availableMonths[currentMonthIndex - 1]);
+    let interval: number;
+    if (timeSpanDays <= 7) {
+      interval = 1; // Every day
+    } else if (timeSpanDays <= 31) {
+      interval = Math.ceil(chartData.length / 10); // ~10 ticks
+    } else if (timeSpanDays <= 90) {
+      interval = Math.ceil(chartData.length / 8); // ~8 ticks
+    } else {
+      interval = Math.ceil(chartData.length / 6); // ~6 ticks
     }
-  }, [availableMonths, currentMonthIndex]);
 
-  const nextMonth = useCallback(() => {
-    if (currentMonthIndex < availableMonths.length - 1) {
-      setSelectedMonth(availableMonths[currentMonthIndex + 1]);
-    }
-  }, [availableMonths, currentMonthIndex]);
-
-  const isPreviousMonthAvailable = currentMonthIndex > 0;
-  const isNextMonthAvailable = currentMonthIndex < availableMonths.length - 1;
+    return chartData
+      .filter((_, index) => index % interval === 0)
+      .map((d) => d.timestamp);
+  }, [chartData, timeSpanDays]);
 
   // Toggle metric - up to 2 can be active
   const toggleMetric = useCallback((metricId: string) => {
@@ -158,43 +225,6 @@ export default function EntriesLineChart({
 
   return (
     <div className="w-full">
-      {/* Month Navigation */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <Button
-          variant="ghost"
-          onClick={previousMonth}
-          disabled={!isPreviousMonthAvailable}
-          className={`p-2 rounded-full border ${
-            isPreviousMonthAvailable
-              ? "border-gray-200 text-gray-300"
-              : "border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed"
-          }`}
-          aria-label="Previous month"
-        >
-          <ChevronLeft />
-        </Button>
-
-        <div className="text-lg font-semibold min-w-[120px] text-center">
-          {selectedMonth
-            ? format(new Date(selectedMonth + "-01"), "MMM yyyy")
-            : ""}
-        </div>
-
-        <Button
-          variant="ghost"
-          onClick={nextMonth}
-          disabled={!isNextMonthAvailable}
-          className={`p-2 rounded-full border ${
-            isNextMonthAvailable
-              ? "border-gray-200 text-gray-300"
-              : "border-gray-300 hover:bg-gray-100 text-gray-700 cursor-not-allowed"
-          }`}
-          aria-label="Next month"
-        >
-          <ChevronRight />
-        </Button>
-      </div>
-
       {/* Chart with dark background */}
       <div
         className="w-full rounded-lg p-4"
@@ -214,6 +244,11 @@ export default function EntriesLineChart({
               dataKey="timestamp"
               stroke="rgba(255, 255, 255, 0.7)"
               tick={{ fill: "rgba(255, 255, 255, 0.7)" }}
+              tickFormatter={xAxisTickFormatter}
+              ticks={xAxisTicks}
+              angle={timeSpanDays > 90 ? 0 : -45}
+              textAnchor={timeSpanDays > 90 ? "middle" : "end"}
+              height={timeSpanDays > 90 ? 30 : 60}
             />
             <YAxis
               label={{
@@ -243,6 +278,9 @@ export default function EntriesLineChart({
                 color: "white",
               }}
               labelStyle={{ color: "white" }}
+              labelFormatter={(timestamp) =>
+                format(new Date(timestamp), "MMM d, yyyy")
+              }
             />
 
             {/* Min/max range and baseline for each active metric */}

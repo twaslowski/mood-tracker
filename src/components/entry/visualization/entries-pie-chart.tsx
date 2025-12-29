@@ -24,6 +24,8 @@ import { getMoodColor } from "@/lib/visualization-utils";
 interface PieChartProps {
   entries: Entry[];
   trackingData: MetricTracking[];
+  startDate: Date;
+  endDate: Date;
 }
 
 interface PieDataPoint {
@@ -44,6 +46,8 @@ interface TooltipProps {
 export default function EntriesPieChart({
   entries,
   trackingData,
+  startDate,
+  endDate,
 }: PieChartProps) {
   // Initialize with first metric if available
   const [selectedMetricId, setSelectedMetricId] = useState<string>(
@@ -66,11 +70,16 @@ export default function EntriesPieChart({
   const pieData = useMemo<PieDataPoint[]>(() => {
     if (!selectedMetric) return [];
 
+    // Filter entries within the date range
+    const filteredEntries = entries.filter(
+      (entry) => entry.recorded_at >= startDate && entry.recorded_at <= endDate,
+    );
+
     // Count occurrences of each value
     const valueCounts = new Map<number, number>();
     let totalCount = 0;
 
-    entries.forEach((entry) => {
+    filteredEntries.forEach((entry) => {
       entry.values.forEach((value) => {
         if (value.metric_id === selectedMetricId) {
           const currentCount = valueCounts.get(value.value) || 0;
@@ -109,7 +118,7 @@ export default function EntriesPieChart({
       .sort((a, b) => b.value - a.value); // Sort by count descending
 
     return data;
-  }, [entries, selectedMetricId, selectedMetric]);
+  }, [entries, selectedMetricId, selectedMetric, startDate, endDate]);
 
   // Custom label renderer for pie chart
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
