@@ -3,15 +3,17 @@
 import React, { useState, useEffect } from "react";
 import { type MetricTracking } from "@/types/tracking";
 import { type EntryValue, EntryValueSchema } from "@/types/entry-value.ts";
-import SubmitButton from "./submit-button";
 import DateTimeInput from "@/components/entry/creation/datetime-input";
 import ValueSelect from "@/components/entry/value-select";
 import { AdditionalMetricPicker } from "@/components/entry/creation/additional-metric-picker.tsx";
 import { Metric } from "@/types/metric.ts";
 import { Button } from "@/components/ui/button.tsx";
-import { XIcon } from "lucide-react";
+import { XIcon, Save, X } from "lucide-react";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
+import { useRouter } from "next/navigation";
+import { createEntry } from "@/app/actions/entry";
+import toast from "react-hot-toast";
 
 interface CreateEntryFormProps {
   trackedMetrics: MetricTracking[];
@@ -20,6 +22,7 @@ interface CreateEntryFormProps {
 export default function EntryCreationForm({
   trackedMetrics,
 }: CreateEntryFormProps) {
+  const router = useRouter();
   const [recordedAt, setRecordedAt] = useState(
     new Date().toISOString().slice(0, 16),
   );
@@ -80,6 +83,24 @@ export default function EntryCreationForm({
   const entryValues = deriveEntryValues();
   const isFormValid = entryValues.length > 0 && !!recordedAt;
 
+  const handleSubmit = async () => {
+    try {
+      await createEntry({
+        comment,
+        values: entryValues,
+        recorded_at: recordedAt,
+      });
+      router.push("/protected?success=true");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create entry. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    router.push("/protected");
+  };
+
   return (
     <div className="bg-primary-foreground/90 rounded-2xl shadow-xl p-8">
       <DateTimeInput value={recordedAt} onChange={setRecordedAt} />
@@ -135,12 +156,20 @@ export default function EntryCreationForm({
         />
       </div>
 
-      <SubmitButton
-        values={entryValues}
-        comment={comment}
-        recorded_at={recordedAt}
-        disabled={!isFormValid}
-      />
+      <div className="flex gap-4 pt-4">
+        <Button
+          onClick={handleSubmit}
+          disabled={!isFormValid}
+          className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-primary disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold py-4 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
+        >
+          <Save className="w-5 h-5" />
+          Save Entry
+        </Button>
+        <Button onClick={handleCancel} className="">
+          <X className="w-5 h-5" aria-label="submit-entry" />
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import EntryCreationForm from "../creation/entry-creation-form";
 import { moodTracking } from "@/__fixtures__/tracking";
 
