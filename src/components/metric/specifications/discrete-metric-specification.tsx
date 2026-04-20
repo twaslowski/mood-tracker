@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { GripVertical, Trash2 } from "lucide-react";
@@ -29,6 +34,21 @@ export default function DiscreteMetricSpecification({
   });
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+
+  const updateScrollIndicators = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollUp(el.scrollTop > 0);
+    setCanScrollDown(el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+  }, []);
+
+  useEffect(() => {
+    updateScrollIndicators();
+  }, [labels.length, updateScrollIndicators]);
 
   const addLabel = () => {
     setLabels([...labels, ""]);
@@ -96,54 +116,66 @@ export default function DiscreteMetricSpecification({
           Create labels and sort them from best to worst, if possible.
         </p>
       </div>
-      <div className="space-y-2 max-h-64 overflow-y-auto">
-        {error && (
-          <div className="p-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
-            {error}
-          </div>
+      <div className="relative">
+        {canScrollUp && (
+          <div className="absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-background to-transparent z-10 pointer-events-none" />
         )}
-        {labels.map((label, index) => (
-          <div
-            key={index}
-            draggable
-            onDragStart={() => setDraggedIndex(index)}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={() => {
-              if (draggedIndex !== null && draggedIndex !== index) {
-                moveLabel(draggedIndex, index);
-              }
-            }}
-            onDragEnd={() => setDraggedIndex(null)}
-            className={`flex gap-2 items-center p-3 rounded border transition-colors ${
-              draggedIndex === index
-                ? "opacity-50 bg-muted"
-                : "hover:bg-muted/50"
-            }`}
-          >
-            <GripVertical className="h-5 w-5 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
-            <div className="flex-1">
-              <Input
-                placeholder="e.g., Happy, Sad, Neutral"
-                value={label}
-                onChange={(e) => updateLabel(index, e.target.value)}
-                className="h-9"
-                aria-label="input-label-name"
-              />
+        <div
+          ref={scrollRef}
+          onScroll={updateScrollIndicators}
+          className="space-y-2 max-h-64 overflow-y-auto"
+        >
+          {error && (
+            <div className="p-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
             </div>
-            {labels.length > 1 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeLabel(index)}
-                className="h-9 w-9 shrink-0"
-                aria-label="remove-label"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        ))}
+          )}
+          {labels.map((label, index) => (
+            <div
+              key={index}
+              draggable
+              onDragStart={() => setDraggedIndex(index)}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => {
+                if (draggedIndex !== null && draggedIndex !== index) {
+                  moveLabel(draggedIndex, index);
+                }
+              }}
+              onDragEnd={() => setDraggedIndex(null)}
+              className={`flex gap-2 items-center p-3 rounded border transition-colors ${
+                draggedIndex === index
+                  ? "opacity-50 bg-muted"
+                  : "hover:bg-muted/50"
+              }`}
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
+              <div className="flex-1">
+                <Input
+                  placeholder="e.g., Happy, Sad, Neutral"
+                  value={label}
+                  onChange={(e) => updateLabel(index, e.target.value)}
+                  className="h-9"
+                  aria-label="input-label-name"
+                />
+              </div>
+              {labels.length > 1 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => removeLabel(index)}
+                  className="h-9 w-9 shrink-0"
+                  aria-label="remove-label"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+        {canScrollDown && (
+          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent z-10 pointer-events-none" />
+        )}
       </div>
       <Button
         type="button"
