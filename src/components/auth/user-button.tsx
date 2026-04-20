@@ -23,10 +23,6 @@ export function UserButton() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {/*  /!*<DropdownMenuItem onClick={() => router.push("/auth/telegram/verify")}>*!/*/}
-        {/*  /!*  <SendIcon />*!/*/}
-        {/*  /!*  Link Telegram Account*!/*/}
-        {/*  /!*</DropdownMenuItem>*!/*/}
         <DropdownMenuItem onClick={() => router.push("/protected/account")}>
           <CogIcon />
           Your Account

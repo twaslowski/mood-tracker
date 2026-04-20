@@ -2,13 +2,8 @@ version: "3"
 tasks:
   start-env:
     desc: Start supabase
-    dotenv:
-      - supabase/functions/.env.dev
     cmds:
       - supabase start
-      - ngrok http 54321 --url $SUPABASE_URL &
-      - curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=$SUPABASE_URL/functions/v1/telegram-webhook"
-      - supabase functions serve --no-verify-jwt --env-file supabase/functions/.env.dev
 
   stop-env:
     desc: Start supabase
@@ -43,12 +38,6 @@ tasks:
       ENVIRONMENT: "{{index .MATCH 0}}"
     cmds:
       - task: "apply:{{.ENVIRONMENT}}"
-      - supabase secrets set --env-file supabase/functions/.env.{{.ENVIRONMENT}}
-      - supabase functions deploy telegram-webhook --no-verify-jwt
-      - supabase functions deploy telegram-auth --no-verify-jwt
-      - |
-        source supabase/functions/.env.{{.ENVIRONMENT}}
-        curl -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" -d "url=${SUPABASE_URL}/functions/v1/telegram-webhook"
 
   build:
     desc: Run formatter, linter, and tests

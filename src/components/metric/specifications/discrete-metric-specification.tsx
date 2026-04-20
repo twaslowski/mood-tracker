@@ -96,7 +96,7 @@ export default function DiscreteMetricSpecification({
           Create labels and sort them from best to worst, if possible.
         </p>
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2 max-h-64 overflow-y-auto">
         {error && (
           <div className="p-3 rounded bg-red-50 border border-red-200 text-red-700 text-sm">
             {error}
@@ -120,7 +120,7 @@ export default function DiscreteMetricSpecification({
                 : "hover:bg-muted/50"
             }`}
           >
-            <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0 cursor-grab active:cursor-grabbing" />
+            <GripVertical className="h-5 w-5 text-muted-foreground shrink-0 cursor-grab active:cursor-grabbing" />
             <div className="flex-1">
               <Input
                 placeholder="e.g., Happy, Sad, Neutral"
@@ -136,7 +136,7 @@ export default function DiscreteMetricSpecification({
                 variant="outline"
                 size="icon"
                 onClick={() => removeLabel(index)}
-                className="h-9 w-9 flex-shrink-0"
+                className="h-9 w-9 shrink-0"
                 aria-label="remove-label"
               >
                 <Trash2 className="h-4 w-4" />
@@ -144,15 +144,15 @@ export default function DiscreteMetricSpecification({
             )}
           </div>
         ))}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={addLabel}
-          className="w-full"
-        >
-          + Add Another Option
-        </Button>
       </div>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={addLabel}
+        className="w-full"
+      >
+        + Add Another Option
+      </Button>
       <div className="flex justify-between gap-2 mt-6">
         <Button onClick={onBack} variant="outline">
           Back

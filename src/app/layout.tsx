@@ -47,7 +47,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex flex-col h-screen">
-            <div className="border-b border-b-muted-foreground/10 flex-shrink-0">
+            <div className="border-b border-b-muted-foreground/10 shrink-0">
               <Header />
             </div>
             <Toaster />

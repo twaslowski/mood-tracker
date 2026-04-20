@@ -58,7 +58,7 @@ export function FeaturesSection() {
               className="p-6 bg-white/5 border border-primary-700/50 hover:border-primary-500/50 transition-colors"
             >
               <div className="flex gap-4">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-500/20">
                     <Icon className="w-6 h-6 text-primary-400" />
                   </div>

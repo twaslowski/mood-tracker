@@ -181,15 +181,3 @@ enabled = false
 port = 54327
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"
-
-[functions.telegram-webhook]
-enabled = true
-verify_jwt = false
-import_map = "./functions/telegram-webhook/deno.json"
-entrypoint = "./functions/telegram-webhook/index.ts"
-
-[functions.telegram-auth]
-enabled = true
-verify_jwt = false
-import_map = "./functions/telegram-auth/deno.json"
-entrypoint = "./functions/telegram-auth/index.ts"

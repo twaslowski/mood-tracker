@@ -102,7 +102,7 @@ export default function EntryCreationForm({
   };
 
   return (
-    <div className="bg-primary-foreground/90 rounded-2xl shadow-xl p-8">
+    <div className="bg-primary-foreground/90 rounded-2xl shadow-xl p-8 max-h-75vh overflow-y-auto">
       <DateTimeInput value={recordedAt} onChange={setRecordedAt} />
 
       <div className="border border-primary/70 my-8" />

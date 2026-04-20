@@ -36,7 +36,7 @@ export function USPSection() {
             className="flex flex-col p-4 md:p-6 bg-white/10 border-none shadow-none"
           >
             <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-              <div className="p-2 md:p-3 bg-primary-500 rounded-full flex-shrink-0">
+              <div className="p-2 md:p-3 bg-primary-500 rounded-full shrink-0">
                 <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <h3 className="text-base md:text-lg font-semibold text-left">

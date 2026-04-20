@@ -32,16 +32,6 @@ variable "cloudflare_api_key" {
   sensitive   = true
 }
 
-variable "telegram_bot_name" {
-  description = "The Telegram bot name."
-  type        = string
-}
-
-variable "telegram_bot_url" {
-  description = "The Telegram bot URL."
-  type        = string
-}
-
 variable "supabase_publishable_key" {
   description = "The Supabase publishable key."
   type        = string

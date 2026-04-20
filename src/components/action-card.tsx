@@ -36,7 +36,7 @@ export const ActionCard = ({
     <Link href={href}>
       <Button className="w-full h-24 px-4 sm:px-6 py-4 sm:py-6 text-left justify-start rounded-2xl overflow-hidden">
         <div className="flex items-center gap-3 sm:gap-4 h-full min-w-0">
-          <div className="icon flex-shrink-0">
+          <div className="icon shrink-0">
             <Icon className={iconClasses} />
           </div>
           <div className="min-w-0 flex-1 flex flex-col justify-center overflow-hidden">
